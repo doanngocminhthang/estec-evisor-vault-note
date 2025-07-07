@@ -75,3 +75,11 @@ set up data playbook ,
 
 ![[siepa meeting-19.png]]
 
+![[siepa meeting-20.png]]
+
+![[siepa meeting-21.png]]
+
+
+FTP và OPCUA
+
+Siepa
