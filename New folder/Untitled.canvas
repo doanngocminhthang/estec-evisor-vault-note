@@ -2,8 +2,8 @@
 	"nodes":[
 		{"id":"2265381d4215a7a4","x":-680,"y":-30,"width":250,"height":60,"type":"text","text":"5trtr"},
 		{"id":"39c025992a924299","x":-140,"y":-140,"width":250,"height":60,"type":"text","text":"retret"},
-		{"id":"4502cca059cc6b19","x":280,"y":-400,"width":400,"height":400,"type":"file","file":"Untitled.canvas"},
-		{"id":"56afeb2c71c251d4","x":-160,"y":40,"width":400,"height":227,"type":"file","file":"Pasted image 20250619113724.png"}
+		{"id":"4502cca059cc6b19","x":280,"y":-400,"width":400,"height":400,"type":"file","file":"New folder/Untitled.canvas"},
+		{"id":"56afeb2c71c251d4","x":-160,"y":40,"width":400,"height":227,"type":"file","file":"New folder/Pasted image 20250619113724.png"}
 	],
 	"edges":[
 		{"id":"863b873e46afe765","fromNode":"2265381d4215a7a4","fromSide":"right","toNode":"39c025992a924299","toSide":"left"}
