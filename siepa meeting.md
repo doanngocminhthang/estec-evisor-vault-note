@@ -63,4 +63,15 @@ connect lẫn nhau
 
 
 establish server, connect 
-set up data enviroment 
+set up data playbook , 
+
+![[siepa meeting-16.png]]
+![[siepa meeting-17.png]]
+
+![[Pasted image 20250707143219.png]]
+
+![[siepa meeting-18.png]]
+
+
+![[siepa meeting-19.png]]
+
