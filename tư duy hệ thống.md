@@ -1,0 +1,8 @@
+- Đưa tất cả quy trình hiện tại thành số hoá 
+- quản lý kế hoạch
+- quản lý kho
+- quản lý tài sản
+- quản lý thiết bị
+- quản lý thi công
+- quản lý nhân sự
+- đã có các mẫu quy trình , giờ số hoá nó qua phần mềm

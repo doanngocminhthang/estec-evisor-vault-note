@@ -1,0 +1,7 @@
+# Obsidian vault settings
+.obsidian/
+
+# Other configuration or temporary folders
+.space/
+.trash/
+.makemd/

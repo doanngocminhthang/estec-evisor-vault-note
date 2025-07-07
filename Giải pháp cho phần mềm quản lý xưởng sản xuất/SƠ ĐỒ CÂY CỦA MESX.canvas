@@ -1,0 +1,16 @@
+{
+	"nodes":[
+		{"id":"e9b711b57356b891","type":"text","text":"MESX","x":-160,"y":-460,"width":250,"height":60},
+		{"id":"c99a7ff7974dfb1a","type":"link","url":"https://demo-3.vti-solutions.vn/","x":-1840,"y":-960,"width":1640,"height":1165},
+		{"id":"2dea1e399c5ce4c5","type":"text","text":"Thông tin sản xuất","x":188,"y":-550,"width":250,"height":60},
+		{"id":"ae20d4209c6a4c95","type":"text","text":"Dashboard","x":188,"y":-453,"width":250,"height":50},
+		{"id":"4bfd0c0beaeb287c","type":"text","text":"Quản lý sản xuất","x":188,"y":-360,"width":250,"height":50},
+		{"id":"76390a8136810e67","x":188,"y":-280,"width":250,"height":60,"type":"text","text":"Sản xuất"}
+	],
+	"edges":[
+		{"id":"c1d7facf27170cc0","fromNode":"e9b711b57356b891","fromSide":"right","toNode":"ae20d4209c6a4c95","toSide":"left"},
+		{"id":"bfa0474855a7c86c","fromNode":"e9b711b57356b891","fromSide":"right","toNode":"2dea1e399c5ce4c5","toSide":"left"},
+		{"id":"61f71962b8493249","fromNode":"e9b711b57356b891","fromSide":"right","toNode":"4bfd0c0beaeb287c","toSide":"left"},
+		{"id":"23d6d7f88f767265","fromNode":"e9b711b57356b891","fromSide":"right","toNode":"76390a8136810e67","toSide":"left"}
+	]
+}
