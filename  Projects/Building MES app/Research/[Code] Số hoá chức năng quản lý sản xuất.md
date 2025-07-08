@@ -158,7 +158,7 @@ def read_work_order(
 
 
 ```
-[[Lỗi NameError name schemas is not defined]]
+[[[Error] Lỗi NameError name schemas is not defined]]
 Use code [with caution](https://support.google.com/legal/answer/13505487).Python
 
 **Giải thích:**
