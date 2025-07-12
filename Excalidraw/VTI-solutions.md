@@ -12,18 +12,18 @@ sticker: emoji//1f61b
 ## Text Elements
 [[annalytic-sumary-architecture]] ^Qc1bpIHu
 
-[[VTI-link-tree , Phân tích sâu hơn về ứng dụng MESX, những thành phần chi tiết có trong đó]] ^F1QahmRm
+[[link_tree_mesx]] ^F1QahmRm
 
-[[web-demo-VTI]] ^STYm0CtW
+[[link_web_mesx]] ^STYm0CtW
 
 VTI ^IpFO0bLv
 
 Link tree ^ppWj7qX5
 
 ## Element Links
-IpFO0bLv: [[web-demo-VTI]]
+IpFO0bLv: [[link_web_mesx]]
 
-ppWj7qX5: [[web-demo-VTI]]
+ppWj7qX5: [[link_web_mesx]]
 
 ## Embedded Files
 8601008e614c48606f423717df602c4964b71478: [[Pasted Image 20250619114701_675.png]]

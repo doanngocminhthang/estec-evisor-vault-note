@@ -10,7 +10,7 @@ sticker: emoji//1f620
 # Excalidraw Data
 
 ## Text Elements
-[[server/server-evisor]] ^qBO2GYBY
+[[server_evisor]] ^qBO2GYBY
 
 SERVER ^uGzfRNwk
 
