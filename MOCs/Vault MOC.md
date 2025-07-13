@@ -1,1 +1,0 @@
-Link vault ecosystem on github : https://github.com/doanngocminhthang/estec-evisor-vault-note
