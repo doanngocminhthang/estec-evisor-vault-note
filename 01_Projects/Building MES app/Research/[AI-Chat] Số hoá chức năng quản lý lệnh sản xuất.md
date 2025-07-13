@@ -109,4 +109,4 @@ Hiện tại, toàn bộ ứng dụng của bạn chỉ có một trang. Chúng 
 
 Sau khi hoàn thành 3 việc này, bạn sẽ có một hệ thống hoàn chỉnh cho việc xem danh sách và xem chi tiết. Đó là nền tảng để bạn xây dựng tiếp các tính năng đính kèm file phức tạp hơn.
 
-[[ [Code] Số hoá chức năng quản lý sản xuất ]]
+[[code_function_management_manufacture]]

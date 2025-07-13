@@ -5,6 +5,9 @@ tags:
 ---
 ![[Lỗi NameError name schemas is not defined.png]]
 
+ Lỗi NameError name schemas is not defined
+
+Properties
 Chính xác! Lỗi này là do tôi đã sơ suất khi cung cấp đoạn code mà không nhắc lại dòng import cần thiết. Xin lỗi bạn!
 
 Lỗi NameError: name 'schemas' is not defined xảy ra vì Python không biết schemas là gì khi bạn dùng nó trong response_model=schemas.WorkOrder.
