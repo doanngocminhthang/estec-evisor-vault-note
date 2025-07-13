@@ -12,7 +12,7 @@ Chính xác! Lỗi này là do tôi đã sơ suất khi cung cấp đoạn code 
 
 Lỗi NameError: name 'schemas' is not defined xảy ra vì Python không biết schemas là gì khi bạn dùng nó trong response_model=schemas.WorkOrder.
 
-[[[Error] Lỗi ModuleNotFoundError No module named schemas']]
+[[error_module_not_found]]
 
 ### **Cách Sửa Lỗi**
 
