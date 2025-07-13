@@ -1,1 +1,0 @@
-![[[Image] Những hình ảnh ứng dụng MES.png]]

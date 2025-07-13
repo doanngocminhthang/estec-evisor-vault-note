@@ -170,7 +170,7 @@ Chúng ta sẽ xây dựng workflow dựa trên một kịch bản phổ biến:
 Slide workflow này sẽ là câu trả lời trực tiếp cho slide "Bất cập, khó khăn" và hiện thực hóa slide "Mục tiêu mong muốn", tạo ra một câu chuyện thuyết phục cho giải pháp của bạn.
 
 
-[[[Analytic] Phân tích module quản lý kho ]]
+[[Analysis_of_warehouse_management_module]]
 
 
-[[[Analytic] Đề xuất tính năng]]
+[[01_Projects/Recomment_function_evisor/analytic_recommend_function]]
