@@ -169,4 +169,4 @@ Chúng ta sẽ vẽ chi tiết từng workflow.
 - **So sánh Trước & Sau:** Bạn có thể chia đôi slide, một bên là workflow thủ công hiện tại (dùng icon giấy tờ, email), một bên là workflow mới (dùng icon tablet, mã QR, tự động) để thấy rõ sự khác biệt và giá trị mang lại.
 
 
-[[[Analytic] Phân Tích Chi Tiết Sơ Đồ Production Workflow Tổng Thể]]
+[[analytic_overview_architecture]]
