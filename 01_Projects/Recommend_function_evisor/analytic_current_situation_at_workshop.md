@@ -173,4 +173,4 @@ Slide workflow này sẽ là câu trả lời trực tiếp cho slide "Bất c�
 [[Analysis_of_warehouse_management_module]]
 
 
-[[01_Projects/Recomment_function_evisor/analytic_recommend_function]]
+[[01_Projects/Recommend_function_evisor/analytic_recommend_function]]

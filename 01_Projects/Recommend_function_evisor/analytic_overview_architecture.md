@@ -132,4 +132,4 @@ Khu vực này quản lý toàn bộ hoạt động vật lý trong kho.
 **Tóm lại:** Bạn đã có trong tay một sơ đồ cực kỳ mạnh mẽ. Nó không chỉ là một workflow mà còn là một **sơ đồ kiến trúc chức năng (functional architecture diagram)**. Hãy sử dụng nó làm slide chủ đạo để giải thích về cấu trúc và cách vận hành tổng thể của hệ thống quản lý nhà xưởng mà bạn đề xuất.
 
 
-[[[Analytic] Tạo Work Production chuyển thể sang tiếng anh]]
+[[create_architecture_to_english_version]]
