@@ -888,4 +888,120 @@ Hãy thực hiện lại các bước tạo và kích hoạt môi trường ảo
 
 **Tóm lại: Bạn chỉ cần tạo lại môi trường ảo bằng lệnh virtualenv env rồi tiếp tục các bước như cũ là được.**
 
+---
+---
+
+Chào bạn, tôi hiểu sự khó chịu khi bạn đã làm theo hướng dẫn mà vẫn gặp lại lỗi cũ. Đừng lo, đây là một vấn đề rất tinh vi nhưng lại rất phổ biến.
+
+**Đây là nguyên nhân chính xác:**
+
+Mặc dù bạn đã cài Python 3.11 và lệnh python --version bên ngoài đã hiển thịpython đúng, nhưng **môi trường ảo env hiện tại của bạn đã được tạo ra TRƯỚC ĐÓ**, và nó đã "khóa" (lock) phiên bản Python cũ hơn (có lẽ là Python 3.13) vào bên trong nó.
+
+Khi bạn chạy source env/Scripts/activate, bạn đang ra lệnh cho terminal sử dụng phiên bản Python **bên trong** thư mục env, chứ không phải phiên bản Python "toàn cục" của máy bạn.
+
+---
+
+### **Cách kiểm tra và sửa lỗi DỨT ĐIỂM**
+
+Hãy làm theo từng bước sau để chẩn đoán và sửa lỗi một lần và mãi mãi.
+
+**Bước 1: Chẩn đoán (Kiểm tra phiên bản Python BÊN TRONG môi trường ảo)**
+
+Trong terminal hiện tại, khi bạn đang thấy (env) ở đầu dòng, hãy chạy lại lệnh kiểm tra phiên bản:
+
+Generated bash
+
+```
+python --version
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+Tôi dám chắc 99% rằng kết quả sẽ là một phiên bản Python **KHÁC** 3.11 (ví dụ: Python 3.13.3). Đây chính là bằng chứng cho thấy môi trường ảo của bạn đang bị "sai".
+
+**Bước 2: Sửa lỗi (Quy trình làm sạch và tạo lại)**
+
+Đây là quy trình "sạch sẽ" nhất để đảm bảo không còn lỗi tồn đọng.
+
+1. **Thoát khỏi môi trường ảo hiện tại:**
+    
+    Generated bash
+    
+    ```
+    deactivate
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    (Dấu (env) sẽ biến mất).
+    
+2. **XÓA HOÀN TOÀN môi trường ảo cũ:** Đây là bước quan trọng nhất.
+    
+    Generated bash
+    
+    ```
+    rm -rf env
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+3. **KIỂM TRA LẠI phiên bản Python toàn cục một lần nữa:**
+    
+    Generated bash
+    
+    ```
+    python --version
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    (Kết quả phải là Python 3.11.x)
+    
+4. **TẠO LẠI môi trường ảo, chỉ định rõ ràng phiên bản Python:**  
+    Lệnh này sẽ ép virtualenv phải dùng python3.11 để tạo môi trường mới. Đây là cách làm an toàn và rõ ràng nhất.
+    
+    Generated bash
+    
+    ```
+    virtualenv -p python3.11 env
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+5. **Kích hoạt môi trường ảo MỚI:**
+    
+    Generated bash
+    
+    ```
+    source env/Scripts/activate
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+6. **KIỂM TRA LẠI phiên bản Python bên trong môi trường ảo MỚI:**
+    
+    Generated bash
+    
+    ```
+    python --version
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    (Bây giờ, kết quả BẮT BUỘC phải là Python 3.11.x). Nếu đúng, bạn đã thành công.
+    
+7. **Cài đặt thư viện:**  
+    Bây giờ, khi môi trường đã đúng, lệnh cài đặt sẽ thành công.
+    
+    Generated bash
+    
+    ```
+    pip install -r requirements.txt
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+
+Hãy thực hiện chính xác theo 7 bước trên, bạn sẽ giải quyết được vấn đề. Chúc may mắn
+
 
