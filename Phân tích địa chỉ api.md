@@ -445,6 +445,7 @@ Dưới đây là một chiến lược kiểm thử toàn diện:
     - **Thiếu trường bắt buộc:** Xóa hoàn toàn một dòng, ví dụ xóa dòng "ActualFuel": 0,.
         - ![[Phân tích địa chỉ api-3.png]]
     - **Thêm trường không mong muốn:** Thêm một dòng mới vào JSON, ví dụ "extra_field": 123.
+	    - 
         
     - **Giá trị nằm ngoài biên (Boundary/Edge Cases):** Nếu bạn biết một trường nào đó phải là số dương, hãy thử điền số âm. Ví dụ, thử "ActualFuel": -100.
         
