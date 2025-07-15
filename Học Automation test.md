@@ -345,3 +345,229 @@ Bạn cần kết nối lại vào EC2 bằng Bước 1 nếu đã ngắt kết 
     2. Kích hoạt môi trường ảo: source env/bin/activate
         
     3. Chạy lại lệnh ở **Bước 3**: nohup uvicorn src.main:app --port 8082 --host 0.0.0.0 &
+
+
+---
+
+
+Chào bạn, đây là một lỗi rất phổ biến. Mình sẽ giải thích nguyên nhân và cách khắc phục nhé.
+
+### **Nguyên nhân lỗi**
+
+Lỗi bash: virtualenv: command not found có nghĩa là:
+
+1. **Bạn đang chạy lệnh này trên máy tính cá nhân của bạn** (máy THANG-DOAN trong môi trường Git Bash), **chứ không phải trên máy chủ EC2**.
+    
+2. Công cụ virtualenv **chưa được cài đặt** trên máy tính cá nhân của bạn, vì vậy terminal không hiểu lệnh này là gì.
+    
+
+Theo hướng dẫn ở trên, các lệnh tạo môi trường ảo (virtualenv env), kích hoạt (source activate), và cài đặt thư viện (pip install) cần được thực hiện **SAU KHI** bạn đã kết nối thành công vào máy chủ EC2.
+
+### **Giải pháp (Làm đúng theo quy trình)**
+
+Bây giờ, bạn hãy làm lại đúng theo các bước đã được sắp xếp ở câu trả lời trước.
+
+**Bước 1: Kết nối vào máy chủ EC2 từ máy tính của bạn**
+
+Mở Git Bash và chạy lại lệnh ssh để truy cập vào máy chủ. Hãy đảm bảo bạn thay "ĐƯỜNG_DẪN_TỚI_FILE/privatekey.pem" bằng đường dẫn thật.
+
+Generated bash
+
+```
+ssh -i "ĐƯỜNG_DẪN_TỚI_FILE/privatekey.pem" ubuntu@ec2-54-251-242-155.ap-southeast-1.compute.amazonaws.com
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+Sau khi chạy lệnh này thành công, dấu nhắc lệnh của bạn sẽ thay đổi thành một cái gì đó tương tự như ubuntu@ip-172-31-xx-xx:~$. **Điều này xác nhận bạn đang ở trên máy chủ EC2.**
+
+**Bước 2: Thực hiện các lệnh cài đặt trên EC2**
+
+Bây giờ, khi đã ở **bên trong máy chủ EC2**, bạn hãy chạy lần lượt các lệnh sau:
+
+Generated bash
+
+```
+# Tải code (nếu chưa có)
+git clone https://github.com/estec-digital/ESKilnMaster---BinhPhuoc---ML.git
+
+# Di chuyển vào thư mục
+cd ESKilnMaster---BinhPhuoc---ML
+
+# Bây giờ mới chạy lệnh virtualenv
+virtualenv env
+
+# Kích hoạt môi trường
+source env/bin/activate
+
+# Cài đặt thư viện
+pip install -r requirements.txt
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+Trên máy chủ EC2, công cụ virtualenv rất có thể đã được cài đặt sẵn. Nếu bạn vẫn gặp lỗi command not found **ngay cả khi đã ở trên EC2**, hãy chạy lệnh sau để cài đặt nó:  
+sudo apt update && sudo apt install -y python3-virtualenv
+
+---
+
+### **Nếu bạn thực sự muốn chạy dự án trên máy cá nhân**
+
+Trong trường hợp bạn muốn thiết lập dự án trên máy THANG-DOAN của mình để lập trình và thử nghiệm, bạn cần cài đặt virtualenv trước.
+
+**1. Cài đặt virtualenv trên máy của bạn (dùng Git Bash):**
+
+Đầu tiên, hãy chắc chắn bạn đã cài đặt Python và pip. Sau đó chạy lệnh:
+
+Generated bash
+
+```
+pip install virtualenv
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+Hoặc nếu bạn dùng Python 3:
+
+Generated bash
+
+```
+pip3 install virtualenv
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+**2. Tạo lại môi trường ảo:**
+
+Sau khi cài đặt thành công, hãy chạy lại lệnh ban đầu:
+
+Generated bash
+
+```
+virtualenv env
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+**3. Kích hoạt môi trường (Lưu ý đường dẫn cho Git Bash trên Windows):**
+
+Generated bash
+
+```
+source env/Scripts/activate
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+**Tóm lại: Bạn đã chạy sai chỗ. Hãy kết nối vào EC2 trước, rồi mới chạy các lệnh cài đặt dự án.**
+
+
+---
+---
+
+
+Tuyệt vời! Lần này lệnh đã chạy thành công.
+
+Bạn đã cài đặt virtualenv trên máy tính cá nhân của mình và vừa **tạo thành công một môi trường ảo tên là env**.
+
+**Tuy nhiên, điều quan trọng nhất cần lưu ý là:** Bạn đã tạo môi trường ảo này **trên MÁY TÍNH CÁ NHÂN của bạn (máy THANG-DOAN)**, chứ không phải trên máy chủ EC2.
+
+Bây giờ bạn có hai lựa chọn, tùy thuộc vào mục tiêu của bạn là gì:
+
+---
+
+### **Lựa chọn 1: Tiếp tục cài đặt và chạy dự án trên MÁY TÍNH CÁ NHÂN (để lập trình/kiểm thử)**
+
+Nếu bạn muốn chạy thử dự án ngay trên máy của mình, hãy làm tiếp các bước sau ngay tại cửa sổ Git Bash hiện tại:
+
+1. **Kích hoạt môi trường ảo vừa tạo:**
+    
+    Generated bash
+    
+    ```
+    source env/Scripts/activate
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    Sau khi chạy, bạn sẽ thấy (env) xuất hiện ở đầu dòng lệnh, ví dụ: (env) thang.doan@THANG-DOAN ...
+    
+2. **Cài đặt các thư viện cần thiết vào môi trường ảo:**
+    
+    Generated bash
+    
+    ```
+    pip install -r requirements.txt
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+3. **Khởi động dịch vụ ở chế độ phát triển (develop):**
+    
+    Generated bash
+    
+    ```
+    uvicorn src.main:app --port 8082 --host 0.0.0.0 --reload
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+4. **Kiểm tra trên trình duyệt của bạn:**  
+    Mở trình duyệt và truy cập: **[http://localhost:8082/docs](https://www.google.com/url?sa=E&q=http%3A%2F%2Flocalhost%3A8082%2Fdocs)**
+    
+
+Đây là cách để bạn lập trình và kiểm tra các thay đổi của mình một cách nhanh chóng.
+
+---
+
+### **Lựa chọn 2: Quay lại mục tiêu ban đầu là triển khai lên MÁY CHỦ EC2**
+
+Nếu mục tiêu của bạn là đưa dịch vụ lên máy chủ EC2 để nó hoạt động online, thì thư mục env bạn vừa tạo trên máy cá nhân không dùng đến. Bạn cần thực hiện lại quy trình trên EC2.
+
+1. **Bỏ qua mọi thứ bạn vừa làm trên máy cá nhân.** Bạn có thể để nguyên hoặc xóa thư mục env đó đi cũng được.
+    
+2. **Kết nối vào máy chủ EC2** bằng lệnh ssh (như đã hướng dẫn ở các câu trả lời trước):
+    
+    Generated bash
+    
+    ```
+    # Thay bằng đường dẫn đúng đến file .pem của bạn
+    ssh -i "ĐƯỜNG_DẪN_TỚI_FILE/privatekey.pem" ubuntu@ec2-54-251-242-155.ap-southeast-1.compute.amazonaws.com
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+3. **SAU KHI ĐÃ VÀO ĐƯỢC EC2**, hãy thực hiện lại toàn bộ các lệnh cài đặt **trên terminal của EC2**:
+    
+    Generated bash
+    
+    ```
+    # Di chuyển vào thư mục dự án (nếu đã clone)
+    cd ESKilnMaster---BinhPhuoc---ML
+    
+    # Tạo môi trường ảo (trên EC2)
+    virtualenv env
+    
+    # Kích hoạt môi trường ảo (trên EC2, đường dẫn khác)
+    source env/bin/activate
+    
+    # Cài đặt thư viện (trên EC2)
+    pip install -r requirements.txt
+    
+    # Chạy dịch vụ ở chế độ triển khai (trên EC2)
+    nohup uvicorn src.main:app --port 8082 --host 0.0.0.0 &
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+
+---
+
+### **Tóm lại**
+
+- **Bạn muốn chạy thử trên máy mình?** → Làm theo **Lựa chọn 1**.
+    
+- **Bạn muốn đưa dịch vụ lên mạng để người khác truy cập?** → Làm theo **Lựa chọn 2**.
+    
+
+Hãy cho tôi biết bạn chọn hướng nào, tôi sẽ hướng dẫn tiếp nếu cần nhé
