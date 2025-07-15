@@ -488,7 +488,8 @@ Dưới đây là một chiến lược kiểm thử toàn diện:
 - **Cách làm:**
     
     - Cố tình làm hỏng cấu trúc JSON, ví dụ: xóa một dấu phẩy ,, thiếu một dấu ngoặc nhọn }.
-        
+	    - ![[Phân tích địa chỉ api-4.png]]
+        - ![[Phân tích địa chỉ api-5.png]]
 - **Kiểm tra kết quả:**
     
     - **Response Code** phải là 422 (hoặc 400 Bad Request tùy theo cách FastAPI xử lý).
