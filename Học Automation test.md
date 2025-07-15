@@ -803,4 +803,89 @@ Hãy quay lại với **Cách 1**, đây là con đường ít chông gai nhấ
 
 Lần này, quá trình cài đặt gần như chắc chắn sẽ thành công vì pip sẽ tìm thấy các gói đã được build sẵn. Sau đó, bạn có thể bắt đầu chạy dịch vụ và thực hiện các bài test.
 
+---
+---
+
+Okay, bạn đã rất gần đích rồi! Lỗi này rất dễ sửa.
+
+### **Phân tích lỗi**
+
+bash: env/Scripts/activate: No such file or directory
+
+Lỗi này có nghĩa là "Tôi không tìm thấy file activate trong thư mục env/Scripts".
+
+**Nguyên nhân:**
+
+Bạn đã kiểm tra phiên bản Python (python --version cho ra Python 3.11.0 - Rất tốt!), nhưng bạn đã **bỏ qua bước tạo lại môi trường ảo** sau khi xóa nó đi.
+
+Khi bạn chạy lệnh rm -rf env ở bước trước, bạn đã xóa hoàn toàn thư mục env và tất cả các file bên trong nó. Bây giờ bạn cần tạo lại nó bằng phiên bản Python 3.11.
+
+---
+
+### **Các bước cần làm ngay bây giờ**
+
+Hãy thực hiện lại các bước tạo và kích hoạt môi trường ảo.
+
+1. **Tạo lại môi trường ảo env (Bước quan trọng bạn đã bỏ qua):**  
+    Hãy chạy lệnh này ngay tại cửa sổ Git Bash hiện tại. Nó sẽ sử dụng Python 3.11 (mà bạn đã xác nhận là phiên bản mặc định) để tạo thư mục env mới.
+    
+    Generated bash
+    
+    ```
+    virtualenv env
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    Bạn cũng có thể chỉ định rõ ràng hơn:  
+    virtualenv -p python3.11 env
+    
+2. **Kích hoạt môi trường ảo vừa tạo:**  
+    Bây giờ thư mục env/Scripts/ đã tồn tại, lệnh sau sẽ chạy thành công.
+    
+    Generated bash
+    
+    ```
+    source env/Scripts/activate
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    (Bạn sẽ thấy (env) xuất hiện ở đầu dòng lệnh).
+    
+3. **Cài đặt các thư viện:**
+    
+    Generated bash
+    
+    ```
+    pip install -r requirements.txt
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    (Bước này bây giờ sẽ thành công vì bạn đang dùng Python 3.11).
+    
+4. **Chạy dịch vụ:**
+    
+    Generated bash
+    
+    ```
+    uvicorn src.main:app --port 8082 --reload
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+5. **Chạy automation test (trong một terminal khác):**
+    
+    - Mở một cửa sổ Git Bash mới.
+        
+    - Di chuyển đến thư mục dự án.
+        
+    - Kích hoạt môi trường ảo: source env/Scripts/activate
+        
+    - Chạy lệnh test: pytest
+        
+
+**Tóm lại: Bạn chỉ cần tạo lại môi trường ảo bằng lệnh virtualenv env rồi tiếp tục các bước như cũ là được.**
+
 
