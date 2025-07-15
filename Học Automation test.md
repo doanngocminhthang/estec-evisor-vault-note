@@ -170,3 +170,178 @@ Kiểm thử tích hợp (Integration Test) dùng để kiểm tra xem các thà
     - Bạn cần đảm bảo môi trường ảo (env) đã được kích hoạt.
         
     - Chạy lệnh pytest trong thư mục gốc của dự án, nó sẽ tự động tìm và thực thi các file kiểm thử (như test_api.py), sau đó báo cáo kết quả thành công hay thất bại.
+
+
+---
+
+
+Chắc chắn rồi! Dưới đây là các bước bạn cần làm, được sắp xếp theo đúng thứ tự từ đầu đến cuối. Bạn chỉ cần thực hiện lần lượt các lệnh này.
+
+---
+
+### **Tóm tắt quy trình:**
+
+1. **Chuẩn bị (Trên máy tính cá nhân):** Lấy "chìa khóa" truy cập.
+    
+2. **Kết nối (Từ máy tính cá nhân):** Truy cập vào máy chủ EC2.
+    
+3. **Cài đặt (Trên máy chủ EC2):** Tải code và cài đặt các thư viện cần thiết.
+    
+4. **Chạy (Trên máy chủ EC2):** Khởi động dịch vụ ML.
+    
+5. **Kiểm tra (Từ máy tính cá nhân):** Xác nhận dịch vụ đang hoạt động.
+    
+
+---
+
+### **Bước 0: Chuẩn bị (Thực hiện một lần duy nhất)**
+
+- **Việc cần làm:** Liên hệ **anh HoanVoESTEC** để nhận file privatekey.pem.
+    
+- **Hành động:** Lưu file này vào một thư mục dễ nhớ trên máy tính của bạn (ví dụ: C:\Users\YourName\ssh_keys\privatekey.pem).
+    
+
+### **Bước 1: Kết nối vào máy chủ EC2 (Thực hiện trên máy tính cá nhân)**
+
+Mở terminal trên máy tính của bạn (Command Prompt, PowerShell, VSCode Terminal, hoặc Terminal trên macOS/Linux) và chạy lệnh sau:
+
+Generated bash
+
+```
+# Thay "ĐƯỜNG_DẪN_TỚI_FILE/privatekey.pem" bằng đường dẫn thực tế của bạn
+ssh -i "ĐƯỜNG_DẪN_TỚI_FILE/privatekey.pem" ubuntu@ec2-54-251-242-155.ap-southeast-1.compute.amazonaws.com
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+- **Ví dụ trên Windows:**  
+    ssh -i "C:\Users\YourName\ssh_keys\privatekey.pem" ubuntu@ec2-54-251-242-155.ap-southeast-1.compute.amazonaws.com
+    
+- **Ví dụ trên macOS/Linux:**  
+    ssh -i "~/ssh_keys/privatekey.pem" ubuntu@ec2-54-251-242-155.ap-southeast-1.compute.amazonaws.com
+    
+
+**Sau khi chạy lệnh này thành công, bạn đã ở trong terminal của máy chủ EC2.** Tất cả các lệnh ở các bước tiếp theo sẽ được thực hiện tại đây.
+
+### **Bước 2: Tải mã nguồn và cài đặt môi trường (Thực hiện trên máy chủ EC2)**
+
+Chạy lần lượt các lệnh sau trên terminal của EC2:
+
+1. **Tải mã nguồn từ GitHub:**
+    
+    Generated bash
+    
+    ```
+    git clone https://github.com/estec-digital/ESKilnMaster---BinhPhuoc---ML.git
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+2. **Di chuyển vào thư mục dự án:**
+    
+    Generated bash
+    
+    ```
+    cd ESKilnMaster---BinhPhuoc---ML
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+3. **Tạo môi trường ảo (Nếu chưa có virtualenv, chạy sudo apt update && sudo apt install -y python3-virtualenv):**
+    
+    Generated bash
+    
+    ```
+    virtualenv env
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+4. **Kích hoạt môi trường ảo:**
+    
+    Generated bash
+    
+    ```
+    source env/bin/activate
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    (Bạn sẽ thấy (env) xuất hiện ở đầu dòng lệnh).
+    
+5. **Cài đặt tất cả các thư viện cần thiết:**
+    
+    Generated bash
+    
+    ```
+    pip install -r requirements.txt
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    (Bước này có thể mất vài phút).
+    
+
+### **Bước 3: Chạy dịch vụ ML (Thực hiện trên máy chủ EC2)**
+
+Bây giờ, hãy khởi động dịch vụ để nó chạy ở chế độ nền.
+
+Generated bash
+
+```
+nohup uvicorn src.main:app --port 8082 --host 0.0.0.0 &
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+- Lệnh này sẽ khởi động dịch vụ trên cổng 8082 và chạy ngầm, kể cả khi bạn đóng terminal.
+    
+- Bạn sẽ thấy một thông báo như [1] 12345 và nohup: ignoring input and appending output to 'nohup.out'. Điều này là bình thường.
+    
+
+### **Bước 4: Kiểm tra xem dịch vụ đã chạy thành công chưa (Thực hiện trên máy tính cá nhân)**
+
+Mở trình duyệt web trên máy tính của bạn và truy cập vào địa chỉ sau:
+
+**[http://54.251.242.155:8082/docs](https://www.google.com/url?sa=E&q=http%3A%2F%2F54.251.242.155%3A8082%2Fdocs)**
+
+Nếu bạn thấy trang **Swagger UI** với danh sách các API hiện ra, nghĩa là bạn đã triển khai thành công!
+
+---
+
+### **Các lệnh quản lý hữu ích (Thực hiện trên máy chủ EC2)**
+
+Bạn cần kết nối lại vào EC2 bằng Bước 1 nếu đã ngắt kết nối.
+
+- **Để kiểm tra xem dịch vụ có đang chạy hay không:**
+    
+    Generated bash
+    
+    ```
+    ps aux | grep 8082
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    Lệnh này sẽ hiển thị thông tin về tiến trình đang chạy trên cổng 8082. Hãy ghi nhớ số **PID** (Process ID) của nó.
+    
+- **Để dừng dịch vụ:**
+    
+    Generated bash
+    
+    ```
+    # Thay <SỐ_PID> bằng số bạn tìm được ở trên
+    kill -9 <SỐ_PID>
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    Ví dụ: kill -9 12345
+    
+- **Để khởi động lại dịch vụ sau khi đã dừng:**
+    
+    1. Vào đúng thư mục: cd ESKilnMaster---BinhPhuoc---ML
+        
+    2. Kích hoạt môi trường ảo: source env/bin/activate
+        
+    3. Chạy lại lệnh ở **Bước 3**: nohup uvicorn src.main:app --port 8082 --host 0.0.0.0 &
