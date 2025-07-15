@@ -281,3 +281,77 @@ Chính xác, bạn đã hiểu đúng rồi!
 - Biết được nó sẽ trả về kết quả như thế nào.
     
 - Nhấn nút "Try it out" để chạy thử API ngay trên trình duyệt.
+
+---
+---
+
+Chắc chắn rồi! Đây là giải thích chi tiết cho từng phần trên giao diện Swagger UI mà bạn đang thấy.
+
+Bạn đã làm rất tốt! Đây chính là "bảng điều khiển" tương tác của Backend. Trang này được tạo ra tự động từ code FastAPI của bạn, giúp bạn hiểu và thử nghiệm các API một cách cực kỳ trực quan.
+
+Hãy cùng phân tích các thành phần chính trong ảnh:
+
+---
+
+### **1. Phần Tiêu đề**
+
+- **FastAPI**: Tên của framework (bộ công cụ lập trình) được dùng để xây dựng nên backend này.
+    
+- **0.1.0**: Đây là phiên bản của ứng dụng của bạn, được định nghĩa trong mã nguồn.
+    
+- **OAS 3.1**: Viết tắt của **O**pen**A**PI **S**pecification phiên bản 3.1. Đây là một tiêu chuẩn quốc tế dùng để mô tả các API. Nhờ tuân theo tiêu chuẩn này, các công cụ như Swagger có thể tự động tạo ra giao diện đẹp đẽ này cho bạn.
+    
+
+---
+
+### **2. Phần API Endpoints (Quan trọng nhất)**
+
+Đây là danh sách tất cả các "chức năng" mà backend của bạn cung cấp. Trong trường hợp này, bạn có 2 chức năng chính:
+
+#### **Phân tích một Endpoint:**
+
+Hãy lấy endpoint đầu tiên làm ví dụ: POST /classify_status_predict_trend
+
+- **POST**: Đây là **phương thức HTTP (HTTP Method)**. Nó cho biết hành động của API. POST thường có nghĩa là "Gửi dữ liệu lên cho backend để xử lý hoặc tạo mới một cái gì đó". (Các phương thức phổ biến khác là GET - lấy dữ liệu về, PUT - cập nhật, DELETE - xóa).
+    
+- **/classify_status_predict_trend**: Đây là **đường dẫn (path)** của API. Đây là địa chỉ cụ thể cho chức năng này.
+    
+    - **Địa chỉ đầy đủ của API này là:** http://127.0.0.1:8082/classify_status_predict_trend
+        
+- **Classify Status Predict Trend**: Đây là mô tả ngắn gọn, dễ hiểu về chức năng của API này: "Phân loại trạng thái và dự đoán xu hướng".
+    
+
+**Tóm lại, bạn có 2 API:**
+
+1. **POST /classify_status_predict_trend**: Gửi dữ liệu lên để phân loại và dự đoán xu hướng.
+    
+2. **POST /find_issues**: Gửi dữ liệu lên để tìm kiếm các vấn đề (issues).
+    
+
+---
+
+### **3. Phần Schemas (Khuôn mẫu dữ liệu)**
+
+"Schemas" định nghĩa **cấu trúc** hay **khuôn mẫu** của dữ liệu được gửi đi hoặc nhận về từ API. Nó giống như một biểu mẫu (form) quy định bạn phải điền những thông tin gì.
+
+- **StatusRequest**: Đây là **Input Schema (Khuôn mẫu đầu vào)**. Rất có thể đây là cấu trúc dữ liệu mà bạn phải gửi lên cho API /classify_status_predict_trend. Nếu bạn bấm vào để mở rộng (Expand), nó sẽ cho bạn biết bạn cần cung cấp những trường dữ liệu nào (ví dụ: temperature, pressure...).
+    
+- **HTTPValidationError** và **ValidationError**: Đây là các **Output Schema (Khuôn mẫu đầu ra)**, cụ thể là cho trường hợp có lỗi. Nếu bạn gửi dữ liệu không hợp lệ (ví dụ: thiếu một trường bắt buộc), backend sẽ trả về một thông báo lỗi có cấu trúc được định nghĩa bởi các schema này.
+    
+
+---
+
+### **Bước tiếp theo để bạn khám phá:**
+
+Bây giờ, để hiểu rõ hơn, bạn hãy làm như sau:
+
+1. **Bấm vào thanh màu xanh lá** của API /classify_status_predict_trend. Nó sẽ mở rộng ra để hiển thị thông tin chi tiết.
+    
+2. Bấm vào nút **"Try it out"**.
+    
+3. Bạn sẽ thấy một ô văn bản (Request body) xuất hiện, bên trong có sẵn một cấu trúc JSON mẫu dựa trên schema StatusRequest.
+    
+4. Hãy chỉnh sửa các giá trị trong đó (nếu cần) và nhấn nút **"Execute"** màu xanh dương.
+    
+
+Hành động này sẽ gửi một yêu cầu thật đến backend. Ngay bên dưới, bạn sẽ thấy kết quả mà backend trả về, bao gồm cả "Response body" (dữ liệu trả về) và "Response code" (mã trạng thái, ví dụ 200 OK là thành công). Đây chính là cốt lõi của việc kiểm thử API
