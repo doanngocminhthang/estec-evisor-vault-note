@@ -355,3 +355,143 @@ Bây giờ, để hiểu rõ hơn, bạn hãy làm như sau:
     
 
 Hành động này sẽ gửi một yêu cầu thật đến backend. Ngay bên dưới, bạn sẽ thấy kết quả mà backend trả về, bao gồm cả "Response body" (dữ liệu trả về) và "Response code" (mã trạng thái, ví dụ 200 OK là thành công). Đây chính là cốt lõi của việc kiểm thử API
+
+---
+---
+
+Chắc chắn rồi! Bức ảnh này cho thấy chi tiết của một API và nó là trọng tâm của việc kiểm thử. Hãy cùng phân tích sâu và vạch ra chiến lược test nhé.
+
+### **I. Phân tích Chi tiết Giao diện**
+
+Đây là giao diện chi tiết của API POST /classify_status_predict_trend.
+![[Phân tích địa chỉ api.png]]
+#### **1. Parameters (Tham số)**
+
+- **No parameters**: Phần này cho biết API không nhận tham số trên đường dẫn URL (ví dụ: /users/{user_id}). Mọi dữ liệu cần thiết phải được gửi trong phần thân của yêu cầu.
+    
+
+#### **2. Request body (Thân yêu cầu)**
+
+- **required**: Chữ màu đỏ này khẳng định rằng bạn **bắt buộc** phải gửi dữ liệu trong thân yêu cầu. Nếu không gửi, API sẽ báo lỗi.
+    
+- **Example Value / Schema**:
+    
+    - Đây là phần quan trọng nhất cho việc kiểm thử đầu vào (input). Nó cho bạn thấy một **ví dụ cụ thể** về cấu trúc dữ liệu JSON mà API mong muốn nhận được.
+        
+    - Cấu trúc này là một đối tượng JSON với rất nhiều cặp "khóa": "giá trị" (key-value pairs), ví dụ: "ActualFuel": 0, "ActualFuelSP": 0,... Tất cả đều là các thông số của lò nung (kiln).
+        
+    - Đây chính là dữ liệu mà bạn sẽ thay đổi để kiểm thử các trường hợp khác nhau.
+        
+
+#### **3. Responses (Các phản hồi có thể xảy ra)**
+
+Phần này mô tả các kết quả mà API có thể trả về, tương ứng với các trường hợp thành công và thất bại.
+
+- **Code 200 - Successful Response**:
+    
+    - **Ý nghĩa:** API đã nhận và xử lý dữ liệu của bạn thành công.
+        
+    - **Example Value:** Kết quả trả về sẽ là một chuỗi (string), ví dụ: "Normal", "Warning", "Critical". Đây chính là kết quả dự đoán của mô hình ML.
+        
+- **Code 422 - Validation Error**:
+    
+    - **Ý nghĩa:** Dữ liệu bạn gửi lên không hợp lệ. Đây là lỗi từ phía bạn (client-side error).
+        
+    - **Example Value:** Kết quả trả về sẽ là một đối tượng JSON chi tiết, cho bạn biết chính xác lỗi ở đâu.
+        
+        - "loc": ["body", "tên_trường_bị_lỗi"]: Cho biết lỗi nằm ở trường nào trong Request body.
+            
+        - "msg": "Mô tả lỗi": Ví dụ: "value is not a valid integer" (giá trị không phải là số nguyên).
+            
+        - "type": "Loại lỗi": Ví dụ: "type_error.integer".
+            
+
+---
+
+### **II. Chiến lược Kiểm thử để Cover các trường hợp**
+
+Mục tiêu của bạn là đảm bảo API hoạt động đúng trong mọi tình huống có thể xảy ra. Để làm điều này, bạn cần kiểm thử các "ca" (test cases) khác nhau, bao gồm cả các ca thành công (happy path) và các ca thất bại (unhappy path/edge cases).
+
+Dưới đây là một chiến lược kiểm thử toàn diện:
+
+#### **Case 1: Happy Path - Kịch bản thành công**
+
+- **Mục tiêu:** Xác nhận API hoạt động đúng với dữ liệu hợp lệ và trả về kết quả dự đoán chính xác.
+    
+- **Cách làm:**
+    
+    1. Nhấn nút **"Try it out"**.
+        
+    2. Lấy một bộ dữ liệu mẫu mà bạn biết chắc kết quả (ví dụ: bộ dữ liệu mà bạn biết sẽ cho ra "Normal"). Điền các giá trị đó vào Request body.
+        
+    3. Nhấn **"Execute"**.
+        
+    4. **Kiểm tra kết quả (Assertions):**
+        
+        - **Response Code** phải là **200**.
+            
+        - **Response Body** phải là chuỗi "Normal" (hoặc kết quả đúng bạn mong đợi).
+            
+
+#### **Case 2: Unhappy Path - Lỗi xác thực dữ liệu (Validation Errors)**
+
+- **Mục tiêu:** Đảm bảo API xử lý đúng các loại dữ liệu đầu vào không hợp lệ và trả về lỗi 422 với thông báo rõ ràng.
+    
+- **Cách làm:** Tạo ra nhiều kịch bản con, mỗi kịch bản thử một loại lỗi:
+    
+    - **Kiểu dữ liệu sai:** Thay vì số 0, hãy thử điền một chuỗi chữ như "abc" vào trường "ActualFuel".
+        
+    - **Thiếu trường bắt buộc:** Xóa hoàn toàn một dòng, ví dụ xóa dòng "ActualFuel": 0,.
+        
+    - **Thêm trường không mong muốn:** Thêm một dòng mới vào JSON, ví dụ "extra_field": 123.
+        
+    - **Giá trị nằm ngoài biên (Boundary/Edge Cases):** Nếu bạn biết một trường nào đó phải là số dương, hãy thử điền số âm. Ví dụ, thử "ActualFuel": -100.
+        
+- **Kiểm tra kết quả cho mỗi kịch bản con:**
+    
+    - **Response Code** phải là **422**.
+        
+    - **Response Body** phải chứa thông tin lỗi rõ ràng, cho biết lỗi ở trường nào và lý do tại sao.
+        
+
+#### **Case 3: Kiểm thử Logic của Mô hình ML (Quan trọng)**
+
+- **Mục tiêu:** Xác nhận rằng mô hình Machine Learning bên trong đang đưa ra dự đoán đúng.
+    
+- **Cách làm:**
+    
+    1. Chuẩn bị trước 3 bộ dữ liệu đầu vào (3 Request body khác nhau):
+        
+        - **Bộ 1:** Dữ liệu tương ứng với trạng thái "Normal".
+            
+        - **Bộ 2:** Dữ liệu tương ứng với trạng thái "Warning".
+            
+        - **Bộ 3:** Dữ liệu tương ứng với trạng thái "Critical".
+            
+    2. Thực thi API 3 lần, mỗi lần với một bộ dữ liệu.
+        
+- **Kiểm tra kết quả cho mỗi lần:**
+    
+    - Với Bộ 1, Response Body phải là "Normal".
+        
+    - Với Bộ 2, Response Body phải là "Warning".
+        
+    - Với Bộ 3, Response Body phải là "Critical".
+        
+
+#### **Case 4: Kiểm thử cấu trúc JSON không hợp lệ**
+
+- **Mục tiêu:** Đảm bảo API xử lý được trường hợp JSON bị lỗi cú pháp.
+    
+- **Cách làm:**
+    
+    - Cố tình làm hỏng cấu trúc JSON, ví dụ: xóa một dấu phẩy ,, thiếu một dấu ngoặc nhọn }.
+        
+- **Kiểm tra kết quả:**
+    
+    - **Response Code** phải là 422 (hoặc 400 Bad Request tùy theo cách FastAPI xử lý).
+        
+    - **Response Body** phải báo lỗi về "JSON decode error" hoặc tương tự.
+        
+
+**Bằng cách thực hiện các nhóm kiểm thử này, bạn sẽ "cover" được hầu hết các kịch bản quan trọng và có thể tự tin rằng API của mình hoạt động ổn định và chính xác.**
