@@ -240,3 +240,44 @@ Access to fetch at 'http://192.168.54.39:5173/api/login' from origin 'http://loc
         
 
 Hãy thực hiện các bước trên, bạn sẽ nhanh chóng tìm ra được nguyên nhân chính xác của vấn đề. Chúc bạn thành công
+
+
+---
+---
+
+  
+
+Chính xác, bạn đã hiểu đúng rồi!
+
+- Terminal bạn đang thấy chính là **Backend** đang chạy.
+    
+- **Swagger API Doc** (tài liệu API) chính là một dạng **Frontend** đơn giản được backend tự động tạo ra.
+    
+
+### **Để mở Swagger API Doc, bạn chỉ cần làm một việc đơn giản:**
+
+1. Mở trình duyệt web của bạn (Chrome, Firefox, Edge...).
+    
+2. Gõ hoặc dán địa chỉ sau vào thanh địa chỉ của trình duyệt và nhấn Enter:
+    
+    **http://127.0.0.1:8082/docs**
+    
+
+**Điều gì sẽ xảy ra?**
+
+- Trình duyệt của bạn sẽ gửi một yêu cầu GET /docs đến backend.
+    
+- Bạn sẽ thấy một dòng log mới xuất hiện trong terminal của backend, tương tự như dòng bạn đã thấy: INFO: 127.0.0.1:xxxxx - "GET /docs HTTP/1.1" 200 OK.
+    
+- Trên màn hình trình duyệt, bạn sẽ thấy một trang web đẹp đẽ với tiêu đề như "FastAPI" hoặc "ESKilnMaster" và danh sách các API (các khối màu xanh, xanh lá, cam...).
+    
+
+Đó chính là trang **Swagger API Doc** mà bạn đang tìm kiếm. Từ trang này, bạn có thể:
+
+- Xem tất cả các API mà backend hỗ trợ.
+    
+- Biết được mỗi API cần dữ liệu đầu vào là gì.
+    
+- Biết được nó sẽ trả về kết quả như thế nào.
+    
+- Nhấn nút "Try it out" để chạy thử API ngay trên trình duyệt.
