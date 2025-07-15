@@ -1004,4 +1004,222 @@ Tôi dám chắc 99% rằng kết quả sẽ là một phiên bản Python **KH
 
 Hãy thực hiện chính xác theo 7 bước trên, bạn sẽ giải quyết được vấn đề. Chúc may mắn
 
+---
+---
 
+ất tốt! Bạn đã tìm ra một lỗi rất sâu và tinh vi. **Lỗi này không phải do bạn làm sai**, mà là do sự phức tạp khi các phiên bản Python khác nhau tương tác với nhau trên Windows.
+
+### **Phân tích lỗi (Tại sao nó lại thất bại?)**
+
+Hãy nhìn vào các manh mối:
+
+1. **Lệnh bạn chạy:** virtualenv -p python3.11 env
+    
+2. **Chương trình đang thực thi:**  
+    C:\Users\thang.doan\AppData\Local\Programs\Python\Python313\Lib\site-packages\virtualenv\
+    
+3. **Lỗi cuối cùng:** FileNotFoundError khi đang cố tạo một file trong thư mục env.
+    
+
+**Giải thích đơn giản:**  
+Bạn đang đứng ở "nhà" của **Python 3.13** và ra lệnh cho công cụ virtualenv của nó (-p python3.11) đi xây một "ngôi nhà" cho **Python 3.11**.
+
+Về lý thuyết thì được, nhưng trên thực tế, công cụ của Python 3.13 đã gặp lỗi tương thích khi cố gắng sao chép các file hệ thống (như setuptools) để thiết lập cho môi trường Python 3.11. Nó giống như bạn dùng bộ đồ nghề của năm 2024 để lắp ráp một cỗ máy đời 2022, có một vài con ốc đặc biệt không tương thích và gây ra lỗi.
+
+Lỗi source env/Scripts/activate: No such file or directory xảy ra là hệ quả tất yếu, vì lệnh virtualenv trước đó đã thất bại nên thư mục env không được tạo ra một cách hoàn chỉnh.
+
+---
+
+### **Giải pháp: Sử dụng công cụ "chính chủ" venv (Cách làm chuẩn và ổn định nhất)**
+
+Rất may mắn, kể từ Python 3.3, Python đã đi kèm một công cụ tạo môi trường ảo "chính chủ" có tên là venv. Nó đơn giản, nhẹ nhàng và quan trọng nhất là **nó luôn hoạt động ổn định** vì nó được chạy bởi chính phiên bản Python mà nó sẽ tạo môi trường.
+
+Hãy quên virtualenv đi và làm theo cách chuẩn này.
+
+**Bước 1: Dọn dẹp (Nếu còn sót lại)**
+
+Nếu thư mục env đang tồn tại ở trạng thái lỗi, hãy xóa nó đi.
+
+Generated bash
+
+```
+rm -rf env
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+**Bước 2: Tạo môi trường ảo bằng venv (Lệnh mới)**
+
+Đây là lệnh thay thế cho virtualenv.
+
+Generated bash
+
+```
+python -m venv env
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+**Giải thích lệnh này:**
+
+- python: Vì Python 3.11 đang là phiên bản mặc định của bạn, lệnh này sẽ gọi python3.11.exe.
+    
+- -m venv: Ra lệnh cho Python chạy module venv của nó.
+    
+- env: Tên của thư mục môi trường ảo sẽ được tạo.
+    
+
+**Bước 3: Kích hoạt môi trường ảo**
+
+Lệnh này không thay đổi, vẫn như cũ.
+
+Generated bash
+
+```
+source env/Scripts/activate
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+Bạn sẽ thấy (env) xuất hiện ở đầu dòng lệnh.
+
+**Bước 4: Kiểm tra lại để chắc chắn**
+
+Bên trong môi trường (env), chạy lệnh:
+
+Generated bash
+
+```
+python --version
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+Kết quả phải là Python 3.11.x.
+
+**Bước 5: Cài đặt thư viện**
+
+Bây giờ thì bạn có thể tự tin cài đặt.
+
+Generated bash
+
+```
+pip install -r requirements.txt
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+Lần này chắc chắn sẽ thành công. Đây là cách làm chuẩn và ổn định nhất hiện nay khi làm việc với các phiên bản Python hiện đại. Chúc bạn thành công
+
+---
+---
+
+Chúc mừng bạn! Bạn đã vượt qua phần khó nhất và tốn nhiều công sức nhất là cài đặt môi trường. Bây giờ mọi thứ đã sẵn sàng để bạn thực hiện mục tiêu chính: **học và chạy automation test**.
+
+Quy trình để chạy test gồm 2 phần chính, diễn ra song song:
+
+1. **Chạy dịch vụ API:** Bạn cần khởi động ứng dụng ML để nó tạo ra các API. Các bài test sẽ gửi yêu cầu đến những API này.
+    
+2. **Chạy bộ kiểm thử (test suite):** Bạn sẽ dùng lệnh pytest để thực thi các file test (ví dụ test_api.py), các file này sẽ tự động gọi đến dịch vụ API đang chạy.
+    
+
+Hãy thực hiện các bước sau đây.
+
+---
+
+### **Bước 1: Chạy dịch vụ ML trên máy của bạn**
+
+Trong cửa sổ terminal Git Bash hiện tại (nơi bạn đang thấy (env) và vừa cài đặt xong), hãy chạy lệnh sau:
+
+Generated bash
+
+```
+uvicorn src.main:app --port 8082 --reload
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+- **Giải thích:** Lệnh này sẽ khởi động một máy chủ web cục bộ trên máy của bạn ở cổng 8082.
+    
+- **Kết quả mong đợi:** Bạn sẽ thấy các dòng thông báo tương tự như sau, và terminal sẽ "đứng im" ở đó, nghĩa là dịch vụ đang chạy.
+    
+    Generated code
+    
+    ```
+    INFO:     Uvicorn running on http://127.0.0.1:8082 (Press CTRL+C to quit)
+    INFO:     Started reloader process [xxxxx] using statreload
+    INFO:     Started server process [xxxxx]
+    INFO:     Waiting for application startup.
+    INFO:     Application startup complete.
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).
+    
+
+**Quan trọng:** Cứ để yên cửa sổ terminal này, đừng tắt nó đi. Dịch vụ API của bạn cần nó để hoạt động.
+
+### **Bước 2: (Tùy chọn nhưng nên làm) Kiểm tra xem dịch vụ có hoạt động không**
+
+Mở trình duyệt web của bạn (Chrome, Firefox,...) và truy cập vào địa chỉ sau:
+
+**[http://localhost:8082/docs](https://www.google.com/url?sa=E&q=http%3A%2F%2Flocalhost%3A8082%2Fdocs)**
+
+Nếu bạn thấy trang tài liệu API Swagger UI hiện ra, điều đó có nghĩa là dịch vụ của bạn đã chạy thành công!
+
+### **Bước 3: Chạy Automation Test**
+
+Bây giờ là lúc thực hiện mục tiêu chính.
+
+1. **Mở một cửa sổ terminal Git Bash MỚI** (Đừng dùng cái đang chạy uvicorn).
+    
+2. Trong cửa sổ MỚI này, hãy di chuyển đến đúng thư mục dự án của bạn:
+    
+    Generated bash
+    
+    ```
+    cd /d/ESTEC/00. PROJECTS/10. ESTEC-ECOSYSTEM/00. ESTEC-ECOSYSTEM-RESEARCH/learn_python_automation_test/ESKilnMaster---ML---HoanVo
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+3. **Kích hoạt lại môi trường ảo** trong cửa sổ MỚI này:
+    
+    Generated bash
+    
+    ```
+    source env/Scripts/activate
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+4. **(Quan trọng) Kiểm tra file test:** Theo tài liệu gốc, bạn cần kiểm tra file test_api.py. Hãy mở file đó và tìm biến TESTING_URL. Hãy chắc chắn rằng nó trỏ đến dịch vụ cục bộ của bạn, ví dụ: TESTING_URL = "http://127.0.0.1:8082".
+    
+5. **Chạy lệnh test:**
+    
+    Generated bash
+    
+    ```
+    pytest
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+
+pytest sẽ tự động tìm các file và hàm test trong dự án, thực thi chúng bằng cách gửi yêu cầu đến dịch vụ đang chạy ở terminal kia, và cuối cùng hiển thị kết quả.
+
+- **Kết quả mong đợi:** Bạn sẽ thấy một bản tóm tắt ở cuối, ví dụ như:  
+    ============================= 5 passed in 1.23s =============================
+    
+
+---
+
+### **Tóm tắt quy trình làm việc**
+
+Bạn sẽ cần **2 cửa sổ terminal** hoạt động cùng lúc:
+
+- **Terminal 1:** Chạy lệnh uvicorn ... để khởi động dịch vụ API.
+    
+- **Terminal 2:** Chạy lệnh pytest để kiểm thử dịch vụ đó.
+    
+
+Chúc bạn thành công và hãy cho tôi biết kết quả nhé
