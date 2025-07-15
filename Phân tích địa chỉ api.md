@@ -495,3 +495,6 @@ Dưới đây là một chiến lược kiểm thử toàn diện:
         
 
 **Bằng cách thực hiện các nhóm kiểm thử này, bạn sẽ "cover" được hầu hết các kịch bản quan trọng và có thể tự tin rằng API của mình hoạt động ổn định và chính xác.**
+
+
+![[Phân tích địa chỉ api-1.png]]
