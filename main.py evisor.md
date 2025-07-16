@@ -193,7 +193,6 @@ Các API được nhóm lại bằng tags (ví dụ: tags=["POD"], tags=["Au
     
 6. **Xác thực đầu vào:** Dù FastAPI đã tự động kiểm tra, bạn vẫn nên viết test cho các trường hợp thiếu trường, sai kiểu dữ liệu để đảm bảo API hoạt động đúng như tài liệu.
 
-
 # Code
 ```python
 from fastapi import FastAPI, UploadFile, File
