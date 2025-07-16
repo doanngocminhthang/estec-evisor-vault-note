@@ -500,4 +500,97 @@ Dưới đây là một chiến lược kiểm thử toàn diện:
 **Bằng cách thực hiện các nhóm kiểm thử này, bạn sẽ "cover" được hầu hết các kịch bản quan trọng và có thể tự tin rằng API của mình hoạt động ổn định và chính xác.**
 
 
-![[Phân tích địa chỉ api-1.png]]
+---
+---
+
+
+Chính xác! Lỗi này là một kết quả kiểm thử rất quan trọng và nó cho bạn biết rất nhiều điều về cách API của bạn hoạt động. Bạn đã thực hiện thành công một trong các "ca kiểm thử thất bại" (unhappy path).
+
+Hãy cùng phân tích chi tiết lỗi này.
+
+### **I. Phân tích Lỗi: "422 Unprocessable Entity"**
+
+Đây không phải là một lỗi "bất ngờ", mà là một phản hồi được thiết kế sẵn của FastAPI để xử lý đầu vào không hợp lệ.
+
+1. **Code 422**: Như đã nói ở trước, đây là mã lỗi cho biết "Tôi (server) hiểu bạn muốn gì, nhưng dữ liệu bạn gửi lên có vấn đề nên tôi không thể xử lý được".
+    
+2. **Response body (Thân phản hồi)**: Đây là phần quan trọng nhất, nó giải thích **tại sao** dữ liệu không hợp lệ.
+    
+    - **"type": "json_invalid"**: Lỗi này không phải là do giá trị của bạn sai (ví dụ: điền chữ vào ô số), mà là do **cấu trúc của file JSON bạn gửi lên bị lỗi cú pháp**.
+        
+    - **"msg": "JSON decode error"**: Đây là một cách nói khác của lỗi trên. Server đã cố gắng "đọc" chuỗi văn bản bạn gửi và chuyển nó thành một đối tượng JSON, nhưng đã thất bại.
+        
+    - **"ctx": { "error": "Expecting ',' delimiter" }**: **Đây là manh mối quan trọng nhất!** Nó có nghĩa là "Tôi đang mong đợi một dấu phẩy (,) để ngăn cách các thành phần, nhưng không thấy nó".
+        
+
+### **II. Nguyên nhân Gốc rễ**
+
+Lỗi "Expecting ',' delimiter" hầu như luôn luôn xảy ra vì một trong hai lý do sau trong Request body bạn đã nhập:
+
+**Lý do 1 (Phổ biến nhất): Bạn đã thiếu một dấu phẩy , giữa hai dòng.**
+
+- **Ví dụ sai:**
+    
+    Generated json
+    
+    ```
+    {
+      "ActualFuel": 100
+      "ActualFuelSP": 100
+    }
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Json
+    
+    Ở đây, server đọc xong dòng "ActualFuel": 100 và mong đợi một dấu phẩy trước khi đọc dòng tiếp theo, nhưng không thấy.
+    
+- **Sửa lại đúng:**
+    
+    Generated json
+    
+    ```
+    {
+      "ActualFuel": 100,
+      "ActualFuelSP": 100
+    }
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Json
+    
+
+**Lý do 2: Bạn có một dấu phẩy thừa ở cuối cùng.**
+
+- **Ví dụ sai:**
+    
+    Generated json
+    
+    ```
+    {
+      "ActualFuel": 100,
+      "ActualFuelSP": 100,  <-- Dấu phẩy này bị thừa
+    }
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Json
+    
+    Một số trình duyệt/công cụ có thể bỏ qua lỗi này, nhưng theo chuẩn JSON chặt chẽ thì nó là sai.
+    
+
+### **III. Phải làm gì bây giờ? (Cách sửa và kiểm thử tiếp)**
+
+Lỗi này cho thấy bạn đang kiểm thử đúng hướng! Bây giờ hãy:
+
+1. **Quay lại ô Request body** trên Swagger UI.
+    
+2. **Rà soát thật kỹ** nội dung JSON bạn đã dán vào. Hãy tìm chỗ nào bạn đã quên đặt dấu phẩy , ở cuối một dòng (trừ dòng cuối cùng bên trong cặp ngoặc {}).
+    
+3. **Mẹo hay:** Nếu khó tìm, hãy **sao chép (copy)** toàn bộ nội dung JSON trong ô Request body.
+    
+4. **Dán (paste)** nó vào một công cụ kiểm tra JSON online như **[JSONLint](https://www.google.com/url?sa=E&q=https%3A%2F%2Fjsonlint.com%2F)**.
+    
+5. Công cụ này sẽ ngay lập tức chỉ ra chính xác dòng và vị trí bạn bị lỗi cú pháp.
+    
+6. Sửa lại lỗi đó trong Swagger UI và nhấn **"Execute"** một lần nữa.
+    
+
+**Sau khi bạn sửa lỗi cú pháp và nhận được Response Code 200 (thành công) hoặc một lỗi 422 khác (về giá trị sai chứ không phải cú pháp), bạn có thể tiếp tục với các kịch bản kiểm thử khác đã vạch ra ở trên.**
