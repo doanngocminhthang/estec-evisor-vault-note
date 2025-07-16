@@ -703,7 +703,7 @@ Use code [with caution](https://support.google.com/legal/answer/13505487).Json
     1. Bạn đã có một ví dụ hoàn hảo về "happy path". Khi viết test, bạn sẽ gửi lên một bộ dữ liệu đầu vào và kiểm tra xem kết quả trả về có cấu trúc và giá trị đúng như JSON này không.
         
     2. Ví dụ về các assert trong file test của bạn:
-        
+    [[file test.api]]
         Generated python
         
         ```
