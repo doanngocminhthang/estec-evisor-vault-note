@@ -1,1 +1,0 @@
-1 câu hỏi truy vấn, 1 vẽ biểu đồ, đặt mình là user nhà máy, đặt ra những yêu cầu cần gì, xem những đối thủ đang làm những gì, tìm các ý tưởng đề xuất, để làm sản phẩm complex, chủ động đề xuất ý tưởng
