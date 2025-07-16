@@ -26,6 +26,7 @@ Dự án của bạn được chia thành 3 thành phần chính, rất rõ ràn
 - 📁 **src/**: Thư mục chứa mã nguồn chính của ứng dụng.
     
     - 📜 main.py: File khởi đầu của ứng dụng. Nó định nghĩa các API endpoints (như /Login, /find_issues), khởi chạy server (uvicorn) và kết nối các thành phần khác lại với nhau.
+    - [[main.py evisor]]
         
     - 📜 Authentication.py: Chứa logic liên quan đến xác thực người dùng (đăng nhập, đăng ký, kiểm tra quyền...).
         
