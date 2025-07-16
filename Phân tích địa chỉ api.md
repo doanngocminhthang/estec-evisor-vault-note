@@ -594,3 +594,128 @@ Lỗi này cho thấy bạn đang kiểm thử đúng hướng! Bây giờ hãy:
     
 
 **Sau khi bạn sửa lỗi cú pháp và nhận được Response Code 200 (thành công) hoặc một lỗi 422 khác (về giá trị sai chứ không phải cú pháp), bạn có thể tiếp tục với các kịch bản kiểm thử khác đã vạch ra ở trên.**
+
+---
+---
+
+Tuyệt vời! Đây là một cấu trúc JSON rất hoàn chỉnh, nó chính là kết quả trả về (Response Body) từ một trong các API của bạn, rất có thể là API POST /classify_status_predict_trend.
+
+Đây không chỉ là một câu trả lời "Có" hoặc "Không", mà là một **bản báo cáo chẩn đoán toàn diện** do mô hình Machine Learning tạo ra. Hãy cùng phân tích từng phần một.
+
+---
+
+### **Giải thích Chi tiết Cấu trúc JSON**
+
+Hãy xem cấu trúc này như một bản báo cáo y tế cho lò nung của bạn, bao gồm: chẩn đoán, lịch sử bệnh án, tiên lượng và đơn thuốc.
+
+#### **1. Trạng thái Tổng quan (status)**
+
+Generated json
+
+```
+"status": "Stable",
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Json
+
+- **Là gì?** Đây là kết luận quan trọng nhất, là chẩn đoán cuối cùng của mô hình.
+    
+- **Ý nghĩa:** Trạng thái hiện tại của lò nung là **"Ổn định" (Stable)**. Mọi thứ đang hoạt động bình thường. Các giá trị khác có thể là "Warning" (Cảnh báo) hoặc "Critical" (Nghiêm trọng).
+    
+- **Trong Automation Test:** Đây là giá trị cốt lõi bạn cần kiểm tra. Ví dụ: assert response.json()['status'] == 'Stable'.
+    
+
+---
+
+#### **2. Phân tích Xu hướng Quá khứ (past_trend)**
+
+Generated json
+
+```
+"past_trend": {
+  "data": [ ... ],
+  "trend_info": { ... }
+}
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Json
+
+- **Là gì?** Phần này nhìn lại dữ liệu trong quá khứ gần nhất để giải thích cho kết luận "Stable" ở trên. Nó là "lịch sử bệnh án".
+    
+- **"data"**: Đây là một mảng chứa dữ liệu thô của các cảm biến trong vài phút/giờ qua. Mỗi {...} là một điểm dữ liệu tại một thời điểm.
+    
+- **"trend_info"**: Đây là phần phân tích của mô hình đối với dữ liệu quá khứ. Nó cho biết xu hướng của từng thông số quan trọng là "Ổn định". Nếu có vấn đề, bạn có thể thấy ở đây là "Increasing" (Đang tăng) hoặc "Decreasing" (Đang giảm).
+    
+
+---
+
+#### **3. Dự báo Xu hướng Tương lai (future_trend)**
+
+Generated json
+
+```
+"future_trend": {
+  "data": [ ... ],
+  "trend_info": null
+}
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Json
+
+- **Là gì?** Đây là phần "tiên tri", là sức mạnh thực sự của mô hình dự đoán. Nó dự báo các giá trị cảm biến sẽ như thế nào trong tương lai gần (ví dụ: 15 phút tới). Đây là "tiên lượng".
+    
+- **"data"**: Một mảng chứa các giá trị dự đoán cho tương lai. Điều này giúp người vận hành thấy trước một vấn đề sắp xảy ra.
+    
+- **"trend_info": null**: Trong trường hợp này, nó là null (rỗng). Điều này có thể có nghĩa là vì trạng thái tương lai được dự báo là ổn định, nên không cần phân tích xu hướng chi tiết nữa.
+    
+
+---
+
+#### **4. Đề xuất Hành động (recommendation)**
+
+Generated json
+
+```
+"recommendation": {
+  "FurnaceSpeedSP": 0,
+  "CoalSP": 0,
+  "FanSP": 0
+}
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Json
+
+- **Là gì?** Đây là phần actionable nhất, là "đơn thuốc" của mô hình. SP thường là viết tắt của **Set Point** (Điểm cài đặt).
+    
+- **Ý nghĩa:** Mô hình đề xuất các giá trị cài đặt cho các thiết bị điều khiển.
+    
+- **Tại sao giá trị là 0?** Vì trạng thái đang là "Stable", mô hình đề xuất **không cần thay đổi gì cả** (thay đổi bằng 0). Nếu lò bị quá nhiệt, bạn có thể thấy đề xuất là "CoalSP": -5 (giảm 5% lượng than) và "FanSP": 10 (tăng 10% tốc độ quạt).
+    
+
+---
+
+### **Tóm lại và Hành động tiếp theo**
+
+- **Tóm lại:** Kết quả này là một bản báo cáo sức khỏe toàn diện cho lò nung, bao gồm: **Trạng thái hiện tại**, **bằng chứng từ quá khứ**, **dự báo cho tương lai**, và **hành động đề xuất**.
+    
+- **Trong Automation Test:**
+    
+    1. Bạn đã có một ví dụ hoàn hảo về "happy path". Khi viết test, bạn sẽ gửi lên một bộ dữ liệu đầu vào và kiểm tra xem kết quả trả về có cấu trúc và giá trị đúng như JSON này không.
+        
+    2. Ví dụ về các assert trong file test của bạn:
+        
+        Generated python
+        
+        ```
+        # Giả sử `response` là kết quả từ việc gọi API
+        data = response.json()
+        
+        assert response.status_code == 200
+        assert data['status'] == 'Stable'
+        assert isinstance(data['past_trend']['data'], list)
+        assert data['recommendation']['CoalSP'] == 0
+        ```
+        
+        Use code [with caution](https://support.google.com/legal/answer/13505487).Python
+        
+    3. Bây giờ, hãy thử tạo một ca kiểm thử thất bại. Thay đổi một vài giá trị trong dữ liệu đầu vào (ví dụ tăng KilnInletTemp lên rất cao) và xem kết quả JSON trả về sẽ khác như thế nào. Rất có thể status sẽ đổi thành "Warning" và recommendation sẽ có các giá trị khác 0.
