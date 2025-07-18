@@ -243,7 +243,7 @@ Hãy tưởng tượng bạn đang xây dựng một ngôi nhà. Pytest cung c�
     
     Generated python
     
-    ```
+    ```python
     @pytest.mark.parametrize("input1, input2, expected_output", [
         (2, 3, 5),          # Test case 1
         (-1, 1, 0),         # Test case 2
@@ -276,3 +276,198 @@ Hãy tưởng tượng bạn đang kiểm tra chất lượng một chiếc ô t
 - **Marker (@pytest.mark.safety):** Nhãn dán cho các mục kiểm tra: "Hạng mục an toàn", "Hạng mục hiệu suất".
     
 - **Parametrization:** Chạy mục "Kiểm tra phanh" ở nhiều tốc độ khác nhau (30km/h, 60km/h, 100km/h) chỉ với một quy trình duy nhất.
+
+---
+---
+
+Chắc chắn rồi! Với vai trò là một tester, việc phân tích sâu cả hai hệ thống Frontend và Backend là chìa khóa để thiết kế các kịch bản kiểm thử hiệu quả, tìm ra lỗi ở những nơi "hiểm hóc" và hiểu được nguồn gốc của vấn đề.
+
+Dưới đây là một bản phân tích sâu, được trình bày theo góc nhìn của một người kiểm thử.
+
+---
+
+### **Tổng quan: Mối quan hệ Frontend - Backend**
+
+Hãy tưởng tượng hệ thống của bạn như một con người:
+
+- **Backend (EVisor---Backend---RnD):** Là **bộ não và hệ thần kinh**. Nó chứa tất cả kiến thức (database), khả năng suy nghĩ (business logic), và không có giao diện. Nó giao tiếp thông qua các dây thần kinh (APIs).
+    
+- **Frontend (EVisor---Frontend---RnD):** Là **bộ mặt, giọng nói và tay chân**. Nó hiển thị thông tin một cách đẹp đẽ, tiếp nhận mệnh lệnh từ người dùng (click, gõ phím) và gửi các tín hiệu đó đến bộ não (gọi APIs).
+    
+
+**Nhiệm vụ của bạn là kiểm tra xem:**
+
+1. Bộ não có hoạt động đúng không? (API Testing).
+    
+2. Bộ mặt có hiển thị đúng thông tin từ não không? (UI Testing).
+    
+3. Tín hiệu từ tay chân có được não xử lý chính xác không? (End-to-End Testing).
+    
+
+---
+
+### **I. Phân tích sâu Backend (EVisor---Backend---RnD)**
+
+Đây là hệ thống logic cốt lõi. Lỗi ở đây thường nghiêm trọng hơn vì nó ảnh hưởng đến dữ liệu và quy trình nghiệp vụ.
+
+#### **Kiến trúc tổng thể**
+
+- **Công nghệ:** Python với framework FastAPI.
+    
+- **Triển khai:** Được "container hóa" bằng Docker và điều phối bằng docker-compose. Điều này có nghĩa là môi trường phát triển và môi trường chạy thật rất giống nhau, giảm thiểu lỗi "trên máy em chạy được...".
+    
+- **Thành phần phụ thuộc:** Phụ thuộc vào hai dịch vụ ngoài quan trọng là **PostgreSQL** (cơ sở dữ liệu quan hệ) và **MinIO** (lưu trữ file/đối tượng).
+    
+
+#### **Phân tích từng File theo góc nhìn Tester**
+
+1. **docker-compose.yaml (Bản thiết kế hạ tầng)**
+    
+    - **Nó là gì?** Là "bản vẽ" chỉ định cách khởi tạo toàn bộ môi trường backend, bao gồm dịch vụ Python, database, và MinIO.
+        
+    - **Tại sao quan trọng?** Nó định nghĩa các cổng (ports), volume (nơi lưu trữ dữ liệu), và các biến môi trường được truyền vào.
+        
+    - **Điểm cần test:**
+        
+        - **Khởi động môi trường:** Liệu lệnh docker-compose up có chạy thành công không? Có dịch vụ nào bị lỗi khởi động không?
+            
+        - **Kết nối giữa các dịch vụ:** Dịch vụ Python có "nhìn thấy" được dịch vụ postgres và minio qua các tên service được định nghĩa trong file này không? Lỗi kết nối thường xuất phát từ đây.
+            
+2. **.env (File bí mật)**
+    
+    - **Nó là gì?** Chứa tất cả các thông tin nhạy cảm và cấu hình: mật khẩu database, access key của MinIO, cổng kết nối...
+        
+    - **Tại sao quan trọng?** Đây là nguồn cấp dữ liệu cấu hình cho toàn bộ ứng dụng.
+        
+    - **Điểm cần test:**
+        
+        - **Lỗi cấu hình:** Nếu một biến môi trường bị thiếu hoặc sai (ví dụ: POSTGRES_PASSWORD sai), ứng dụng có bị crash một cách khó hiểu không, hay nó báo lỗi một cách "sạch sẽ" (ví dụ: "Cannot connect to database")?
+            
+3. **src/main.py (Tổng đài điều phối)**
+    
+    - **Nó là gì?** Là file chính, là "tổng đài" tiếp nhận tất cả các cuộc gọi (request) từ bên ngoài và chuyển chúng đến đúng người xử lý (các hàm function).
+        
+    - **Tại sao quan trọng?** Nó định nghĩa tất cả các API endpoints. Đây là **bản đồ API** của bạn. Nó cũng cấu hình CORS (cho phép Frontend từ domain khác gọi vào).
+        
+    - **Điểm cần test:**
+        
+        - **Routing:** Gọi đến một đường dẫn không tồn tại (ví dụ /LoginABC) sẽ nhận được lỗi 404 Not Found chuẩn không?
+            
+        - **Middleware (CORS):** Kiểm tra xem các header CORS có được trả về đúng không.
+            
+        - **Xử lý lỗi chung (try...except Exception as e):** Đây là chốt chặn cuối cùng. Cố tình tạo ra một lỗi không lường trước trong một hàm con, xem API có trả về một JSON lỗi { "status": "error", ... } hay là server bị sập hoàn toàn.
+            
+4. **src/DB_Connection.py và src/Authentication.py (Bộ phận An ninh & Kho bạc)**
+    
+    - **Nó là gì?** Một file chuyên xử lý kết nối database, file còn lại chuyên xử lý logic xác thực.
+        
+    - **Tại sao quan trọng?** An ninh và dữ liệu là hai thứ quan trọng nhất. check_session là hàm "gác cổng" cho hầu hết các API nghiệp vụ.
+        
+    - **Điểm cần test:**
+        
+        - **SQL Injection (dù ít khả năng với các thư viện hiện đại):** Thử nhập các chuỗi đặc biệt vào username/password.
+            
+        - **Quản lý Session/Token:** Test luồng sống của một token: tạo ra khi Login, được chấp nhận khi gọi API, và bị vô hiệu hóa khi Logout.
+            
+        - **Điều kiện tương tranh (Race Conditions):** Chuyện gì xảy ra nếu cùng một user cố gắng login 2 lần cùng một lúc?
+            
+5. **src/POD_TimeTracker.py (Bộ phận Nghiệp vụ)**
+    
+    - **Nó là gì?** Chứa logic "thật" của ứng dụng: đọc file Excel, gộp dữ liệu, tính toán...
+        
+    - **Tại sao quan trọng?** Đây là nơi tạo ra giá trị cho người dùng.
+        
+    - **Điểm cần test:**
+        
+        - **Logic tính toán:** Cần có các bộ dữ liệu đầu vào mẫu và kết quả đầu ra mong đợi để so sánh. (Ví dụ: đưa 2 file excel đầu vào, tự tính tay kết quả file gộp, sau đó gọi API và so sánh kết quả).
+            
+        - **Xử lý file lỗi:** Chuyện gì xảy ra nếu file Excel bị sai định dạng, thiếu cột, hoặc dữ liệu bên trong không hợp lệ? Hàm có báo lỗi rõ ràng không?
+            
+        - **Tương tác với MinIO:** Test các trường hợp file không tồn tại trên MinIO.
+            
+
+---
+
+### **II. Phân tích sâu Frontend (EVisor---Frontend---RnD)**
+
+Frontend là nơi trải nghiệm người dùng được quyết định. Lỗi ở đây có thể không làm mất dữ liệu, nhưng sẽ gây khó chịu và mất lòng tin.
+
+#### **Kiến trúc tổng thể**
+
+- **Công nghệ:** Vue.js, một framework JavaScript hiện đại để xây dựng Giao diện người dùng tương tác (SPA - Single Page Application).
+    
+- **Hệ sinh thái:**
+    
+    - **Vite:** Công cụ xây dựng và server phát triển, nổi tiếng về tốc độ.
+        
+    - **Pinia:** Thư viện quản lý trạng thái. Đây là **"bộ nhớ trung tâm"** của frontend.
+        
+    - **Vue Router:** Thư viện quản lý việc điều hướng giữa các trang.
+        
+    - **ElementPlus:** Thư viện các thành phần UI (nút, bảng, form...).
+        
+
+#### **Phân tích từng File theo góc nhìn Tester**
+
+1. **package.json (Bảng kê khai linh kiện)**
+    
+    - **Nó là gì?** Liệt kê tất cả các thư viện JavaScript mà dự án sử dụng và phiên bản của chúng.
+        
+    - **Tại sao quan trọng?** Nó cho bạn biết các công nghệ chính đang được dùng. Phần "scripts" cho bạn biết các lệnh để chạy (dev), kiểm thử (test), và đóng gói (build) ứng dụng.
+        
+    - **Điểm cần test:** Đảm bảo có thể cài đặt môi trường thành công bằng npm install và chạy ứng dụng bằng npm run dev.
+        
+2. **main.js (Quy trình khởi động)**
+    
+    - **Nó là gì?** File đầu tiên được chạy. Nó khởi tạo Vue, lắp ráp Pinia, Router, ElementPlus vào ứng dụng.
+        
+    - **Tại sao quan trọng?** Nó chứa logic kiểm tra xác thực ban đầu (authStore.checkAuth()) và thiết lập "trạm gác" (router.beforeEach).
+        
+    - **Điểm cần test:**
+        
+        - **Duy trì đăng nhập:** Đăng nhập, sau đó refresh trang (F5). Bạn có còn đăng nhập không? Logic checkAuth có hoạt động không?
+            
+        - **Chuyển hướng:** Khi đã đăng xuất, thử truy cập URL của trang dashboard. Có bị đá về trang login không? Logic trong router.beforeEach có hoạt động không?
+            
+3. **router/index.js (Bản đồ thành phố - Giả định)**
+    
+    - **Nó là gì?** File này định nghĩa tất cả các "con đường" (routes) trong ứng dụng. Ví dụ: đường /login sẽ dẫn đến component LoginPage.vue.
+        
+    - **Tại sao quan trọng?** Nó thường chứa logic bảo vệ cho từng route.
+        
+    - **Điểm cần test:**
+        
+        - Kiểm tra từng route trong file. Route nào yêu cầu đăng nhập (meta: { requiresAuth: true })? Cố gắng truy cập nó khi chưa đăng nhập.
+            
+        - Kiểm tra trang 404. Truy cập một URL không tồn tại, có hiển thị trang "Not Found" thân thiện không?
+            
+4. **stores/auth.js (Két sắt thông tin - Giả định)**
+    
+    - **Nó là gì?** Một store của Pinia, là "nguồn chân lý duy nhất" cho trạng thái xác thực. Nó chứa các biến như isLoggedIn, user, token.
+        
+    - **Tại sao quan trọng?** Mọi component trong ứng dụng sẽ hỏi store này "người dùng đã đăng nhập chưa?" để quyết định hiển thị nút "Login" hay "Logout". Nếu store này sai, cả ứng dụng sẽ hiển thị sai.
+        
+    - **Điểm cần test:**
+        
+        - **Phản ứng của UI:** Mở Vue Devtools, theo dõi state của authStore. Khi bạn login, các biến có thay đổi đúng không? UI có cập nhật theo không? Khi logout, state có được xóa sạch không?
+            
+        - **Tương tác với localStorage:** Kiểm tra xem token có được lưu vào và xóa khỏi localStorage của trình duyệt một cách chính xác khi login/logout không.
+            
+5. **Các file .vue (Các tòa nhà và nội thất)**
+    
+    - **Nó là gì?** Là các thành phần giao diện. Mỗi file .vue thường có 3 phần: <template> (HTML - cấu trúc), <script> (JavaScript - logic), và <style> (CSS - trang trí).
+        
+    - **Tại sao quan trọng?** Đây là nơi người dùng tương tác trực tiếp.
+        
+    - **Điểm cần test:**
+        
+        - **Hiển thị dữ liệu:** Dữ liệu từ API có được hiển thị đúng định dạng trên bảng, trên form không?
+            
+        - **Tương tác người dùng:** Click nút có gọi đúng hàm không? Gõ vào ô input có cập nhật dữ liệu không?
+            
+        - **Xử lý trạng thái (Loading, Error):** Khi đang gọi API, có hiển thị icon "loading" không? Khi API trả về lỗi, có hiển thị thông báo lỗi cho người dùng không?
+            
+        - **Validation trên form:** Có kiểm tra email hợp lệ, trường bắt buộc... ngay trên trình duyệt trước khi gửi đến backend không?
+            
+
+Bằng cách phân tích hệ thống một cách có cấu trúc như vậy, bạn không chỉ tìm ra lỗi mà còn có thể chỉ ra chính xác vị trí và nguyên nhân khả dĩ của nó, giúp tăng tốc độ sửa lỗi và nâng cao chất lượng sản phẩm.
