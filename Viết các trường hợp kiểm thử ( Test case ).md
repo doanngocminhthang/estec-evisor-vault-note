@@ -29,15 +29,15 @@ Tôi sẽ chia các test case thành 3 nhóm chính, từ cấp thấp đến c�
 
 #### **B. Nhóm API Nghiệp vụ (POD TimeTracker)**
 
-|   |   |   |   |
-|---|---|---|---|
-|ID Test|Mục tiêu kiểm thử|Các bước thực hiện|Kết quả mong đợi|
-|**POD-01**|**Happy Path:** Upload file thành công|Gửi POST /POD_TimeTracker_Upload với 1 hoặc nhiều file Excel hợp lệ.|- Status code: 200 OK.<br>- Response body chứa status: "success" và danh sách path_files đã được upload lên MinIO.|
-|**POD-02**|Upload file không hợp lệ|Gửi POST /POD_TimeTracker_Upload với file .txt hoặc .jpg.|API có thể vẫn trả về 200 OK (vì nó chỉ upload), nhưng các bước sau (merge) sẽ báo lỗi.|
-|**POD-03**|**Happy Path:** Gộp file thành công|1. Login.<br>2. Gửi POST /POD_TimeTracker_Merge với user_id và danh sách path_files hợp lệ.|- Status code: 200 OK.<br>- Response body chứa status: "success" và đường dẫn đến file tổng hợp mới.|
-|**POD-04**|Gộp file khi chưa đăng nhập|Gửi POST /POD_TimeTracker_Merge mà không có session/token hợp lệ.|- Status code: 200 OK nhưng body là lỗi, hoặc 401 Unauthorized.<br>- Message: "Phiên làm việc đã hết hạn...".|
-|**POD-05**|Gộp file với đường dẫn không tồn tại|Gửi POST /POD_TimeTracker_Merge với một đường dẫn file không có trên MinIO.|API nên trả về lỗi rõ ràng, ví dụ: "File not found on storage".|
-|**POD-06**|**Happy Path:** Tải file thành công|1. Login.<br>2. Gửi POST /POD_TimeTracker_Download với path_file hợp lệ.|- Status code: 200 OK.<br>- Response Header chứa Content-Disposition: attachment... để trình duyệt tự tải file về.|
+|            |                                        |                                                                                             |                                                                                                                    |
+| ---------- | -------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| ID Test    | Mục tiêu kiểm thử                      | Các bước thực hiện                                                                          | Kết quả mong đợi                                                                                                   |
+| **POD-01** | **Happy Path:** Upload file thành công | Gửi POST /POD_TimeTracker_Upload với 1 hoặc nhiều file Excel hợp lệ.                        | - Status code: 200 OK.<br>- Response body chứa status: "success" và danh sách path_files đã được upload lên MinIO. |
+| **POD-02** | Upload file không hợp lệ               | Gửi POST /POD_TimeTracker_Upload với file .txt hoặc .jpg.                                   | API có thể vẫn trả về 200 OK (vì nó chỉ upload), nhưng các bước sau (merge) sẽ báo lỗi.                            |
+| **POD-03** | **Happy Path:** Gộp file thành công    | 1. Login.<br>2. Gửi POST /POD_TimeTracker_Merge với user_id và danh sách path_files hợp lệ. | - Status code: 200 OK.<br>- Response body chứa status: "success" và đường dẫn đến file tổng hợp mới.               |
+| **POD-04** | Gộp file khi chưa đăng nhập            | Gửi POST /POD_TimeTracker_Merge mà không có session/token hợp lệ.                           | - Status code: 200 OK nhưng body là lỗi, hoặc 401 Unauthorized.<br>- Message: "Phiên làm việc đã hết hạn...".      |
+| **POD-05** | Gộp file với đường dẫn không tồn tại   | Gửi POST /POD_TimeTracker_Merge với một đường dẫn file không có trên MinIO.                 | API nên trả về lỗi rõ ràng, ví dụ: "File not found on storage".                                                    |
+| **POD-06** | **Happy Path:** Tải file thành công    | 1. Login.<br>2. Gửi POST /POD_TimeTracker_Download với path_file hợp lệ.                    | - Status code: 200 OK.<br>- Response Header chứa Content-Disposition: attachment... để trình duyệt tự tải file về. |
 
 ---
 
