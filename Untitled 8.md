@@ -35,7 +35,7 @@ File này có 4 nhiệm vụ chính, giống như một quy trình lắp ráp tr
         
 - import ElementPlus from 'element-plus': Đây là thư viện giao diện (UI library). Nó cung cấp các nút bấm, bảng biểu, form... đã được làm sẵn.
     
-    - **Điểm cần test:** Giúp bạn nhận biết lỗi. Nếu một nút bấm bị lỗi hiển thị, lỗi có thể đến từ logic của team hoặc từ chính thư viện (ít khả năng hơn).
+    - **Điểm cần test:** Giúp bạn nhận biết lỗi. Nếu một nút bấm bị lỗi hiển thị, lỗi có thể đến từ logic của team hoặc từ chính thư viện (ít khả năng hơn). 
         
 - import { useAuthStore } from './stores/auth': **QUAN TRỌNG NHẤT.** Đây là một "ngăn" cụ thể trong bộ nhớ Pinia, chuyên dùng để lưu trữ **trạng thái xác thực**. Nó chứa các biến như isLoggedIn, user, token, authReady. Đây là "trái tim" của hệ thống login.
     
