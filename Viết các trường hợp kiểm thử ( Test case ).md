@@ -89,6 +89,9 @@ The Sensors panel now lets you set accuracy in geolocation emulation, so you can
     "summary_file": "data/POD/TimeTracker/Input/ES_20250716_104738_thm.xlsx"
 }
 ```
+
+[[Phân tích các thứ trong network]]
+
 ---
 
 ### **II. Kiểm thử Giao diện & Component (Dùng trình duyệt và Vue DevTools)**
