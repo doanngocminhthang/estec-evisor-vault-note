@@ -451,7 +451,7 @@ Frontend là nơi trải nghiệm người dùng được quyết định. Lỗi
         
     - **Điểm cần test:**
         
-        - **Phản ứng của UI:** Mở Vue Devtools, theo dõi state của authStore. Khi bạn login, các biến có thay đổi đúng không? UI có cập nhật theo không? Khi logout, state có được xóa sạch không?
+        - **Phản ứng của UI:** Mở Vue Devtools , theo dõi state của authStore. Khi bạn login, các biến có thay đổi đúng không? UI có cập nhật theo không? Khi logout, state có được xóa sạch không? [[Phân tích vue dev tools]]
             
         - **Tương tác với localStorage:** Kiểm tra xem token có được lưu vào và xóa khỏi localStorage của trình duyệt một cách chính xác khi login/logout không.
             
