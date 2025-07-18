@@ -54,3 +54,22 @@ public/             # File tĩnh, index.html
 - **layouts/**: Định nghĩa bố cục tổng thể cho các trang.
 
 Kiến trúc này giúp dự án dễ mở rộng, bảo trì và làm việc nhóm hiệu quả. Bạn có thể tùy chỉnh theo nhu cầu dự án.
+
+---
+
+Với dự án này, bạn có thể thực hiện các hoạt động sau:
+
+1. **Phát triển giao diện người dùng:** Thêm, sửa các component, trang mới bằng Vue 3 và Element Plus.
+2. **Kết nối API:** Tích hợp hoặc chỉnh sửa các dịch vụ gọi API bằng Axios.
+3. **Quản lý trạng thái:** Sử dụng Pinia để quản lý dữ liệu dùng chung giữa các component.
+4. **Xác thực người dùng:** Tích hợp hoặc mở rộng chức năng đăng nhập, đăng ký với Firebase.
+5. **Hiển thị dữ liệu:** Tạo biểu đồ, bảng dữ liệu bằng ChartJS và các component UI.
+6. **Điều hướng ứng dụng:** Thêm/sửa các route với Vue Router.
+7. **Tối ưu hiệu năng:** Refactor code, tách logic sang composables, services.
+8. **Kiểm thử:** Viết unit test, kiểm thử giao diện và chức năng.
+9. **Triển khai:** Build và deploy lên môi trường thật (AWS hoặc server khác).
+
+Bạn muốn bắt đầu với chức năng nào?
+
+---
+
