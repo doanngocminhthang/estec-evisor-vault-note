@@ -37,23 +37,73 @@ Tôi sẽ chia các test case thành 3 nhóm chính, từ cấp thấp đến c�
 | **POD-03** | **Happy Path:** Gộp file thành công    | 1. Login.<br>2. Gửi POST /POD_TimeTracker_Merge với user_id và danh sách path_files hợp lệ. | - Status code: 200 OK.<br>- Response body chứa status: "success" và đường dẫn đến file tổng hợp mới.               |
 | **POD-04** | Gộp file khi chưa đăng nhập            | Gửi POST /POD_TimeTracker_Merge mà không có session/token hợp lệ.                           | - Status code: 200 OK nhưng body là lỗi, hoặc 401 Unauthorized.<br>- Message: "Phiên làm việc đã hết hạn...".      |
 | **POD-05** | Gộp file với đường dẫn không tồn tại   | Gửi POST /POD_TimeTracker_Merge với một đường dẫn file không có trên MinIO.                 | API nên trả về lỗi rõ ràng, ví dụ: "File not found on storage".                                                    |
-| **POD-06** | **Happy Path:** Tải file thành công    | 1. Login.<br>2. Gửi POST /POD_TimeTracker_Download với path_file hợp lệ.                    | - Status code: 200 OK.<br>- Response Header chứa Content-Disposition: attachment... để trình duyệt tự tải file về. |
+| **POD-06** | **Happy Path:** Tải file thành công    | 1. Login.<br>2. Gửi POST /POD_TimeTracker_Download với path_file hợp lệ.<br>                | - Status code: 200 OK.<br>- Response Header chứa Content-Disposition: attachment... để trình duyệt tự tải file về. |
+```
+1. path_files: ["data/POD/TimeTracker/Input/Form mau 1.xlsx"]
 
+2. 0: "data/POD/TimeTracker/Input/Form mau 1.xlsx"
+
+3. status: "success"
+4. summary_file: "data/POD/TimeTracker/Input/ES_20250716_104738_thm.xlsx"
+---
+
+Request URL
+
+http://192.168.54.39:8000/POD_TimeTracker_Upload
+
+Request Method
+
+POST
+
+Status Code
+
+200 OK
+
+Remote Address
+
+192.168.54.39:8000
+
+Referrer Policy
+
+strict-origin-when-cross-origin
+
+### Preconnected origins in 'Network dependency tree' insight
+
+The 'Network dependency tree' insight now shows you a list of used or unused preconnected origins and preconnect candidates, if any.
+
+### Server response and redirection times in 'Document request latency' insight
+
+The 'Document request latency' insight now shows you server response time and, if any, redirection time.
+
+### Geolocation accuracy parameter in Sensors
+
+The Sensors panel now lets you set accuracy in geolocation emulation, so you can test the handling of different levels of GPS accuracy.
+
+---
+
+{
+    "status": "success",
+    "path_files": [
+        "data/POD/TimeTracker/Input/Form mau 1.xlsx"
+    ],
+    "summary_file": "data/POD/TimeTracker/Input/ES_20250716_104738_thm.xlsx"
+}
+```
 ---
 
 ### **II. Kiểm thử Giao diện & Component (Dùng trình duyệt và Vue DevTools)**
 
 Tập trung vào sự chính xác của hiển thị và tương tác ở cấp độ nhỏ.
 
-|   |   |   |   |
-|---|---|---|---|
-|ID Test|Mục tiêu kiểm thử|Các bước thực hiện|Kết quả mong đợi (Quan sát trong Vue DevTools)|
-|**UI-01**|**State:** Trạng thái đăng nhập được cập nhật|1. Đăng nhập.<br>2. Mở Vue DevTools, kiểm tra Pinia store auth.|- state của auth store chứa thông tin user và token từ API.<br>- Biến isLoggedIn (nếu có) đổi thành true.|
-|**UI-02**|**Reactivity:** Giao diện thay đổi theo state|1. Sau khi đăng nhập.<br>2. Quan sát AppHeader.|- Tên người dùng được hiển thị.<br>- Nút "Login" đổi thành menu người dùng với nút "Logout".|
-|**UI-03**|**State:** Thu gọn/Mở rộng Sidebar|1. Click vào nút thu gọn Sidebar.<br>2. Quan sát state của component <App>.|- Biến isSidebarCollapsed đổi giá trị (true/false).<br>- Giao diện sidebar thu vào/mở ra tương ứng.|
-|**UI-04**|**State:** Hiển thị trạng thái Loading|1. Click nút "Merge" (một hành động tốn thời gian).<br>2. Quan sát state của component trang.|- Biến isLoading đổi thành true. Giao diện hiển thị spinner/loading.<br>- Sau khi API trả về, isLoading đổi lại thành false. Spinner biến mất.|
-|**UI-05**|**Routing:** Điều hướng hoạt động|1. Click vào các mục menu trong <SideBar>.|- URL trên trình duyệt thay đổi.<br>- Component bên trong <RouterView> thay đổi tương ứng.<br>- Biến $route trong Vue DevTools cập nhật đúng path.|
-|**UI-06**|**State:** Xử lý lỗi API|1. Dùng Chrome DevTools (tab Network) để chặn một yêu cầu API.<br>2. Thực hiện hành động gọi API đó.|- Một thông báo lỗi (toast, dialog) thân thiện được hiển thị cho người dùng.<br>- Trong state của component/store, một biến lỗi (ví dụ error_message) được cập nhật.|
+|           |                                               |                                                                                                      |                                                                                                                                                                      |
+| --------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ID Test   | Mục tiêu kiểm thử                             | Các bước thực hiện                                                                                   | Kết quả mong đợi (Quan sát trong Vue DevTools)                                                                                                                       |
+| **UI-01** | **State:** Trạng thái đăng nhập được cập nhật | 1. Đăng nhập.<br>2. Mở Vue DevTools, kiểm tra Pinia store auth.                                      | - state của auth store chứa thông tin user và token từ API.<br>- Biến isLoggedIn (nếu có) đổi thành true.                                                            |
+| **UI-02** | **Reactivity:** Giao diện thay đổi theo state | 1. Sau khi đăng nhập.<br>2. Quan sát AppHeader.                                                      | - Tên người dùng được hiển thị.<br>- Nút "Login" đổi thành menu người dùng với nút "Logout".                                                                         |
+| **UI-03** | **State:** Thu gọn/Mở rộng Sidebar            | 1. Click vào nút thu gọn Sidebar.<br>2. Quan sát state của component <App>.                          | - Biến isSidebarCollapsed đổi giá trị (true/false).<br>- Giao diện sidebar thu vào/mở ra tương ứng.                                                                  |
+| **UI-04** | **State:** Hiển thị trạng thái Loading        | 1. Click nút "Merge" (một hành động tốn thời gian).<br>2. Quan sát state của component trang.        | - Biến isLoading đổi thành true. Giao diện hiển thị spinner/loading.<br>- Sau khi API trả về, isLoading đổi lại thành false. Spinner biến mất.                       |
+| **UI-05** | **Routing:** Điều hướng hoạt động             | 1. Click vào các mục menu trong <SideBar>.                                                           | - URL trên trình duyệt thay đổi.<br>- Component bên trong <RouterView> thay đổi tương ứng.<br>- Biến $route trong Vue DevTools cập nhật đúng path.                   |
+| **UI-06** | **State:** Xử lý lỗi API                      | 1. Dùng Chrome DevTools (tab Network) để chặn một yêu cầu API.<br>2. Thực hiện hành động gọi API đó. | - Một thông báo lỗi (toast, dialog) thân thiện được hiển thị cho người dùng.<br>- Trong state của component/store, một biến lỗi (ví dụ error_message) được cập nhật. |
 
 ---
 
