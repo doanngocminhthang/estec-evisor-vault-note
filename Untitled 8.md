@@ -108,3 +108,171 @@ File này có 4 nhiệm vụ chính, giống như một quy trình lắp ráp tr
         
 
 Hiểu rõ file main.js này cho bạn một cái nhìn tổng quan về "khung xương" và "hệ thần kinh" của toàn bộ ứng dụng frontend, từ đó giúp bạn thiết kế các kịch bản test hiệu quả hơn rất nhiều.
+
+---
+---
+
+Chắc chắn rồi! pytest là một framework kiểm thử cực kỳ mạnh mẽ và phổ biến trong thế giới Python. Sự thành công của nó đến từ việc nó rất dễ sử dụng nhưng lại cung cấp những tính năng vô cùng linh hoạt.
+
+Dưới đây là phân tích các thành phần cơ bản và quan trọng nhất của pytest mà bất kỳ ai cũng cần nắm vững.
+
+---
+
+### **Các thành phần cơ bản của pytest**
+
+Hãy tưởng tượng bạn đang xây dựng một ngôi nhà. Pytest cung cấp cho bạn các viên gạch và công cụ để làm việc đó.
+
+#### **1. Test Files (Các file kiểm thử)**
+
+- **Là gì?** Đây là các file Python chứa mã nguồn kiểm thử của bạn.
+    
+- **Quy ước (Convention):** pytest sẽ tự động tìm kiếm các file này. Để được nhận diện, tên file phải bắt đầu bằng test_ hoặc kết thúc bằng _test.py.
+    
+    - **Ví dụ:** test_authentication.py, calculator_test.py.
+        
+- **Vai trò:** Giống như các bản thiết kế riêng cho từng khu vực của ngôi nhà (thiết kế cho phòng khách, thiết kế cho nhà bếp).
+    
+
+#### **2. Test Functions (Các hàm kiểm thử)**
+
+- **Là gì?** Đây là các hàm Python cụ thể thực hiện một kịch bản kiểm thử duy nhất.
+    
+- **Quy ước:** Bên trong các file test, pytest sẽ tìm các hàm có tên bắt đầu bằng test_.
+    
+    - **Ví dụ:** def test_login_successful():, def test_addition_with_negative_numbers():.
+        
+- **Vai trò:** Giống như một hạng mục công việc cụ thể trong bản thiết kế, ví dụ: "Kiểm tra độ chắc của móng nhà", "Kiểm tra hệ thống điện".
+    
+
+#### **3. Assertions (Các câu lệnh khẳng định)**
+
+- **Là gì?** Đây là "trái tim" của một bài test. Nó là câu lệnh dùng để kiểm tra xem một điều kiện có đúng như mong đợi hay không.
+    
+- **Cách dùng:** pytest sử dụng câu lệnh assert tiêu chuẩn của Python, làm cho code rất ngắn gọn và dễ đọc.
+    
+    - **Ví dụ:**
+        
+        Generated python
+        
+        ```
+        def test_addition():
+            result = 2 + 2
+            assert result == 4  # Khẳng định rằng kết quả phải bằng 4
+        ```
+        
+        Use code [with caution](https://support.google.com/legal/answer/13505487).Python
+        
+- **Điểm mạnh:** Khi một assert thất bại, pytest sẽ cung cấp một báo cáo lỗi cực kỳ chi tiết, cho bạn biết chính xác giá trị thực tế khác với giá trị mong đợi như thế nào.
+    
+- **Vai trò:** Giống như việc người kỹ sư dùng thước đo để kiểm tra xem một bức tường có được xây với kích thước chính xác hay không.
+    
+
+#### **4. Fixtures (Môi trường/Dữ liệu chuẩn bị sẵn)**
+
+- **Là gì?** Đây là tính năng mạnh mẽ và đặc trưng nhất của pytest. Fixtures là các hàm đặc biệt dùng để **chuẩn bị môi trường, dữ liệu hoặc các đối tượng cần thiết** cho một hoặc nhiều bài test.
+    
+- **Cách dùng:**
+    
+    1. Tạo một hàm và trang trí nó bằng @pytest.fixture.
+        
+    2. Hàm test nào cần sử dụng fixture này, chỉ cần khai báo tên của nó như một tham số đầu vào.
+        
+- **Ví dụ:**
+    
+    Generated python
+    
+    ```
+    import pytest
+    
+    # Fixture này tạo ra một bộ dữ liệu người dùng mẫu
+    @pytest.fixture
+    def sample_user_data():
+        return {"username": "testuser", "email": "test@example.com"}
+    
+    # Hàm test này sử dụng dữ liệu từ fixture
+    def test_user_email(sample_user_data):
+        assert "@" in sample_user_data["email"]
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Python
+    
+- **Vai trò:** Giống như việc chuẩn bị sẵn nguyên liệu trước khi nấu ăn (thái sẵn rau, ướp sẵn thịt). Nó giúp các bài test của bạn sạch sẽ, không bị lặp lại code, và dễ dàng quản lý các tài nguyên như kết nối database, khởi tạo đối tượng phức tạp. Bạn cũng có thể dùng yield để thực hiện các hành động "dọn dẹp" (teardown) sau khi test xong.
+    
+
+#### **5. Markers (Các nhãn dán)**
+
+- **Là gì?** Markers là các "nhãn dán" mà bạn có thể gắn vào các bài test để phân loại chúng.
+    
+- **Cách dùng:** Sử dụng decorator @pytest.mark.ten_nhan_dan.
+    
+- **Ví dụ:**
+    
+    Generated python
+    
+    ```
+    @pytest.mark.slow
+    def test_processing_large_file():
+        # ...
+    
+    @pytest.mark.api
+    @pytest.mark.login
+    def test_login_successful():
+        # ...
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Python
+    
+- **Mục đích:** Giúp bạn linh hoạt trong việc chạy test. Ví dụ, bạn có thể ra lệnh:
+    
+    - Chỉ chạy các bài test login: pytest -m login
+        
+    - Chạy tất cả trừ các bài test slow: pytest -m "not slow"
+        
+- **Các marker tích hợp sẵn:** pytest có sẵn một số marker hữu ích như @pytest.mark.skip (bỏ qua test này) và @pytest.mark.xfail (đánh dấu test này được mong đợi là sẽ thất bại).
+    
+- **Vai trò:** Giống như bạn dán nhãn lên các thùng đồ: "Đồ dễ vỡ", "Đồ nhà bếp", "Tài liệu quan trọng", để sau này dễ dàng tìm kiếm và sắp xếp.
+    
+
+#### **6. Parametrization (Tham số hóa)**
+
+- **Là gì?** Cho phép bạn chạy một hàm test duy nhất với nhiều bộ dữ liệu đầu vào khác nhau.
+    
+- **Cách dùng:** Sử dụng decorator @pytest.mark.parametrize.
+    
+- **Ví dụ:**
+    
+    Generated python
+    
+    ```
+    @pytest.mark.parametrize("input1, input2, expected_output", [
+        (2, 3, 5),          # Test case 1
+        (-1, 1, 0),         # Test case 2
+        (5, -10, -5),       # Test case 3
+        (0, 0, 0)           # Test case 4
+    ])
+    def test_addition(input1, input2, expected_output):
+        assert (input1 + input2) == expected_output
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Python
+    
+- **Vai trò:** Giúp tránh việc lặp lại code một cách kinh khủng. Thay vì viết 4 hàm test riêng biệt, bạn chỉ cần viết 1 hàm và cung cấp dữ liệu cho nó.
+    
+
+---
+
+### **Tóm tắt bằng một phép so sánh:**
+
+Hãy tưởng tượng bạn đang kiểm tra chất lượng một chiếc ô tô:
+
+- **Test File (test_car.py):** Cuốn sổ tay kiểm tra chất lượng xe.
+    
+- **Test Function (def test_engine_start()):** Một mục trong sổ tay: "Kiểm tra khả năng khởi động của động cơ".
+    
+- **Assertion (assert car.engine.is_running()):** Hành động kiểm tra cụ thể: "Gạt chìa khóa và khẳng định rằng đèn báo động cơ đang chạy phải sáng lên".
+    
+- **Fixture (@pytest.fixture def car_with_full_gas()):** Công đoạn chuẩn bị: "Đảm bảo xe đã được đổ đầy xăng và ắc quy đã được sạc đầy trước mỗi lần kiểm tra".
+    
+- **Marker (@pytest.mark.safety):** Nhãn dán cho các mục kiểm tra: "Hạng mục an toàn", "Hạng mục hiệu suất".
+    
+- **Parametrization:** Chạy mục "Kiểm tra phanh" ở nhiều tốc độ khác nhau (30km/h, 60km/h, 100km/h) chỉ với một quy trình duy nhất.
