@@ -352,8 +352,10 @@ Hãy tưởng tượng hệ thống của bạn như một con người:
     - **Điểm cần test:**
         
         - **Routing:** Gọi đến một đường dẫn không tồn tại (ví dụ /LoginABC) sẽ nhận được lỗi 404 Not Found chuẩn không?
+	        - ![[Pytest-các thành phần-nhiệm vụ file main.js evisor-phân tích sâu các file frontend vs be.png]]
             
         - **Middleware (CORS):** Kiểm tra xem các header CORS có được trả về đúng không.
+	        - Là sao?
             
         - **Xử lý lỗi chung (try...except Exception as e):** Đây là chốt chặn cuối cùng. Cố tình tạo ra một lỗi không lường trước trong một hàm con, xem API có trả về một JSON lỗi { "status": "error", ... } hay là server bị sập hoàn toàn.
             
