@@ -1274,3 +1274,122 @@ Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
     
 
 Bạn đang làm rất tốt. Mỗi lần FAILED là một cơ hội để học hỏi và làm cho kịch bản test của bạn trở nên vững chắc hơn. Hãy tiếp tục nhé
+
+
+---
+---
+
+Ok, đây là một manh mối rất tốt! Lỗi vẫn là TimeoutError, nhưng lần này lý do đã thay đổi một chút.
+
+### **Phân tích Log lỗi mới**
+
+- **Hành động gây lỗi:** username_input.fill("thangdnm").
+    
+- **Lỗi chính:** TimeoutError: Locator.fill: Timeout 30000ms exceeded..
+    
+- **Nhật ký hành động (Call log):**
+    
+    - E - waiting for get_by_placeholder("Vui lòng nhập tên đăng nhập")
+        
+
+**Diễn giải:**  
+Lỗi này có nghĩa là: "Tôi (Playwright) đã cố gắng tìm một phần tử có placeholder chính xác là "Vui lòng nhập tên đăng nhập" trong vòng 30 giây để điền dữ liệu vào, nhưng tôi không tìm thấy nó."
+
+Điều này cho thấy rằng placeholder mà chúng ta thấy trên giao diện có thể không hoàn toàn giống 100% với thuộc tính placeholder trong mã HTML.
+
+### **Nguyên nhân và Cách kiểm tra**
+
+Có một vài lý do rất phổ biến cho sự khác biệt này:
+
+1. **Khoảng trắng thừa:** Có thể trong mã HTML, placeholder là " Vui lòng nhập tên đăng nhập " (có khoảng trắng ở đầu hoặc cuối).
+    
+2. **Sai khác về chữ hoa/chữ thường:** Mặc dù ít khả năng, nhưng có thể có sự khác biệt.
+    
+3. **Placeholder được tạo động:** Placeholder có thể được tạo ra bởi JavaScript và có thể chứa các ký tự không hiển thị (non-breaking space &nbsp;) mà mắt thường không thấy được.
+    
+4. **Sai chính tả:** Đây là trường hợp đơn giản nhất, có thể có một lỗi gõ nhầm.
+    
+
+#### **Cách giải quyết: Sử dụng "Pick Locator" của Playwright**
+
+Đây là lúc sử dụng công cụ mạnh nhất của Playwright để không bao giờ phải đoán selector nữa.
+
+**Bước 1: Mở Playwright Inspector**
+
+Thay vì chạy test trực tiếp, chúng ta sẽ chạy nó ở chế độ gỡ lỗi (debug mode). Chế độ này sẽ mở một cửa sổ trình duyệt và một cửa sổ "Playwright Inspector" cho phép bạn tương tác và lấy selector một cách chính xác.
+
+Trong terminal của Tester, hãy chạy lệnh sau:
+
+Generated bash
+
+```
+# Thêm cờ --debug vào lệnh của bạn
+pytest -v --headed --debug tests/test_e2e_login_flow.py
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+**Bước 2: Sử dụng "Pick Locator"**
+
+1. Hai cửa sổ sẽ mở ra: một cửa sổ trình duyệt và một cửa sổ Playwright Inspector.
+    
+2. Trong cửa sổ Playwright Inspector, bạn sẽ thấy một nút có biểu tượng con trỏ chuột tên là **"Pick locator"**. Hãy bấm vào nó.
+    
+3. Di chuyển con trỏ chuột của bạn vào cửa sổ trình duyệt và **bấm vào ô input "Tên đăng nhập"**.
+    
+4. Ngay lập tức, trong cửa sổ Playwright Inspector, nó sẽ **tự động tạo ra một selector tối ưu** cho bạn. Nó có thể trông giống như:
+    
+    - page.get_by_placeholder("Vui lòng nhập tên đăng nhập") (nếu placeholder đúng)
+        
+    - Hoặc một selector khác ổn định hơn mà nó tìm thấy, ví dụ: page.locator("#username").
+        
+
+**Bước 3: Sao chép và Cập nhật Code Test**
+
+1. Sao chép (copy) selector mà Playwright Inspector đã gợi ý.
+    
+2. Dừng chế độ debug (nhấn Ctrl+C trong terminal).
+    
+3. Mở file test_e2e_login_flow.py và dán selector đó vào vị trí của username_input.
+    
+
+**Ví dụ, nếu Inspector gợi ý page.locator("#login-username-input"):**
+
+Generated python
+
+```
+def test_e2e_full_login_logout_flow(page: Page):
+    # ...
+    
+    # SỬA LẠI: Dùng selector chính xác từ Playwright Inspector
+    username_input = page.locator("#login-username-input")
+    # Tương tự, hãy dùng Pick Locator để lấy selector cho password input
+    password_input = page.locator("#login-password-input") # Ví dụ
+    
+    login_button = page.get_by_role("button", name="Đăng nhập")
+    
+    # ... các bước còn lại
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Python
+
+**Bước 4: Chạy lại bài Test**
+
+Generated bash
+
+```
+pytest -v --headed tests/test_e2e_login_flow.py
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+**Tại sao phương pháp này lại hiệu quả?**
+
+- **Chính xác 100%:** Bạn không cần phải đoán. Công cụ sẽ tự phân tích DOM và đưa ra selector tốt nhất.
+    
+- **Nhanh chóng:** Thay vì phải tự mò mẫm trong tab Elements, bạn chỉ cần click và copy.
+    
+- **Học hỏi:** Bạn có thể xem cách Playwright tạo ra các selector và học hỏi từ đó.
+    
+
+Hãy thử dùng chế độ debug với "Pick locator". Đây là một kỹ năng cực kỳ quan trọng và sẽ giúp bạn tiết kiệm rất nhiều thời gian trong việc viết test E2E.
