@@ -153,14 +153,14 @@ Bạn đang viết một **backend API quản lý sản xuất** sử dụng **F
 
 ## 🏗️ **Tổng quan hệ thống**
 
-|Thành phần|Công nghệ|Vai trò|
-|---|---|---|
-|**FastAPI**|Python framework|Xây dựng REST API|
-|**PostgreSQL**|DBMS|Lưu thông tin người dùng, phiên đăng nhập|
-|**MinIO**|Object Storage|Lưu trữ file (Excel input/output)|
-|**Pandas**|Python lib|Đọc và xử lý dữ liệu Excel|
-|**.env**|dotenv|Quản lý biến môi trường|
-|**CORS middleware**|FastAPI|Cho phép frontend (Vue) gọi API từ domain khác|
+| Thành phần          | Công nghệ        | Vai trò                                        |
+| ------------------- | ---------------- | ---------------------------------------------- |
+| **FastAPI**         | Python framework | Xây dựng REST API                              |
+| **PostgreSQL**      | DBMS             | Lưu thông tin người dùng, phiên đăng nhập      |
+| **MinIO**           | Object Storage   | Lưu trữ file (Excel input/output)              |
+| **Pandas**          | Python lib       | Đọc và xử lý dữ liệu Excel                     |
+| **.env**            | dotenv           | Quản lý biến môi trường                        |
+| **CORS middleware** | FastAPI          | Cho phép frontend (Vue) gọi API từ domain khác |
 
 ---
 
