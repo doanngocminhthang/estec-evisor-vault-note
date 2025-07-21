@@ -1,8 +1,7 @@
 ---
 tags: ""
 ---
-# 
-VITE CONFIG
+# VITE CONFIG
 VITE_API_BASE_URL=/api
 VITE_API_IMG_URL=/img
 VITE_API_SOCKET_FLASH="wss://43vcec7hc4.execute-api.us-east-2.amazonaws.com/lite/"
