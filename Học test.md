@@ -1763,3 +1763,111 @@ Lần này, pytest sẽ đọc và thực thi code trong file test của bạn
 - Cờ --debug của pytest dùng để in log ra màn hình. Nếu bạn đặt một tên file ngay sau nó, nó có thể hiểu nhầm là bạn muốn ghi log vào file đó.
     
 - Hãy thường xuyên git commit code của bạn. Nó giống như việc tạo một điểm lưu (save point) trong game, giúp bạn dễ dàng quay lại nếu có sự cố xảy ra.
+
+---
+---
+
+Ok, lỗi này cho chúng ta biết một thông tin rất quan trọng.
+
+### **Phân tích lỗi git restore**
+
+error: pathspec 'tests/test_e2e_login_flow.py' did not match any file(s) known to git
+
+- **Ý nghĩa:** "Tôi (Git) không thể khôi phục file tests/test_e2e_login_flow.py vì tôi **chưa bao giờ biết đến sự tồn tại của file này**".
+    
+- **Nguyên nhân:** Lỗi này xảy ra vì file test_e2e_login_flow.py là một file **mới được tạo (untracked file)**. Bạn đã tạo ra nó, nhưng bạn chưa bao giờ chạy lệnh git add và git commit để lưu nó vào lịch sử của Git.
+    
+
+Vì Git chưa từng lưu một phiên bản nào của file này, nó không có gì để khôi phục lại cả.
+
+---
+
+### **Giải pháp bây giờ**
+
+Rất tiếc là chúng ta không thể dùng Git để khôi phục lại file này. Bây giờ bạn cần làm theo cách thủ công.
+
+**Kế hoạch hành động mới:**
+
+1. **Mở file:** EVisor---Tester---RnD\tests\test_e2e_login_flow.py.
+    
+2. **Xóa toàn bộ nội dung** bên trong (cái log dài dòng đó).
+    
+3. **Viết lại (hoặc copy-paste) nội dung code test** vào file này.
+    
+
+May mắn là chúng ta đã có sẵn một phiên bản code rất tốt để bạn copy. Hãy dùng đoạn code dưới đây, nó đã được cải tiến để sử dụng các selector ổn định hơn.
+
+**Copy toàn bộ đoạn code sau và dán vào file test_e2e_login_flow.py của bạn:**
+
+Generated python
+
+```python
+from playwright.sync_api import Page, expect
+
+# --- Cấu hình ---
+FRONTEND_URL = "http://localhost:5173"
+VALID_USER = {"username": "hoanvlh", "password": "Ef27Xw34"} # Sửa lại nếu cần
+
+def test_e2e_full_login_logout_flow(page: Page):
+    """
+    Kiểm tra luồng đăng nhập - đăng xuất hoàn chỉnh trên giao diện.
+    """
+    
+    # Bước 1: Mở trang web
+    print("\n[E2E] Navigating to login page...")
+    page.goto(FRONTEND_URL)
+    
+    # Bước 2: Tìm các phần tử và khẳng định chúng hiển thị
+    print("[E2E] Finding login form elements...")
+    # Dùng get_by_placeholder để tìm các ô input
+    username_input = page.get_by_placeholder("Vui lòng nhập tên đăng nhập")
+    password_input = page.get_by_placeholder("Vui lòng nhập mật khẩu")
+    # Dùng get_by_role cho nút bấm
+    login_button = page.get_by_role("button", name="Đăng nhập")
+    
+    # Khẳng định rằng các phần tử đều hiển thị trước khi tương tác
+    expect(username_input).to_be_visible(timeout=10000) # Tăng thời gian chờ lên 10s
+    expect(password_input).to_be_visible()
+    expect(login_button).to_be_visible()
+    print("[E2E] Login form elements are visible.")
+
+    # Bước 3: Điền form và đăng nhập
+    print("[E2E] Filling form and clicking login...")
+    username_input.fill(VALID_USER["username"])
+    password_input.fill(VALID_USER["password"])
+    login_button.click()
+    
+    # Bước 4: Kiểm tra đã đăng nhập thành công
+    print("[E2E] Verifying successful login...")
+    # Chờ cho đến khi URL thay đổi (hoặc một phần tử trên trang mới xuất hiện)
+    page.wait_for_url(f"{FRONTEND_URL}/dashboard", timeout=10000)
+    
+    # Tìm một phần tử đặc trưng trên trang dashboard để xác nhận
+    dashboard_header = page.get_by_role("heading", name="Dashboard") # Giả sử có tiêu đề H1 là "Dashboard"
+    expect(dashboard_header).to_be_visible()
+    print("[E2E] Successfully navigated to dashboard.")
+
+    # Các bước 5 và 6 (Đăng xuất) có thể thêm vào sau khi luồng đăng nhập đã chạy thành công
+    # ...
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Python
+
+---
+
+### **Bước tiếp theo**
+
+1. **Lưu file** sau khi đã dán code mới vào.
+    
+2. **Chạy lại pytest** với lệnh gọn gàng, không có --debug:
+    
+    Generated bash
+    
+    ```
+    pytest -v --headed tests/test_e2e_login_flow.py
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+
+Bây giờ bạn đã có một file test sạch sẽ và sẵn sàng để chạy lại từ đầu. Lần này, nó sẽ thực thi code thay vì báo lỗi cú pháp.
