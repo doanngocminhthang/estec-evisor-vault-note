@@ -571,3 +571,123 @@ Use code [with caution](https://support.google.com/legal/answer/13505487).Pytho
     
 
 Bạn đang đi đúng hướng. Hãy bắt đầu từng bước một, và bạn sẽ nhanh chóng làm chủ được quy trình này
+
+---
+---
+
+Chính xác! Giờ là lúc quay lại vai trò chính của bạn: **đảm bảo chất lượng bằng cách kiểm thử**.
+
+Bây giờ bạn đã biết cách khởi động tất cả các thành phần của hệ thống:
+
+1. **Backend** có thể chạy bằng docker-compose up hoặc uvicorn.
+    
+2. **Frontend** có thể chạy bằng npm run dev.
+    
+3. **Môi trường Tester** đã được thiết lập với pytest.
+    
+
+### **Kế hoạch hành động chi tiết để bạn bắt đầu Test ngay bây giờ**
+
+Hãy thực hiện theo một quy trình có cấu trúc để không bị rối.
+
+#### **Bước 1: Chuẩn bị "Chiến trường"**
+
+1. **Khởi động Backend:**
+    
+    - Mở một terminal, cd vào thư mục EVisor---Backend---RnD.
+        
+    - Chạy lệnh: docker-compose up -d (khuyến khích) hoặc uvicorn src.main:app --reload.
+        
+    - Để terminal đó chạy.
+        
+2. **Khởi động Frontend:**
+    
+    - Mở một terminal **khác**, cd vào thư mục EVisor---Frontend---RnD.
+        
+    - Chạy lệnh: npm run dev.
+        
+    - Để terminal này chạy.
+        
+3. **Mở môi trường Tester:**
+    
+    - Mở terminal thứ ba, cd vào thư mục EVisor---Tester---RnD.
+        
+    - Kích hoạt môi trường ảo: .\venv\Scripts\activate.
+        
+    - Đây là nơi bạn sẽ ra lệnh cho pytest.
+        
+
+Bây giờ, bạn có một hệ thống hoàn chỉnh đang hoạt động và một "trung tâm chỉ huy" để bắt đầu kiểm thử.
+
+---
+
+### **Bước 2: Thực hiện Test API (Kiểm tra "Bộ não")**
+
+Đây là ưu tiên hàng đầu. Hãy chắc chắn logic cốt lõi đúng.
+
+1. **Mở file tests/test_authentication.py** trong thư mục EVisor---Tester---RnD.
+    
+2. **Xem lại các test case** bạn đã viết hoặc được cung cấp (ví dụ: test_login_successful, test_login_wrong_password).
+    
+3. **Trong terminal của Tester**, chạy lệnh:
+    
+    Generated bash
+    
+    ```
+    pytest -v tests/test_authentication.py
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+4. **Quan sát kết quả:**
+    
+    - **Nếu PASSED:** Tuyệt vời! Bạn đã xác nhận được logic đăng nhập hoạt động đúng ở cấp độ API.
+        
+    - **Nếu FAILED:** Đây là một phát hiện quý giá! Hãy đọc kỹ thông báo lỗi. Nó sẽ cho bạn biết assert nào đã thất bại.
+        
+        - Ví dụ, nếu assert response.status_code == 200 thất bại và báo AssertionError: assert 500 == 200, điều đó có nghĩa là server backend đã gặp lỗi nội bộ (Internal Server Error) thay vì trả về kết quả thành công. Hãy kiểm tra log của terminal Backend để xem chi tiết lỗi là gì.
+            
+
+---
+
+### **Bước 3: Thực hiện Test End-to-End (Kiểm tra sự phối hợp)**
+
+Sau khi API đã ổn, hãy kiểm tra xem người dùng có thể tương tác với hệ thống một cách trọn vẹn không.
+
+1. **Mở file tests/test_e2e_login_flow.py**.
+    
+2. **Kiểm tra các selector:** Hãy chắc chắn rằng các selector như input[name="username"] khớp với những gì Frontend Dev đã viết. Nếu cần, hãy mở trình duyệt, nhấn F12, và tự kiểm tra các thuộc tính id, name, class của các phần tử trên trang Login.
+    
+3. **Trong terminal của Tester**, chạy lệnh (nhớ --headed để xem trình duyệt mở lên):
+    
+    Generated bash
+    
+    ```
+    pytest -v --headed tests/test_e2e_login_flow.py
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+4. **Quan sát robot chạy:**
+    
+    - Một cửa sổ trình duyệt sẽ mở ra.
+        
+    - Playwright sẽ tự động điều khiển nó: gõ username, password, click nút...
+        
+    - **Nếu PASSED:** Chúc mừng! Bạn đã xác nhận được luồng đăng nhập từ đầu đến cuối hoạt động trơn tru.
+        
+    - **Nếu FAILED:** pytest-playwright sẽ tự động chụp ảnh màn hình tại thời điểm xảy ra lỗi và lưu lại. Hãy xem ảnh đó và đọc thông báo lỗi để biết tại sao nó thất bại.
+        
+        - Lỗi phổ biến nhất là "TimeoutError: waiting for selector..." -> nghĩa là nó không tìm thấy phần tử bạn yêu cầu. Lý do có thể là selector sai, hoặc trang chưa kịp tải xong.
+            
+
+### **Lời khuyên cho bạn:**
+
+- **Bắt đầu nhỏ:** Hãy tập trung vào việc làm cho một file test (ví dụ test_authentication.py) chạy thành công 100%.
+    
+- **Đọc lỗi cẩn thận:** Thông báo lỗi là người bạn tốt nhất của bạn. Đừng hoảng sợ khi thấy màu đỏ, hãy đọc nó để hiểu chuyện gì đang xảy ra.
+    
+- **Giao tiếp:** Nếu một bài test thất bại và bạn không chắc tại sao, hãy chụp màn hình lỗi và hỏi các thành viên khác trong nhóm. "API Login đang trả về lỗi 500 thay vì 401, bạn có thể xem giúp mình không?"
+    
+
+Chúc bạn có một buổi kiểm thử hiệu quả
