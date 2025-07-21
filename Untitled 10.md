@@ -853,7 +853,7 @@ Hãy cùng bóc tách các thành phần.
 
 Generated python
 
-```
+```python
 import sys
 import os
 import pytest
