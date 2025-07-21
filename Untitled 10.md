@@ -829,3 +829,135 @@ Bạn đã phát hiện ra 2 vấn đề rất quan trọng trong logic của Ba
 - **Bài test test_login_missing_password_field PASSED:** Chúc mừng! Điều này chứng tỏ cơ chế validation tự động của FastAPI đang hoạt động rất tốt.
     
 - Bạn đã làm xuất sắc vai trò của một tester: phát hiện ra sự không nhất quán giữa kỳ vọng và thực tế, đồng thời tìm ra các điểm cần cải thiện trong thiết kế API.
+
+---
+---
+
+Chắc chắn rồi! File test này đã được thêm một vài yếu tố nâng cao so với phiên bản trước. Đây là một bước tiến rất tốt, cho thấy bạn đang bắt đầu nghĩ đến các loại hình test khác nhau.
+
+Hãy cùng phân tích chi tiết từng phần của code này.
+
+---
+
+### **Tổng quan: Đây là file test gì?**
+
+File này hiện tại đang làm một việc chính: **Kiểm thử API (API Testing)**. Nó gửi các yêu cầu HTTP thật sự đến một server backend đang chạy để kiểm tra xem các API có hoạt động đúng không.
+
+Tuy nhiên, nó cũng chứa các yếu tố "mầm mống" để có thể thực hiện **Kiểm thử Đơn vị (Unit Testing)** trong tương lai.
+
+Hãy cùng bóc tách các thành phần.
+
+---
+
+### **A. Phần Cấu hình và Chuẩn bị (Setup)**
+
+Generated python
+
+```
+import sys
+import os
+import pytest
+import requests
+
+BASE_URL = "http://127.0.0.1:8082"  # Sửa lại nếu backend của bạn chạy ở cổng.
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+
+from Authentication import Authentication_function
+
+class DummyConn:
+    # mock connection object
+    pass
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Python
+
+1. **import ...**: Nhập các thư viện cần thiết.
+    
+    - pytest: Framework kiểm thử.
+        
+    - requests: Thư viện để gửi yêu cầu HTTP (gọi API).
+        
+    - sys, os: Các thư viện hệ thống của Python, được dùng cho một mục đích đặc biệt ở dưới.
+        
+2. **BASE_URL = "..."**: Một biến hằng số để lưu địa chỉ của backend.
+    
+    - **Lợi ích:** Nếu backend đổi địa chỉ hoặc cổng, bạn chỉ cần sửa ở một nơi duy nhất. Đây là một thực hành tốt.
+        
+3. **sys.path.insert(...) và from Authentication import ...**: **Đây là phần nâng cao và quan trọng nhất.**
+    
+    - **Mục đích:** Người viết code này đang cố gắng **nhập (import) trực tiếp hàm Authentication_function** từ mã nguồn của Backend (EVisor---Backend---RnD/src/Authentication.py) vào file test này.
+        
+    - **Tại sao lại làm vậy?** Để có thể viết các bài **kiểm thử đơn vị (unit test)**. Unit test sẽ kiểm tra logic của chỉ một hàm duy nhất mà không cần chạy cả server, không cần gọi API, không cần kết nối database thật. Đây là loại test rất nhanh và giúp cô lập lỗi.
+        
+    - **Lưu ý quan trọng:** Dựa trên cấu trúc thư mục của bạn, dòng sys.path.insert này rất có thể sẽ **bị lỗi** hoặc không hoạt động như mong đợi. Vì file test của bạn nằm trong EVisor---Tester---RnD, việc đi ngược lên một cấp (..) rồi vào src sẽ không tìm thấy được thư mục src của Backend. Đây là một vấn đề phổ biến trong cấu trúc monorepo, nhưng ý tưởng của nó là để cho phép test ở mức độ sâu hơn.
+        
+4. **class DummyConn:**: Đây là một **Đối tượng Giả lập (Mock Object)**.
+    
+    - **Mục đích:** Hàm Authentication_function yêu cầu một tham số là conn (đối tượng kết nối database). Khi viết unit test, bạn không muốn kết nối đến database thật. DummyConn được tạo ra để "giả vờ" làm một đối tượng kết nối và truyền vào hàm đó, giúp bạn chỉ tập trung kiểm tra logic của hàm.
+        
+    - **Hiện tại:** Class này chưa được sử dụng trong các bài test bên dưới. Nó chỉ được định nghĩa sẵn để dùng trong tương lai.
+        
+
+---
+
+### **B. Các ca Kiểm thử (Hiện tại đều là API Testing)**
+
+Các hàm test_* bên dưới **KHÔNG** sử dụng Authentication_function hay DummyConn đã được import ở trên. Chúng vẫn đang hoạt động theo phương pháp **Black-Box Testing**: gửi yêu cầu đến API và kiểm tra phản hồi.
+
+**1. test_login_successful()**
+
+- **Kịch bản:** Happy Path.
+    
+- **Hành động:** Gửi POST request đến http://127.0.0.1:8082/Login với username và password chính xác.
+    
+- **Khẳng định (Assert):**
+    
+    - assert response.status_code == 200: Mong đợi server trả về mã thành công.
+        
+    - assert response_data["status"] == "success": Mong đợi nội dung JSON có trạng thái là "success".
+        
+    - assert "token" in response_data: Mong đợi trong nội dung JSON có chứa khóa "token".
+        
+
+**2. test_login_wrong_password()**
+
+- **Kịch bản:** Unhappy Path - Sai thông tin.
+    
+- **Hành động:** Gửi request với mật khẩu sai.
+    
+- **Khẳng định:**
+    
+    - assert response.status_code == 401: Mong đợi server trả về mã lỗi "Unauthorized". (Như bạn đã phát hiện ở lần trước, thực tế API đang trả về 200, nên assert này sẽ fail. Đây là một phát hiện đúng của tester!).
+        
+    - assert response_data["status"] == "error": Mong đợi trạng thái lỗi.
+        
+    - assert "Invalid username or password" in response_data["message"]: Mong đợi có thông báo lỗi cụ thể.
+        
+
+**3. test_login_missing_password_field()**
+
+- **Kịch bản:** Unhappy Path - Dữ liệu đầu vào không hợp lệ.
+    
+- **Hành động:** Gửi request thiếu trường password.
+    
+- **Khẳng định:**
+    
+    - assert response.status_code == 422: Mong đợi server (nhờ có FastAPI) tự động trả về lỗi validation.
+        
+
+---
+
+### **Tóm tắt cho bạn với vai trò Tester**
+
+- **Hiện tại, file này đang làm rất tốt nhiệm vụ kiểm thử API.** Bạn có thể dựa vào các mẫu này để viết test cho các API khác (/Logout, /ChangePassword...).
+    
+- **Các dòng code import và class DummyConn là dấu hiệu cho thấy dự án đang muốn hướng đến việc viết cả Unit Test.** Đây là một điều rất tốt.
+    
+- **Công việc của bạn lúc này:**
+    
+    1. Tập trung vào việc **viết thêm các bài test API** cho tất cả các endpoint khác trong main.py.
+        
+    2. **Sửa lại các assert cho đúng với hành vi thực tế của API** (ví dụ: sửa assert 401 thành assert 200 cho ca test_login_wrong_password).
+        
+    3. **Báo cáo lại các phát hiện của bạn:** "API Login khi sai mật khẩu trả về code 200 thay vì 401" là một phát hiện giá trị.
