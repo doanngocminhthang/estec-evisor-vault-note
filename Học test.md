@@ -1871,3 +1871,118 @@ Use code [with caution](https://support.google.com/legal/answer/13505487).Pytho
     
 
 Bây giờ bạn đã có một file test sạch sẽ và sẵn sàng để chạy lại từ đầu. Lần này, nó sẽ thực thi code thay vì báo lỗi cú pháp.
+
+
+---
+---
+
+Tuyệt vời! Bạn đã tiến bộ vượt bậc. Lỗi lần này không còn là lỗi không tìm thấy phần tử nữa. Các bước tìm kiếm, điền form và click đã **thành công**!
+
+Báo cáo lỗi này cho chúng ta biết một thông tin cực kỳ giá trị: **Sau khi đăng nhập, ứng dụng đã chuyển hướng đến một URL khác với URL bạn mong đợi.**
+
+Hãy cùng phân tích chi tiết.
+
+---
+
+### **A. Phân tích Log lỗi mới - "Sai địa chỉ đích"**
+
+**1. Hành động gây lỗi:**
+
+- > page.wait_for_url(f"{FRONTEND_URL}/dashboard", timeout=10000)
+    
+    - Bạn đang ra lệnh cho Playwright: "Hãy chờ đợi, trong vòng 10 giây, cho đến khi URL của trang web trở thành http://localhost:5173/dashboard".
+        
+
+**2. Lỗi chính:**
+
+- E playwright._impl._errors.TimeoutError: Timeout 10000ms exceeded.
+    
+    - Lỗi hết thời gian chờ. Sau 10 giây, URL vẫn không trở thành cái bạn mong muốn.
+        
+
+**3. Phần "Vàng" - Nhật ký điều hướng (Navigation Logs):**  
+Đây là phần quan trọng nhất trong log lỗi lần này.
+
+Generated code
+
+```
+E       =========================== logs ===========================
+E       waiting for navigation to "http://localhost:5173/dashboard" until 'load'
+E         navigated to "http://localhost:5173/login"
+E         navigated to "http://localhost:5173/summary-dashboard"
+E       ============================================================
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).
+
+- **Dòng 1:** Playwright nói: "Tôi đang chờ để đi đến /dashboard".
+    
+- **Dòng 2:** Nó ghi nhận: "Trang web đã điều hướng đến /login" (Đây có thể là khi bạn gọi page.goto lúc đầu).
+    
+- **Dòng 3:** Nó ghi nhận: **"Trang web đã điều hướng đến /summary-dashboard"**.
+    
+
+**Kết luận:**  
+Sau khi bạn click nút "Đăng nhập", ứng dụng Frontend đã chuyển hướng người dùng đến trang /summary-dashboard, chứ không phải /dashboard như bạn đã giả định trong code test. Sự khác biệt giữa kỳ vọng (/dashboard) và thực tế (/summary-dashboard) đã gây ra lỗi TimeoutError.
+
+---
+
+### **B. Giải pháp**
+
+Đây là một lỗi rất dễ sửa. Bạn chỉ cần cập nhật lại code test để nó phản ánh đúng hành vi thực tế của ứng dụng.
+
+**Hành động:**
+
+1. **Mở file:** EVisor---Tester---RnD\tests\test_e2e_login_flow.py.
+    
+2. **Tìm đến các dòng kiểm tra sau khi đăng nhập (Bước 4).**
+    
+3. **Sửa lại URL đích:**
+    
+    - Thay đổi f"{FRONTEND_URL}/dashboard" thành f"{FRONTEND_URL}/summary-dashboard".
+        
+
+**Code được sửa đổi:**
+
+Generated python
+
+```
+# ... các bước 1, 2, 3 giữ nguyên ...
+
+    # Bước 4: Kiểm tra đã đăng nhập thành công
+    print("[E2E] Verifying successful login...")
+    
+    # SỬA LẠI ĐƯỜNG DẪN Ở ĐÂY
+    page.wait_for_url(f"{FRONTEND_URL}/summary-dashboard", timeout=10000)
+    
+    # Sửa lại cả phần kiểm tra heading để khớp với trang mới
+    # Hãy tự mình vào trang summary-dashboard để xem tiêu đề của nó là gì
+    dashboard_header = page.get_by_role("heading", name="Summary Dashboard") # Ví dụ
+    expect(dashboard_header).to_be_visible()
+    print("[E2E] Successfully navigated to summary dashboard.")
+
+    # ...
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Python
+
+---
+
+### **C. Bước tiếp theo**
+
+1. **Sửa code** như hướng dẫn ở trên.
+    
+2. **Chạy lại bài test:**
+    
+    Generated bash
+    
+    ```
+    pytest -v --headed tests/test_e_login_flow.py
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+
+Lần này, bài test có khả năng **PASSED** rất cao!
+
+Đây là một ví dụ điển hình cho thấy tầm quan trọng của việc **"quan sát và thích ứng"** trong kiểm thử. Đôi khi, bài test của bạn thất bại không phải vì ứng dụng bị lỗi, mà vì kỳ vọng của bạn chưa khớp với hành vi thực tế của nó. Việc tìm ra và cập nhật lại kỳ vọng đó cũng là một phần quan trọng của công việc tester.
