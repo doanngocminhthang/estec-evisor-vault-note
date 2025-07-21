@@ -1493,3 +1493,70 @@ Khi bạn đã đến được bước này, hãy làm theo hướng dẫn về�
     
 
 Đây là lộ trình rõ ràng nhất để bạn đi từ trạng thái "lỗi thiết lập" sang "chạy và gỡ lỗi test case thực tế". Hãy làm theo từng bước nhé.
+
+
+---
+---
+
+Chính xác! Bạn nói đúng rồi. Lệnh cuối cùng bạn chạy là:  
+pytest -v --headed --debug tests/test_e2e_login_flow.py
+
+Cờ --debug chính là lý do bạn thấy một loạt log chi tiết và dài dòng như vậy.
+
+### **Chế độ Debug của pytest là gì?**
+
+Hãy tưởng tượng pytest như một người thợ lành nghề.
+
+- **Chế độ bình thường (pytest -v):** Người thợ sẽ làm việc và cuối cùng chỉ báo cáo cho bạn: "Công việc X đã xong", "Công việc Y bị lỗi ở bước Z". Báo cáo rất ngắn gọn và tập trung vào kết quả.
+    
+- **Chế độ Debug (pytest -v --debug):** Người thợ sẽ vừa làm vừa **"suy nghĩ thành lời"**. Bạn sẽ nghe thấy mọi thứ: "Bây giờ tôi sẽ lấy cái cờ lê...", "Ồ, con ốc này bị rỉ sét, tôi không vặn được", "Tôi sẽ thử dùng một công cụ khác...", "Tôi đang kiểm tra file này xem có hợp lệ không...".
+    
+
+Cái log dài mà bạn thấy chính là pytest đang "suy nghĩ thành lời". Nó cho bạn biết chính xác nó đã nạp những plugin nào, quét những thư mục nào, và gặp lỗi ở đâu trong quá trình **chuẩn bị (collection)** trước khi kịp chạy bài test.
+
+### **Khi nào nên dùng --debug?**
+
+Bạn chỉ nên dùng nó khi gặp các lỗi "kỳ lạ", ví dụ:
+
+- pytest không tìm thấy các bài test của bạn.
+    
+- pytest bị crash mà không có lý do rõ ràng.
+    
+- Bạn nghi ngờ một plugin nào đó đang gây ra vấn đề.
+    
+
+Trong trường hợp của bạn, --debug đã làm rất tốt nhiệm- vụ của nó: nó đã giúp chúng ta tìm ra 2 lỗi nghiêm trọng ở giai đoạn "collection" (lỗi SyntaxError và ImportError).
+
+---
+
+### **Vậy giờ tôi phải làm gì?**
+
+Bây giờ bạn đã biết nguyên nhân của các lỗi đó rồi, bạn **không cần dùng --debug nữa**. Hãy quay trở lại chế độ bình thường để nhận được báo cáo lỗi gọn gàng hơn.
+
+**Kế hoạch của bạn ngay bây giờ:**
+
+1. **Thực hiện 2 hành động sửa lỗi** mà chúng ta đã xác định:
+    
+    - **Mở file test_e2e_login_flow.py và xóa dòng versions pytest-8.4.1...** (lỗi cú pháp).
+        
+    - **Đổi tên file test_auth_flow.py thành _test_auth_flow.py** để pytest tạm thời bỏ qua nó.
+        
+2. **Chạy lại pytest ở chế độ bình thường:**  
+    Mở terminal của Tester và chạy lệnh **không có --debug**:
+    
+    Generated bash
+    
+    ```
+    pytest -v --headed tests/test_e2e_login_flow.py
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+
+**Kết quả bạn sẽ thấy lần này:**
+
+- Terminal sẽ không còn in ra hàng trăm dòng log nữa.
+    
+- Nó sẽ hiển thị một báo cáo lỗi ngắn gọn và tập trung vào lỗi TimeoutError khi tìm kiếm phần tử, giống như các lần trước.
+    
+- Từ đó, bạn có thể tiếp tục công việc "thám tử": dùng **Playwright Codegen** để tìm ra selector chính xác.
