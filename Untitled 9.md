@@ -10,12 +10,12 @@ Kiểm tra **đăng nhập thành công / thất bại**
 
 ### Test case nên có:
 
-|Test Case|Mô tả|
-|---|---|
-|✅ Thành công|Đúng username + password, trả về `status = success`, có session|
-|❌ Sai mật khẩu|Đúng username nhưng sai password → `status = error`|
-|❌ Sai username|Username không tồn tại → `status = error`|
-|❌ Exception|Ví dụ: hỏng DB, nên mock `conn.cursor().execute()` raise exception|
+| Test Case      | Mô tả                                                              |
+| -------------- | ------------------------------------------------------------------ |
+| ✅ Thành công   | Đúng username + password, trả về `status = success`, có session    |
+| ❌ Sai mật khẩu | Đúng username nhưng sai password → `status = error`                |
+| ❌ Sai username | Username không tồn tại → `status = error`                          |
+| ❌ Exception    | Ví dụ: hỏng DB, nên mock `conn.cursor().execute()` raise exception |
 
 ---
 
