@@ -1653,3 +1653,113 @@ Bây giờ bạn chỉ cần làm **duy nhất một việc** nữa thôi.
     
 
 Từ đó, bạn có thể tiếp tục dùng **Playwright Codegen** để tìm selector chính xác. Bạn đã gần đến đích rồi
+
+---
+---
+
+Chào bạn, đây là một lỗi rất "tinh vi" và dễ gặp phải khi mới làm quen với các công cụ dòng lệnh.
+
+**Đây không phải là lỗi từ bài test của bạn. Đây là lỗi do bạn đã vô tình ra lệnh cho pytest ghi đè (overwrite) toàn bộ nội dung file test của bạn bằng một file log gỡ lỗi (debug log).**
+
+Hãy cùng phân tích chính xác tại sao điều này xảy ra.
+
+---
+
+### **A. Phân tích Nguyên nhân: Lỗi ở đâu?**
+
+Hãy nhìn lại câu lệnh bạn đã chạy trong các lần trước:  
+pytest -v --headed --debug tests/test_e2e_login_flow.py
+
+Khi bạn đặt tên file ở cuối cùng, pytest hiểu rằng đó là file bạn muốn nó chạy.
+
+Tuy nhiên, trong lần chạy này, có vẻ như đã có một sự thay đổi nhỏ trong cách bạn gõ lệnh, có thể là do một khoảng trắng bị đặt sai chỗ. Dựa vào hình ảnh, có một dòng rất quan trọng mà pytest đã thông báo:
+
+writing pytest debug information to tests/test_e2e_login_flow.py
+
+**Diễn giải:**
+
+- **Lệnh bạn chạy:** pytest ... --debug tests/test_e2e_login_flow.py
+    
+- **pytest đã hiểu lệnh này như thế nào?** Nó đã hiểu cờ --debug và đối số ngay sau nó (tests/test_e2e_login_flow.py) là một cặp. Nó hiểu rằng: "Hãy chạy ở chế độ debug, và **ghi tất cả thông tin debug đó vào file có tên là tests/test_e2e_login_flow.py**".
+    
+- **Kết quả:** Toàn bộ code Python mà bạn đã viết trong file test_e2e_login_flow.py đã bị **xóa sạch** và thay thế bằng cái log dài dằng dặc mà bạn đang thấy.
+    
+
+Bây giờ, file test_e2e_login_flow.py của bạn không còn là một file Python hợp lệ nữa, nó chỉ là một file văn bản chứa log.
+
+---
+
+### **B. Giải pháp: Khôi phục lại file và Chạy đúng lệnh**
+
+Bây giờ bạn cần làm 2 việc: khôi phục lại code và chạy lại đúng cách.
+
+#### **Bước 1: Khôi phục lại file test_e2e_login_flow.py**
+
+Đây là lúc sức mạnh của Git (hệ thống quản lý phiên bản) tỏa sáng.
+
+1. **Mở Terminal** và đảm bảo bạn đang ở trong thư mục EVisor---Tester---RnD.
+    
+2. Dùng lệnh git để hủy bỏ tất cả các thay đổi bạn đã vô tình gây ra cho file này và khôi phục nó về phiên bản cuối cùng đã được lưu trong Git.
+    
+    Generated bash
+    
+    ```
+    git restore tests/test_e2e_login_flow.py
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    Hoặc nếu bạn dùng git checkout:
+    
+    Generated bash
+    
+    ```
+    git checkout -- tests/test_e2e_login_flow.py
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+3. **Kiểm tra lại:** Mở file test_e2e_login_flow.py trong VSCode. Bạn sẽ thấy code Python gốc của mình đã quay trở lại.
+    
+
+**Nếu bạn chưa dùng Git hoặc chưa commit file này:**
+
+- Hãy thử nhấn Ctrl+Z trong VSCode để hoàn tác.
+    
+- Nếu không được, bạn sẽ cần phải viết lại nội dung file test này dựa trên các ví dụ chúng ta đã trao đổi.
+    
+
+#### **Bước 2: Sửa các lỗi gốc (nếu chưa sửa)**
+
+Hãy chắc chắn rằng bạn đã sửa 2 lỗi collection từ trước:
+
+1. Đổi tên test_auth_flow.py -> _test_auth_flow.py.
+    
+2. Xóa dòng versions pytest... nếu nó còn tồn tại trong file test_e2e_login_flow.py sau khi khôi phục.
+    
+
+#### **Bước 3: Chạy lại pytest đúng cách**
+
+Bây giờ, hãy chạy lại lệnh pytest, nhưng **không dùng --debug nữa** vì chúng ta không cần nó.
+
+Generated bash
+
+```
+# Đảm bảo Backend & Frontend đang chạy
+# Chạy lệnh trong thư mục EVisor---Tester---RnD
+pytest -v --headed tests/test_e2e_login_flow.py
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+Lần này, pytest sẽ đọc và thực thi code trong file test của bạn thay vì ghi đè lên nó.
+
+---
+
+### **Tóm tắt bài học**
+
+- Khi dùng các công cụ dòng lệnh, vị trí của các đối số (arguments) rất quan trọng.
+    
+- Cờ --debug của pytest dùng để in log ra màn hình. Nếu bạn đặt một tên file ngay sau nó, nó có thể hiểu nhầm là bạn muốn ghi log vào file đó.
+    
+- Hãy thường xuyên git commit code của bạn. Nó giống như việc tạo một điểm lưu (save point) trong game, giúp bạn dễ dàng quay lại nếu có sự cố xảy ra.
