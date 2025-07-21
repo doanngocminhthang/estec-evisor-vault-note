@@ -1393,3 +1393,103 @@ Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
     
 
 Hãy thử dùng chế độ debug với "Pick locator". Đây là một kỹ năng cực kỳ quan trọng và sẽ giúp bạn tiết kiệm rất nhiều thời gian trong việc viết test E2E.
+
+
+---
+---
+
+
+Chính xác! Báo cáo lỗi này đã xác nhận lại những gì chúng ta phân tích ở trên. Giờ đây bạn đã có một "to-do list" rất rõ ràng.
+
+**Vấn đề:** pytest thậm chí còn chưa thể bắt đầu chạy các bài test vì nó đã vấp phải lỗi ngay từ khi "đọc" các file test của bạn.
+
+Hãy giải quyết từng vấn đề một.
+
+---
+
+### **Kế hoạch hành động từng bước**
+
+Đây là những gì bạn cần làm ngay bây giờ, theo thứ tự ưu tiên.
+
+#### **Bước 1: Sửa lỗi SyntaxError (Lỗi dễ nhất)**
+
+Đây là lỗi nghiêm trọng nhất vì nó khiến Python không thể hiểu được file của bạn.
+
+1. **Mở file:** EVisor---Tester---RnD\tests\test_e2e_login_flow.py.
+    
+2. **Nhìn vào dòng đầu tiên (line 1)**. Dựa vào log lỗi, dòng đó đang chứa một đoạn text không phải là code Python:
+    
+    Generated code
+    
+    ```
+    versions pytest-8.4.1, python-3.11.0.final.0
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).
+    
+3. **Hành động:** **Xóa hoàn toàn dòng này** và bất kỳ dòng nào khác không phải là code Python (như import, def, các biến...).
+    
+4. **Lưu file lại.**
+    
+
+**Sau khi làm xong bước này, một trong hai lỗi lớn sẽ biến mất.**
+
+#### **Bước 2: Vô hiệu hóa file test_auth_flow.py (Để tập trung vào các file khác)**
+
+File này đang bị lỗi ImportError vì cấu trúc dự án. Để có thể tiếp tục làm việc với các file test khác mà không bị nó làm phiền, chúng ta sẽ tạm thời "giấu" nó đi khỏi pytest.
+
+1. **Mở cây thư mục** của dự án EVisor---Tester---RnD.
+    
+2. **Tìm file:** tests/test_auth_flow.py.
+    
+3. **Hành động:** **Đổi tên file** thành _test_auth_flow.py (thêm một dấu gạch dưới _ ở đầu).
+    
+    - **Tại sao lại làm vậy?** Theo quy ước của pytest, nó sẽ tự động bỏ qua các file có tên bắt đầu bằng dấu gạch dưới.
+        
+
+**Sau khi làm xong bước này, lỗi thứ hai cũng sẽ biến mất, và pytest sẽ có thể thu thập (collect) các bài test còn lại một cách thành công.**
+
+---
+
+#### **Bước 3: Chạy lại pytest để xác nhận**
+
+Bây giờ, hãy quay lại terminal của Tester (nhớ kích hoạt môi trường ảo venv) và chạy lại lệnh kiểm thử E2E.
+
+**Lần này, hãy chạy mà không có --debug** để có báo cáo gọn gàng hơn.
+
+Generated bash
+
+```
+# Đảm bảo Backend và Frontend vẫn đang chạy
+pytest -v --headed tests/test_e2e_login_flow.py
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+**Kết quả mong đợi:**
+
+- Bạn sẽ không còn thấy 2 errors during collection nữa.
+    
+- pytest sẽ báo cáo collected 1 item.
+    
+- Cửa sổ trình duyệt sẽ mở ra và bắt đầu thực hiện các hành động trong test_e2e_login_flow.py.
+    
+- Rất có thể bạn sẽ lại gặp lỗi TimeoutError vì selector sai, nhưng đây là một **lỗi "tốt"** - một lỗi trong quá trình thực thi test, chứ không phải lỗi thiết lập.
+    
+
+---
+
+#### **Bước 4: Tập trung vào việc sửa Test E2E**
+
+Khi bạn đã đến được bước này, hãy làm theo hướng dẫn về **Playwright Codegen** mà tôi đã chỉ cho bạn ở câu trả lời trước để:
+
+1. Khởi động Codegen (playwright codegen http://localhost:5173).
+    
+2. Tự tay thực hiện luồng đăng nhập.
+    
+3. **Copy các selector chính xác** mà Codegen tạo ra.
+    
+4. Dán chúng vào file test_e2e_login_flow.py của bạn.
+    
+
+Đây là lộ trình rõ ràng nhất để bạn đi từ trạng thái "lỗi thiết lập" sang "chạy và gỡ lỗi test case thực tế". Hãy làm theo từng bước nhé.
