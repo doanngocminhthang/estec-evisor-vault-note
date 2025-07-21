@@ -279,4 +279,295 @@ Use code [with caution](https://support.google.com/legal/answer/13505487).Pytho
 | **Unit/Component Test** (Frontend) | Vitest / Jest       | Không có vai trò trực tiếp.                                   | Trung bình. Do dev frontend thường tự viết.          |
 | **End-to-End Test**                | pytest + playwright | **Người điều khiển.** Dùng Python để ra lệnh cho trình duyệt. | Cao. Kiểm tra sự phối hợp của cả hệ thống.           |
 
-**Lời khuyên:** Hãy **bắt đầu với việc viết test API cho Backend bằng pytest trước**. Khi đã có một bộ test API vững chắc, bạn có thể tự tin rằng "bộ não" của hệ thống hoạt động đúng. Sau đó, hãy tiến tới viết các bài test E2E để đảm bảo "bộ não" và "cơ thể" giao tiếp tốt với nhau.
+**Lời khuyên:** Hãy **bắt đầu với việc viết test API cho Backend bằng pytest trước**. Khi đã có một bộ test API vững chắc, bạn có thể tự tin rằng "bộ não" của hệ thống hoạt động đúng. Sau đó, hãy tiến tới viết các bài test E2E để đảm bảo "bộ não" và "cơ thể" giao tiếp tốt với nhau..
+
+---
+---
+
+Tuyệt vời! Cấu trúc dự án bạn đã thiết lập là vô cùng chuyên nghiệp và rõ ràng. Việc tách riêng Backend, Frontend, và Tester là một thực hành tốt nhất (best practice) và sẽ giúp bạn làm việc rất hiệu quả.
+
+Với vai trò là một tester đang học hỏi, đây là một cơ hội tuyệt vời. Bạn chính là "người dùng đầu tiên", là "chốt chặn an toàn" cho cả đội. Mục tiêu của bạn không chỉ là tìm lỗi, mà là đảm bảo chất lượng và sự ổn định của sản phẩm.
+
+Dưới đây là một hướng dẫn chi tiết, từng bước một, để bạn có thể bắt đầu viết và chạy các bài kiểm thử cho dự án này.
+
+---
+
+### **A. Tư duy và Vai trò của bạn trong Nhóm**
+
+1. **Bạn là cầu nối:** Bạn là người duy nhất cần hiểu cả hai phía Frontend và Backend. Hãy nói chuyện thường xuyên với cả hai thành viên còn lại.
+    
+    - **Nói chuyện với Backend Dev:** "API /Login sẽ trả về những thông tin gì khi thành công? Khi thất bại thì trả về mã lỗi bao nhiêu (401 hay 422)?" -> Điều này giúp bạn viết assert chính xác.
+        
+    - **Nói chuyện với Frontend Dev:** "Ô input username có id hay name là gì để mình có thể chọn nó trong test E2E? Nút Login có id là gì?" -> Điều này giúp bạn viết script E2E ổn định.
+        
+2. **Tư duy của bạn:**
+    
+    - **"Happy Path":** Luồng hoạt động đúng đắn nhất (đăng nhập đúng, upload file đúng...).
+        
+    - **"Unhappy Path":** Các luồng thất bại có chủ đích (đăng nhập sai, upload file lỗi...).
+        
+    - **"Edge Cases":** Các trường hợp biên (upload file 0kb, nhập tên người dùng có ký tự đặc biệt, click nút 2 lần liên tiếp...).
+        
+
+---
+
+### **B. Bước 1: Thiết lập Môi trường Tester**
+
+Bạn sẽ làm việc chủ yếu trong thư mục EVisor---Tester---RnD. Hãy thiết lập nó.
+
+1. **Mở Terminal** và di chuyển vào thư mục của bạn:
+    
+    Generated bash
+    
+    ```
+    cd EVisor---Tester---RnD
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+2. **Tạo Môi trường ảo (Virtual Environment):** Điều này để cô lập các thư viện của bạn.
+    
+    Generated bash
+    
+    ```
+    # Lệnh này sẽ tạo một thư mục tên là 'venv'
+    python -m venv venv
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+3. **Kích hoạt Môi trường ảo:**
+    
+    - Trên Windows:
+        
+        Generated bash
+        
+        ```
+        .\venv\Scripts\activate
+        ```
+        
+        Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+        
+    - Trên macOS/Linux:
+        
+        Generated bash
+        
+        ```
+        source venv/bin/activate
+        ```
+        
+        Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+        
+    
+    (Bạn sẽ thấy (venv) xuất hiện ở đầu dòng lệnh).
+    
+4. **Cài đặt các công cụ cần thiết:** Dựa trên requirements.txt của bạn và nhu cầu, chúng ta sẽ cài các thư viện chính:
+    
+    Generated bash
+    
+    ```
+    pip install pytest requests pytest-playwright
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    - pytest: Framework chính để viết và chạy test.
+        
+    - requests: Thư viện để gửi yêu cầu API đến Backend.
+        
+    - pytest-playwright: Thư viện để điều khiển trình duyệt và test Frontend.
+        
+5. **Cài đặt trình duyệt cho Playwright:**
+    
+    Generated bash
+    
+    ```
+    playwright install
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    (Lệnh này sẽ tải về các trình duyệt Chromium, Firefox, WebKit).
+    
+
+**Bây giờ, môi trường của bạn đã sẵn sàng!**
+
+---
+
+### **C. Hướng dẫn viết Test - Bắt đầu với Backend (API Testing)**
+
+Kiểm thử API là nền tảng vì nó nhanh, ổn định và kiểm tra trực tiếp logic cốt lõi. Chúng ta sẽ hoàn thiện file tests/test_authentication.py của bạn.
+
+**Mở file tests/test_authentication.py và viết lại theo cấu trúc sau:**
+
+Generated python
+
+``` python
+import pytest
+import requests
+
+# --- Cấu hình ---
+# Địa chỉ của server backend đang chạy
+BASE_URL = "http://127.0.0.1:8082"  # Sửa lại nếu backend của bạn chạy ở cổng khác
+
+# --- Các ca kiểm thử cho API Login ---
+
+def test_login_successful():
+    """Ca kiểm thử 1: Đăng nhập thành công"""
+    # Arrange - Chuẩn bị dữ liệu
+    payload = {"username": "hoanvlh", "password": "Ef27Xw34"} # Dùng tài khoản hợp lệ
+    
+    # Act - Thực hiện hành động
+    response = requests.post(f"{BASE_URL}/Login", json=payload)
+    
+    # Assert - Khẳng định kết quả
+    assert response.status_code == 200, "Phản hồi phải là 200 OK"
+    
+    response_data = response.json()
+    assert response_data["status"] == "success", "Trạng thái phải là 'success'"
+    assert "token" in response_data, "Phản hồi phải chứa 'token'"
+
+def test_login_wrong_password():
+    """Ca kiểm thử 2: Đăng nhập với mật khẩu sai"""
+    # Arrange
+    payload = {"username": "hoanvlh", "password": "saimatkhau123"}
+    
+    # Act
+    response = requests.post(f"{BASE_URL}/Login", json=payload)
+    
+    # Assert
+    # Một API tốt sẽ trả về 401 Unauthorized cho lỗi đăng nhập
+    assert response.status_code == 401, "Phản hồi phải là 401 Unauthorized"
+    
+    response_data = response.json()
+    assert response_data["status"] == "error", "Trạng thái phải là 'error'"
+    assert "Invalid username or password" in response_data["message"], "Phải có thông báo lỗi đúng"
+
+def test_login_missing_password_field():
+    """Ca kiểm thử 3: Gửi yêu cầu thiếu trường mật khẩu"""
+    # Arrange
+    payload = {"username": "hoanvlh"} # Cố tình thiếu password
+    
+    # Act
+    response = requests.post(f"{BASE_URL}/Login", json=payload)
+    
+    # Assert
+    # FastAPI sẽ tự động trả về lỗi 422 cho dữ liệu không hợp lệ
+    assert response.status_code == 422, "Phản hồi phải là 422 Unprocessable Entity"
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Python
+
+---
+
+### **D. Nâng cao - Viết Test End-to-End (E2E) cho Frontend**
+
+Kiểm thử E2E sẽ mô phỏng chính xác những gì người dùng làm trên trình duyệt. Chúng ta sẽ hoàn thiện file tests/test_e2e_login_flow.py.
+
+**Mở file tests/test_e2e_login_flow.py và viết theo cấu trúc sau:**
+
+Generated python
+
+```python
+from playwright.sync_api import Page, expect
+
+# --- Cấu hình ---
+FRONTEND_URL = "http://localhost:5173"  # Sửa lại nếu frontend của bạn chạy ở cổng khác
+
+def test_e2e_full_login_logout_flow(page: Page):
+    """
+    Kiểm tra luồng đăng nhập - đăng xuất hoàn chỉnh trên giao diện.
+    `page` là một fixture được cung cấp bởi pytest-playwright.
+    """
+    
+    # Bước 1: Mở trang web
+    page.goto(FRONTEND_URL)
+    
+    # Bước 2: Tìm các ô input và nút bấm, sau đó tương tác
+    # Hãy hỏi Frontend Dev để có các selector (id, name, class) ổn định nhất
+    username_input = page.locator('input[name="username"]')
+    password_input = page.locator('input[name="password"]')
+    login_button = page.locator('button[type="submit"]')
+    
+    # Khẳng định rằng chúng ta đang ở trang login
+    expect(login_button).to_be_visible()
+
+    # Bước 3: Điền form và đăng nhập
+    username_input.fill("hoanvlh")
+    password_input.fill("Ef27Xw34")
+    login_button.click()
+    
+    # Bước 4: Kiểm tra đã đăng nhập thành công
+    # Mong đợi URL chuyển đến trang dashboard và thấy tên người dùng
+    expect(page).to_have_url(f"{FRONTEND_URL}/dashboard") # Giả định trang đích là /dashboard
+    
+    user_menu = page.locator('.user-profile-name') # Selector cho menu người dùng
+    expect(user_menu).to_have_text("hoanvlh")
+
+    # Bước 5: Đăng xuất
+    user_menu.click()
+    logout_button = page.locator('text=Logout') # Tìm nút có chữ "Logout"
+    logout_button.click()
+    
+    # Bước 6: Kiểm tra đã quay về trang login
+    expect(page).to_have_url(f"{FRONTEND_URL}/login")
+    expect(login_button).to_be_visible() # Nút login lại xuất hiện
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Python
+
+---
+
+### **E. Cách chạy các bài Test**
+
+1. **Quan trọng:**
+    
+    - Để chạy **API Test**, chỉ cần server **Backend** đang chạy.
+        
+    - Để chạy **E2E Test**, **CẢ HAI** server **Backend** và **Frontend** phải đang chạy.
+        
+2. **Mở terminal** và đảm bảo bạn đang ở trong thư mục EVisor---Tester---RnD và môi trường ảo (venv) đã được kích hoạt.
+    
+3. **Chạy tất cả các bài test:**
+    
+    Generated bash
+    
+    ```
+    pytest -v
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+4. **Chỉ chạy các bài test API:**
+    
+    Generated bash
+    
+    ```
+    pytest -v tests/test_authentication.py
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+5. **Chỉ chạy các bài test E2E (và mở trình duyệt để xem robot chạy):**
+    
+    Generated bash
+    
+    ```
+    pytest -v --headed tests/test_e2e_login_flow.py
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+
+### **Kế hoạch hành động cho bạn:**
+
+1. **Làm theo Bước B** để thiết lập môi trường hoàn chỉnh.
+    
+2. **Làm theo Bước C** để viết và chạy bài test API đầu tiên. Xem nó thất bại, sau đó sửa lại cho nó thành công.
+    
+3. **Làm theo Bước D** để viết và chạy bài test E2E đầu tiên. Hãy nói chuyện với Frontend Dev để lấy các selector chính xác.
+    
+4. **Mở rộng:** Dựa trên các mẫu trên, hãy tự viết các bài test cho các chức năng khác như ChangePassword, POD_TimeTracker_Upload...
+    
+
+Bạn đang đi đúng hướng. Hãy bắt đầu từng bước một, và bạn sẽ nhanh chóng làm chủ được quy trình này
