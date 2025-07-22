@@ -1663,3 +1663,203 @@ Trong khi đó, các file test khác của bạn (như test_authentication.py) 
     
 
 **Sau khi đổi tên file, hãy chạy lại lệnh pytest -v**. Lần này, nó sẽ bỏ qua file lỗi và chạy các bài test còn lại của bạn.
+
+
+---
+---
+
+Chính xác! Đây là một câu hỏi rất thực tế. Khi bạn có hàng chục, hàng trăm bài test, việc nhìn vào một "bức tường" log dài dằng dặc sẽ rất khó chịu và không hiệu quả.
+
+May mắn là pytest cung cấp rất nhiều công cụ để bạn kiểm soát độ dài và chi tiết của log.
+
+### **A. Tại sao Log của bạn lại dài?**
+
+Hãy phân tích các nguyên nhân chính khiến log bị dài, từ đó bạn sẽ biết cách kiểm soát chúng.
+
+1. **Do có Test Bị Thất bại (FAILED):**
+    
+    - Đây là nguyên nhân chính và cũng là **lý do "tốt"**. Khi một test thất bại, pytest sẽ in ra một "traceback" cực kỳ chi tiết, chỉ cho bạn chính xác dòng assert nào đã sai, giá trị thực tế là gì, giá trị mong đợi là gì. Điều này là vô giá để gỡ lỗi.
+        
+    - **=> Bạn không nên tắt nó đi**, nhưng có thể làm cho nó ngắn hơn.
+        
+2. **Do bạn đang chạy ở Chế độ Verbose (-v):**
+    
+    - Cờ -v yêu cầu pytest phải in ra tên của từng bài test và kết quả của nó (PASSED, FAILED). Nếu không có -v, pytest sẽ chỉ in ra các dấu chấm (.) cho mỗi bài test thành công, làm cho log ngắn hơn rất nhiều.
+        
+3. **Do có Cảnh báo (Warnings):**
+    
+    - Bạn đã thấy rất nhiều dòng warnings summary màu vàng. Đây là các cảnh báo từ các thư viện (Pydantic, starlette) rằng bạn đang dùng một tính năng cũ sắp bị loại bỏ. Chúng hữu ích cho lập trình viên nhưng có thể gây nhiễu cho tester.
+        
+    - **=> Bạn có thể tắt chúng đi.**
+        
+4. **Do có các lệnh print() trong code:**
+    
+    - Nếu trong code test của bạn có các lệnh print(), pytest mặc định sẽ "nuốt" chúng đi và chỉ hiển thị khi test thất bại. Tuy nhiên, nếu bạn dùng cờ -s, tất cả các print sẽ được in ra, làm log dài hơn.
+        
+
+---
+
+### **B. "Hộp đồ nghề" của bạn để kiểm soát Log**
+
+Đây là các "công tắc" bạn có thể dùng để điều chỉnh độ dài của log.
+
+#### **Công tắc 1: Điều chỉnh Độ chi tiết của Báo cáo (-v và -q)**
+
+- **Chế độ Mặc định (Ngắn gọn):**
+    
+    Generated bash
+    
+    ```
+    pytest
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    - **Kết quả:** Sẽ hiển thị . cho mỗi test PASSED, F cho mỗi FAILED. Rất gọn gàng.
+        
+    
+    Generated code
+    
+    ```
+    tests/test_authentication.py ..F                                  [100%]
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).
+    
+- **Chế độ Im lặng (-q - quiet):**
+    
+    Generated bash
+    
+    ```
+    pytest -q
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    - **Kết quả:** Thậm chí còn ngắn hơn, gần như không hiển thị gì cho đến khi có báo cáo tóm tắt cuối cùng.
+        
+- **Chế độ Chi tiết (-v - verbose):**
+    
+    Generated bash
+    
+    ```
+    pytest -v
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    - **Kết quả:** Như bạn đã thấy, nó liệt kê tên đầy đủ của từng test. Tốt khi bạn muốn biết chính xác test nào đang chạy.
+        
+
+#### **Công tắc 2: Điều chỉnh Độ dài của Lỗi (--tb)**
+
+Đây là công tắc cực kỳ hữu ích để làm cho phần báo cáo lỗi (FAILURES) ngắn hơn.
+
+- **Chế độ Ngắn (--tb=short):**
+    
+    Generated bash
+    
+    ```
+    pytest --tb=short
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    - **Kết quả:** Sẽ chỉ hiển thị một vài dòng quan trọng nhất của lỗi, bỏ qua các chi tiết sâu bên trong thư viện. Rất dễ đọc.
+        
+- **Chế độ Chỉ một dòng (--tb=line):**
+    
+    Generated bash
+    
+    ```
+    pytest --tb=line
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    - **Kết quả:** Mỗi lỗi chỉ được tóm tắt trên một dòng duy nhất. Tốt để có cái nhìn tổng quan khi có quá nhiều lỗi.
+        
+- **Tắt hoàn toàn (--tb=no):**
+    
+    Generated bash
+    
+    ```
+    pytest --tb=no
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    - **Kết quả:** Không hiển thị bất kỳ chi tiết lỗi nào, chỉ có tóm tắt cuối cùng. (Ít khi dùng).
+        
+
+#### **Công tắc 3: Tắt Cảnh báo (--disable-warnings)**
+
+Đây là cách để loại bỏ các dòng màu vàng gây nhiễu.
+
+Generated bash
+
+```
+pytest --disable-warnings
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+- **Kết quả:** Sẽ không còn phần warnings summary nữa. Log của bạn sẽ sạch hơn rất nhiều.
+    
+
+---
+
+### **C. Chiến lược thực tế cho bạn**
+
+Bạn không cần nhớ tất cả. Đây là một quy trình làm việc hiệu quả:
+
+**1. Khi bạn đang viết và gỡ lỗi một file test cụ thể:**
+
+- **Mục tiêu:** Cần xem chi tiết.
+    
+- **Lệnh nên dùng:**
+    
+    Generated bash
+    
+    ```
+    # Chạy chi tiết và tắt các cảnh báo gây nhiễu
+    pytest -v --disable-warnings tests/test_authentication.py
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+
+**2. Khi bạn muốn chạy toàn bộ bộ test và chỉ muốn biết có lỗi gì không:**
+
+- **Mục tiêu:** Cần một báo cáo tổng quan nhanh.
+    
+- **Lệnh nên dùng:**
+    
+    Generated bash
+    
+    ```
+    # Chạy ở chế độ mặc định, báo cáo lỗi ngắn gọn, tắt cảnh báo
+    pytest --tb=short --disable-warnings
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    Lệnh này sẽ cho bạn một báo cáo cực kỳ sạch sẽ và dễ đọc, chỉ tập trung vào những gì thực sự bị lỗi.
+    
+
+**3. Khi bạn chỉ muốn biết "Pass hay Fail?":**
+
+- **Mục tiêu:** Chỉ cần kết quả cuối cùng.
+    
+- **Lệnh nên dùng:**
+    
+    Generated bash
+    
+    ```
+    pytest -q
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+
+**Lời khuyên:** Hãy thử chạy lệnh pytest --tb=short --disable-warnings. Bạn sẽ thấy ngay sự khác biệt và có thể sẽ thích dùng nó làm lệnh mặc định của mình.
