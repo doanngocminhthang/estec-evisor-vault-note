@@ -1591,3 +1591,75 @@ Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
 (venv) thang.doan@THANG-DOAN MINGW64 ...
 
 Từ đó, bạn có thể tiếp tục chạy các lệnh pip install ... và pytest ... như bình thường.
+
+
+
+----
+-----
+
+
+
+
+
+Tuyệt vời, bạn đã kích hoạt thành công môi trường ảo (venv) và chạy pytest.
+
+Báo cáo lỗi này chính là lỗi ImportError mà chúng ta đã thấy khi chạy ở chế độ debug. Giờ đây nó hiển thị gọn gàng hơn.
+
+### **Phân tích Lỗi**
+
+**1. Lỗi chính:**  
+ERROR collecting tests/test_auth_flow.py
+
+- pytest đã thất bại ngay từ khi cố gắng "thu thập" (đọc và hiểu) file test_auth_flow.py.
+    
+
+**2. Nguyên nhân sâu xa (Traceback):**
+
+- tests\test_auth_flow.py:10: in <module>  
+    from main import app
+    
+    - File test của bạn (test_auth_flow.py) đang cố gắng import đối tượng app từ file main.py.
+        
+- ..\EVisor---Backend---RnD\src\main.py:10: in <module>  
+    from src.POD_TimeTracker import *
+    
+    - Để thực hiện việc import trên, Python phải đọc file main.py của Backend. Và tại dòng 10 của file main.py, nó lại cố gắng import từ src.POD_TimeTracker.
+        
+- **E ModuleNotFoundError: No module named 'src.POD_TimeTracker'**
+    
+    - Đây là điểm gãy. Khi Python đang ở trong ngữ cảnh của dự án EVisor---Tester---RnD, nó không biết src là gì cả. Nó chỉ tìm kiếm trong thư mục hiện tại (Tester) và các thư viện đã cài đặt. Nó không thể "nhìn thấy" được thư mục src của dự án Backend.
+        
+
+---
+
+### **Vấn đề là gì?**
+
+File test_auth_flow.py được viết theo phong cách **White-Box Testing** hoặc **Grey-Box Testing**. Nó đang cố gắng import trực tiếp mã nguồn của ứng dụng (main.py) để có thể kiểm thử các thành phần bên trong.
+
+Trong khi đó, các file test khác của bạn (như test_authentication.py) được viết theo phong cách **Black-Box Testing**. Nó không cần biết code bên trong backend viết gì, nó chỉ gửi request đến một địa chỉ (BASE_URL) và kiểm tra kết quả trả về.
+
+**Với cấu trúc monorepo hiện tại của bạn, cách tiếp cận Black-Box là dễ dàng và phù hợp nhất.**
+
+---
+
+### **Giải pháp: Tập trung vào Black-Box Testing**
+
+Để có thể tiếp tục công việc và chạy các bài test khác, bạn cần "vô hiệu hóa" file đang gây lỗi này.
+
+**Hành động cần làm ngay:**
+
+1. **Mở cây thư mục** của dự án EVisor---Tester---RnD trong VSCode.
+    
+2. **Tìm file:** tests/test_auth_flow.py.
+    
+3. **Hành động:** **Đổi tên file** đó thành **_test_auth_flow.py** (thêm một dấu gạch dưới _ vào đầu tên file).
+    
+
+**Tại sao lại làm vậy?**
+
+- pytest có một quy ước: nó sẽ tự động **bỏ qua** tất cả các file có tên bắt đầu bằng dấu gạch dưới _.
+    
+- Bằng cách đổi tên, bạn tạm thời "giấu" file này đi khỏi pytest, cho phép nó tiếp tục quét và chạy các file test hợp lệ khác mà không bị lỗi ImportError làm gián đoạn.
+    
+
+**Sau khi đổi tên file, hãy chạy lại lệnh pytest -v**. Lần này, nó sẽ bỏ qua file lỗi và chạy các bài test còn lại của bạn.
