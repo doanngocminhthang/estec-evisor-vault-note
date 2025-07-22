@@ -2277,3 +2277,178 @@ Hãy coi nó như một "bản đồ" hoặc "mục lục" của toàn bộ dị
         
 
 Bạn đang làm rất tốt việc phân tích và hiểu rõ vai trò của từng thành phần trong dự án. Việc phân biệt rõ ràng đâu là Backend, đâu là Frontend sẽ giúp bạn định vị và báo cáo lỗi một cách chính xác hơn rất nhiều.
+
+
+
+---
+----
+
+
+
+
+
+
+Câu hỏi này chính là cốt lõi của công việc phân tích của một tester. Rất hay!
+
+Bạn hoàn toàn có thể tự mình suy luận ra API sẽ trả về gì chỉ bằng cách đọc mã nguồn của Backend. Hãy cùng nhau "giải phẫu" hàm Authentication_api để tìm ra câu trả lời.
+
+Generated python
+
+```python
+@app.post("/Login", tags=["Authentication"])
+def Authentication_api(input: Authentication):
+    try:
+        # (1) Kết nối DB...
+        # (2) Gọi hàm logic chính
+        return Authentication_function(conn, input) 
+    except Exception as e:
+        # (3) Bắt lỗi chung
+        return {
+            "status": "error", 
+            "message": str(e)
+            }
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Python
+
+Để biết API này trả về gì, bạn cần phân tích các câu lệnh **return** của nó trong mọi kịch bản có thể xảy ra.
+
+---
+
+### **A. Kịch bản Thành công ("Happy Path")**
+
+Đây là trường hợp mọi thứ diễn ra suôn sẻ.
+
+1. **Luồng thực thi:** Code sẽ chạy vào khối try và thực thi dòng return Authentication_function(conn, input).
+    
+2. **Làm sao để biết Status Code?**
+    
+    - Bạn để ý thấy trong dòng return này, lập trình viên **không hề chỉ định** một status code nào cả (ví dụ: return data, 200).
+        
+    - **Quy tắc của FastAPI:** Khi một hàm API trả về dữ liệu thành công mà không nói rõ status code, FastAPI sẽ **tự động mặc định là 200 OK**.
+        
+    - **=> Kết luận 1:** Khi thành công, status code sẽ là **200**.
+        
+3. **Làm sao để biết nội dung (Body) trả về?**
+    
+    - Nội dung trả về chính là kết quả của hàm Authentication_function(conn, input).
+        
+    - **Hành động của bạn:** Bạn cần mở file src/Authentication.py và tìm xem hàm Authentication_function này return về cái gì. Rất có thể bên trong nó sẽ có một đoạn code tương tự như:
+        
+        Generated python
+        
+        ```python
+        # Bên trong file Authentication.py (đây là ví dụ)
+        def Authentication_function(conn, input_data):
+            # ... kiểm tra username, password ...
+            if user_found_and_password_is_correct:
+                # ... tạo token ...
+                return {
+                    "status": "success",
+                    "message": "Đăng nhập thành công",
+                    "token": generated_token,
+                    "user_info": { ... }
+                }
+            else:
+                # ...
+        ```
+        
+        Use code [with caution](https://support.google.com/legal/answer/13505487).Python
+        
+    - **=> Kết luận 2:** Khi thành công, nội dung trả về sẽ là một dictionary (JSON) có chứa các khóa như status, message, và quan trọng nhất là token.
+        
+
+---
+
+### **B. Kịch bản Thất bại ("Unhappy Paths")**
+
+Đây là các trường hợp có lỗi xảy ra. Có nhiều loại lỗi khác nhau.
+
+#### **Loại 1: Lỗi Logic (ví dụ: Sai mật khẩu)**
+
+1. **Luồng thực thi:** Code vẫn chạy vào return Authentication_function(conn, input), nhưng lần này, hàm đó sẽ trả về một kết quả lỗi.
+    
+2. **Hành động của bạn:** Tương tự như trên, bạn xem trong file Authentication.py. Rất có thể bạn sẽ thấy:
+    
+    Generated python
+    
+    ```
+    # Bên trong file Authentication.py (đây là ví dụ)
+    def Authentication_function(conn, input_data):
+        # ...
+        if user_found_but_password_is_wrong:
+            # Đây chính là chỗ gây ra lỗi bạn đã thấy!
+            return {
+                "status": "error",
+                "message": "Invalid username or password"
+            }
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Python
+    
+3. **Status Code là gì?** Vì đây vẫn là một lệnh return bình thường từ hàm, FastAPI vẫn sẽ mặc định status code là **200 OK**.
+    
+4. **=> Kết luận 3:** Đây chính là lý do tại sao bài test test_login_wrong_password của bạn mong đợi 401 nhưng lại nhận được 200. **API được thiết kế để luôn trả về 200, và sự khác biệt nằm ở nội dung JSON bên trong.**
+    
+
+#### **Loại 2: Lỗi Hệ thống (ví dụ: Mất kết nối Database)**
+
+1. **Luồng thực thi:** Lệnh get_postgres_connection(...) hoặc Authentication_function(...) bị lỗi và ném ra một Exception. Code sẽ nhảy vào khối except.
+    
+2. **Làm sao để biết trả về gì?** Nhìn vào khối except:
+    
+    Generated python
+    
+    ```
+    except Exception as e:
+        return {
+            "status": "error", 
+            "message": str(e)
+            }
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Python
+    
+3. **Status Code là gì?** Một lần nữa, đây là một lệnh return bình thường, vì vậy FastAPI vẫn mặc định là **200 OK**.
+    
+4. **=> Kết luận 4:** Ngay cả khi database sập, API này vẫn sẽ trả về 200 OK kèm theo một JSON chứa thông báo lỗi chi tiết.
+    
+
+#### **Loại 3: Lỗi Dữ liệu đầu vào (Validation Error)**
+
+1. **Luồng thực thi:** Đây là trường hợp đặc biệt và là "phép màu" của FastAPI.
+    
+2. **Kịch bản:** Bạn gửi lên một JSON thiếu trường password.
+    
+3. **Điều gì xảy ra?**
+    
+    - FastAPI sẽ nhìn vào định nghĩa def Authentication_api(input: Authentication):.
+        
+    - Nó thấy rằng input phải tuân theo khuôn mẫu của class Authentication (yêu cầu có cả username và password).
+        
+    - Vì JSON bạn gửi lên không tuân thủ, FastAPI sẽ **chặn request này lại và tự động trả về lỗi NGAY LẬP TỨC**, trước cả khi nó kịp chạy dòng code đầu tiên bên trong hàm Authentication_api.
+        
+4. **Status Code và Body là gì?**
+    
+    - FastAPI được lập trình sẵn để trong trường hợp này, nó sẽ trả về status code là **422 Unprocessable Entity** và một body JSON chi tiết mô tả lỗi.
+        
+5. **=> Kết luận 5:** Đây là lý do tại sao bài test test_login_missing_password_field của bạn mong đợi code 422 và đã PASSED.
+    
+
+---
+
+### **Tóm tắt: "Checklist" cho Tester khi đọc code API**
+
+Khi nhìn vào một hàm API, hãy tự hỏi:
+
+1. **Happy Path:** Lệnh return thành công trông như thế nào? => Sẽ là code **200** và body tương ứng.
+    
+2. **Error Handling:**
+    
+    - Có khối try...except không? Lệnh return trong except trả về gì? => Sẽ là code **200** và body lỗi chung.
+        
+    - Các hàm logic bên trong (..._function) có thể return về các dictionary lỗi không? => Sẽ là code **200** và body lỗi cụ thể.
+        
+3. **Validation:** Dữ liệu đầu vào (BaseModel) yêu cầu những gì? Nếu gửi thiếu hoặc sai kiểu, API sẽ tự động trả về **422**.
+    
+4. **(Nâng cao) Có raise HTTPException không?** Nếu lập trình viên dùng raise HTTPException(status_code=401, ...) thì API sẽ trả về chính xác status code đó. (Trong code của bạn hiện chưa có).
