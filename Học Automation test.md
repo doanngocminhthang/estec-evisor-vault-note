@@ -1863,3 +1863,118 @@ Bạn không cần nhớ tất cả. Đây là một quy trình làm việc hi�
     
 
 **Lời khuyên:** Hãy thử chạy lệnh pytest --tb=short --disable-warnings. Bạn sẽ thấy ngay sự khác biệt và có thể sẽ thích dùng nó làm lệnh mặc định của mình.
+
+
+---
+---
+
+
+
+
+
+
+
+Rất tốt! Báo cáo lỗi này cực kỳ rõ ràng và chỉ ra **một vấn đề duy nhất nhưng lại ảnh hưởng đến tất cả các bài test của bạn.**
+
+Bạn đã làm đúng khi chạy pytest --tb=short --disable-warnings. Báo cáo bây giờ rất gọn gàng và dễ đọc.
+
+---
+
+### **A. Phân tích "Manh mối chung"**
+
+Hãy nhìn vào tất cả các lỗi FAILED và ERROR. Chúng đều có một điểm chung rất rõ ràng:
+
+**1. Lỗi của các bài Test API (test_authentication.py):**
+
+- requests.exceptions.ConnectionError: ... Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+    
+
+**2. Lỗi của bài Test E2E (test_e2e_login_flow.py):**
+
+- playwright._impl._errors.Error: Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/login
+    
+
+**Diễn giải:**
+
+- **ConnectionRefusedError**
+    
+- **No connection could be made...**
+    
+- **actively refused it**
+    
+- **ERR_CONNECTION_REFUSED**
+    
+
+Tất cả các thông báo này đều có chung một ý nghĩa:  
+**"Tôi (pytest/playwright) đã cố gắng kết nối đến server, nhưng không có ai ở đó để trả lời. Cánh cửa đã đóng và máy chủ đã từ chối kết nối của tôi."**
+
+---
+
+### **B. Nguyên nhân gốc rễ**
+
+Vấn đề không nằm ở code test của bạn. Code test của bạn đang hoạt động đúng - nó đang cố gắng gọi đến các server. Vấn đề nằm ở chỗ các server đó **không hề chạy**.
+
+- **Lỗi API:** Các bài test trong test_authentication.py thất bại vì **server Backend (chạy ở localhost:8082) đang không hoạt động**.
+    
+- **Lỗi E2E:** Bài test trong test_e2e_login_flow.py thất bại vì **server Frontend (chạy ở localhost:5173) đang không hoạt động**.
+    
+- **Lỗi Setup:** Bài test trong test_pod_timetracker.py bị ERROR ở giai đoạn setup vì fixture auth_token cũng cần gọi đến API Login của Backend, mà Backend thì không chạy.
+    
+
+---
+
+### **C. Giải pháp: Khởi động lại các Server**
+
+Đây chính là **Bước 1: Chuẩn bị "Chiến trường"** mà chúng ta đã nói đến. Trước khi chạy pytest, bạn phải đảm bảo cả hai hệ thống Backend và Frontend đã được khởi động và đang sẵn sàng nhận kết nối.
+
+**Kế hoạch hành động của bạn ngay bây giờ:**
+
+1. **Mở Terminal 1 - Khởi động Backend:**
+    
+    - cd vào EVisor---Backend---RnD.
+        
+    - Chạy docker-compose up -d.
+        
+    - Kiểm tra bằng docker ps để đảm bảo các container đang Up.
+        
+    - **Để yên terminal này.**
+        
+2. **Mở Terminal 2 - Khởi động Frontend:**
+    
+    - cd vào EVisor---Frontend---RnD.
+        
+    - Chạy npm install (nếu bạn chưa chạy).
+        
+    - Chạy npm run dev.
+        
+    - Bạn sẽ thấy thông báo server đang lắng nghe ở http://localhost:5173.
+        
+    - **Để yên terminal này.**
+        
+3. **Mở Terminal 3 - Chạy Test:**
+    
+    - cd vào EVisor---Tester---RnD.
+        
+    - Kích hoạt môi trường ảo: source venv/Scripts/activate.
+        
+    - Bây giờ, hãy chạy lại lệnh test của bạn:
+        
+        Generated bash
+        
+        ```
+        pytest --tb=short --disable-warnings
+        ```
+        
+        Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+        
+
+**Kết quả mong đợi lần này:**
+
+- Các lỗi ConnectionRefusedError sẽ **biến mất**.
+    
+- Các bài test của bạn bây giờ sẽ có thể kết nối đến các server và thực sự kiểm tra logic.
+    
+- Bạn có thể sẽ thấy các lỗi khác (ví dụ: AssertionError), nhưng đó là các lỗi "tốt", là các lỗi về logic nghiệp vụ mà bạn đang tìm kiếm.
+    
+
+Luôn nhớ checklist này trước mỗi lần chạy test: **Backend chạy chưa? Frontend chạy chưa?** Nếu câu trả lời là chưa, đó là việc đầu tiên bạn cần làm.
