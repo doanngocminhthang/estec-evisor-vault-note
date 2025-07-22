@@ -1978,3 +1978,129 @@ Vấn đề không nằm ở code test của bạn. Code test của bạn đang 
     
 
 Luôn nhớ checklist này trước mỗi lần chạy test: **Backend chạy chưa? Frontend chạy chưa?** Nếu câu trả lời là chưa, đó là việc đầu tiên bạn cần làm.
+
+
+---
+---
+
+
+
+Chắc chắn rồi! Bạn đã xác định đúng vấn đề. Bây giờ, hãy thực hiện lại các bước để khởi động dự án Backend.
+
+Dựa trên cấu trúc dự án của bạn, **cách tốt nhất và được khuyến khích nhất là sử dụng Docker Compose**, vì nó sẽ khởi động đồng thời cả ứng dụng Python, cơ sở dữ liệu PostgreSQL và dịch vụ lưu trữ file MinIO, đảm bảo bạn có một môi trường kiểm thử hoàn chỉnh.
+
+---
+
+### **Cách 1: Chạy bằng Docker Compose (Khuyến khích nhất)**
+
+#### **Điều kiện tiên quyết:**
+
+- Bạn phải có **Docker Desktop** đã được cài đặt và đang chạy trên máy của bạn.
+    
+
+#### **Các bước thực hiện:**
+
+1. **Mở một cửa sổ terminal mới** (PowerShell, Command Prompt, hoặc Git Bash). Cửa sổ này sẽ dành riêng cho việc chạy Backend.
+    
+2. **Di chuyển vào thư mục của dự án Backend:**
+    
+    Generated bash
+    
+    ```
+    cd D:\ESTEC\00. PROJECTS\10. ESTEC-ECOSYSTEM\01. ESTEC-ESCOSYSTEM-CODE\EVisor---Backend---RnD
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+3. **Khởi động tất cả các dịch vụ:**  
+    Bạn có thể dùng các script đã được tạo sẵn, đây là cách dễ nhất:
+    
+    - Nếu bạn đang dùng **PowerShell** hoặc **CMD**:
+        
+        Generated powershell
+        
+        ```
+        .\start.bat
+        ```
+        
+        Use code [with caution](https://support.google.com/legal/answer/13505487).Powershell
+        
+    - Nếu bạn đang dùng **Git Bash**:
+        
+        Generated bash
+        
+        ```
+        ./start.sh
+        ```
+        
+        Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+        
+    
+    Hoặc, bạn có thể dùng lệnh Docker gốc:
+    
+    Generated bash
+    
+    ```
+    docker-compose up -d
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    - up: Khởi động các container được định nghĩa trong file docker-compose.yaml.
+        
+    - -d: Chạy ở chế độ nền (detached mode), giúp bạn có thể tiếp tục dùng terminal này cho việc khác.
+        
+4. **Kiểm tra xem các dịch vụ đã chạy thành công chưa:**  
+    Sau khi lệnh trên chạy xong, hãy gõ lệnh sau để xem trạng thái các container:
+    
+    Generated bash
+    
+    ```
+    docker ps
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+    **Kết quả bạn muốn thấy:**  
+    Bạn sẽ thấy một danh sách gồm 3 container, và cột STATUS của chúng đều phải là Up (có thể kèm theo thời gian, ví dụ Up 2 minutes). Tên của chúng sẽ tương tự như evisor---backend---rnd-backend-1, evisor---backend---rnd-postgres-1, và evisor---backend---rnd-minio-1.
+    
+
+**Nếu bạn thấy cả 3 container đều đang Up, xin chúc mừng! Toàn bộ hệ thống backend của bạn đã sẵn sàng.** Bạn có thể để yên terminal này và quay lại terminal của Tester để chạy pytest.
+
+---
+
+### **Cách 2: Chạy trực tiếp bằng Python (Chỉ khi Docker không hoạt động)**
+
+Cách này chỉ khởi động ứng dụng Python. Bạn chỉ nên dùng cách này nếu có lý do đặc biệt không thể dùng Docker.
+
+1. **Mở Terminal** và di chuyển vào thư mục backend.
+    
+2. **Kích hoạt môi trường ảo** mà bạn đã tạo trước đó:
+    
+    - Trong PowerShell/CMD: .\venv\Scripts\activate
+        
+    - Trong Git Bash: source venv/Scripts/activate
+        
+3. **Chạy ứng dụng bằng Uvicorn:**
+    
+    Generated bash
+    
+    ```
+    uvicorn src.main:app --reload --port 8082
+    ```
+    
+    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+    
+4. Bạn sẽ thấy thông báo Uvicorn running on http://127.0.0.1:8082.  
+    **Lưu ý:** Cách này yêu cầu bạn phải đảm bảo PostgreSQL và MinIO cũng đang chạy bằng một cách nào đó (ví dụ, đã được khởi động từ Docker trước đó).
+    
+
+---
+
+### **Tóm lại, bạn cần làm gì ngay bây giờ:**
+
+1. **Thực hiện theo các bước của Cách 1 (Docker Compose).**
+    
+2. Dùng docker ps để xác nhận mọi thứ đã chạy.
+    
+3. Sau khi backend đã chạy, hãy quay lại terminal của EVisor---Tester---RnD và chạy lại pytest. Các lỗi ConnectionRefusedError sẽ biến mất.
