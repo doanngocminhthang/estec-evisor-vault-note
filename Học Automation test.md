@@ -2452,3 +2452,112 @@ Khi nhìn vào một hàm API, hãy tự hỏi:
 3. **Validation:** Dữ liệu đầu vào (BaseModel) yêu cầu những gì? Nếu gửi thiếu hoặc sai kiểu, API sẽ tự động trả về **422**.
     
 4. **(Nâng cao) Có raise HTTPException không?** Nếu lập trình viên dùng raise HTTPException(status_code=401, ...) thì API sẽ trả về chính xác status code đó. (Trong code của bạn hiện chưa có).
+
+----
+----
+Hoàn hảo! Bây giờ chúng ta có đầy đủ mảnh ghép rồi. Việc phân tích file Authentication.py này sẽ giải thích **tất cả** các lỗi mà bạn đã thấy trong báo cáo của pytest.
+
+Đây là một ví dụ tuyệt vời cho thấy tầm quan trọng của việc tester đọc và hiểu code.
+
+---
+
+### **A. "Giải phẫu" hàm Authentication_function**
+
+Hãy cùng đi theo luồng suy nghĩ của hàm này:
+
+**1. Khối try (Kịch bản lý tưởng):**
+
+- **Dòng SELECT ...**: Nó thực hiện một truy vấn SQL rất đơn giản: "Hãy tìm trong bảng User một dòng có username **VÀ** password khớp chính xác với những gì người dùng gửi lên".
+    
+    - **LỖ HỔNG BẢO MẬT LỚN:** Mật khẩu đang được lưu dưới dạng **văn bản thuần (plain text)** trong database và được so sánh trực tiếp. Đây là một thực hành bảo mật rất không tốt. Mật khẩu nên được "băm" (hashed) trước khi lưu. Đây là một phát hiện quan trọng bạn có thể báo cáo lại cho team.
+        
+- **Dòng user = cursor.fetchone()**: Lấy kết quả tìm được.
+    
+- **if user: (Nếu tìm thấy người dùng):**
+    
+    - **Logic:** A! username và password đều khớp. Đăng nhập thành công!
+        
+    - **Tạo Session:** Tạo một session_id ngẫu nhiên.
+        
+    - **Xóa Session cũ:** DELETE FROM "Session" ... -> Xóa mọi phiên đăng nhập cũ của người dùng này.
+        
+    - **Chèn Session mới:** INSERT INTO "Session" ... -> Lưu lại phiên đăng nhập mới này vào database, có thời hạn 8 tiếng.
+        
+    - **return {"status": "success", ...}**: Trả về một JSON chứa rất nhiều thông tin: status, user_id, avatar, full_name, và quan trọng nhất là session_id (đây chính là cái "token" mà bài test của bạn đang tìm kiếm, nhưng với một cái tên khác!).
+        
+- **else: (Nếu không tìm thấy người dùng):**
+    
+    - **Logic:** Không tìm thấy dòng nào khớp. Lý do có thể là sai username hoặc sai password.
+        
+    - **return {"status": "error", ...}**: Trả về một JSON báo lỗi rõ ràng.
+        
+
+**2. Khối except:**
+
+- **Logic:** Nếu có bất kỳ lỗi nào xảy ra trong quá trình trên (ví dụ: database sập, câu query sai...), nó sẽ bắt lỗi đó.
+    
+- **return {"status": "error", "message": str(e)}**: Trả về một JSON báo lỗi chung chung hơn, kèm theo thông báo lỗi kỹ thuật.
+    
+
+**3. Khối finally:**
+
+- **Logic:** Dù thành công hay thất bại, khối này **luôn luôn** được thực thi.
+    
+- **Hành động:** cursor.close() và conn.close() -> Đóng kết nối đến database để giải phóng tài nguyên.
+    
+
+---
+
+### **B. Giải thích các Lỗi mà pytest đã tìm thấy (Bây giờ đã rõ 100%)**
+
+Bây giờ, hãy khớp những gì chúng ta vừa phân tích với các lỗi bạn đã thấy.
+
+**1. Lỗi test_login_successful FAILED (assert 'error' == 'success')**
+
+- **Nguyên nhân:** Khi bạn gửi hoanvlh/Ef27Xw34, hàm Authentication_function đã chạy câu SELECT, nhưng cursor.fetchone() đã trả về None (không tìm thấy gì). Do đó, code đã nhảy vào khối else và return {"status": "error", ...}.
+    
+- **Lý do tại sao không tìm thấy:** Chắc chắn 100% trong database mà Docker đang sử dụng **không có** người dùng nào có username='hoanvlh' VÀ password='Ef27Xw34'.
+    
+- **Hành động:** Bạn cần phối hợp với Backend Dev để thêm đúng dữ liệu người dùng này vào script khởi tạo database của Docker.
+    
+
+**2. Lỗi ERROR at setup of test_merge_file_successfully (KeyError: 'token')**
+
+- **Nguyên nhân:** Fixture auth_token của bạn đã gọi API Login. API Login đã gọi hàm Authentication_function. Hàm này (vì lý do ở trên) đã trả về {"status": "error", ...}.
+    
+- Khi code test của bạn cố gắng truy cập response_data["token"], nó đã gây ra lỗi KeyError vì trong JSON lỗi đó không hề có khóa "token".
+    
+- **Sự thật vừa được phát hiện:** Tên của khóa xác thực không phải là "token", mà là **"session_id"**.
+    
+- **Hành động:**
+    
+    1. Sau khi Vấn đề 1 được sửa, bạn cần sửa lại fixture của mình.
+        
+    2. Mở file tests/conftest.py.
+        
+    3. Sửa dòng return response_data["token"] thành return response_data["session_id"].
+        
+
+**3. Lỗi test_login_wrong_password FAILED (assert 200 == 401)**
+
+- **Nguyên nhân:** Như chúng ta đã phân tích từ file main.py, khi Authentication_function trả về một dictionary lỗi, FastAPI vẫn bọc nó trong một response có status code 200 OK.
+    
+- **Hành động:** Bạn cần sửa lại bài test để nó mong đợi status code 200 và kiểm tra nội dung JSON bên trong.
+    
+
+---
+
+### **C. Tóm tắt "Phát hiện" của bạn với vai trò Tester**
+
+Bạn vừa thực hiện một cuộc "điều tra" hoàn chỉnh. Đây là những gì bạn có thể báo cáo lại cho team:
+
+1. **Lỗi nghiêm trọng (Bug):** Chức năng đăng nhập đang thất bại với tài khoản hợp lệ. Nguyên nhân rất có thể là do thiếu dữ liệu người dùng trong môi trường test (Docker).
+    
+2. **Điểm cần cải thiện (Improvement):** API /Login khi thất bại nên trả về status code 401 thay vì 200 để tuân thủ chuẩn RESTful và giúp frontend dễ xử lý hơn.
+    
+3. **Lỗ hổng bảo mật (Vulnerability):** Mật khẩu đang được lưu và so sánh dưới dạng văn bản thuần. Team cần xem xét việc áp dụng hashing (ví dụ: dùng thư viện passlib) để tăng cường bảo mật.
+    
+4. **Cập nhật Test Script:** Cần sửa lại tên khóa từ "token" thành "session_id" trong các fixture và các bài test có liên quan.
+    
+
+Bạn đã làm xuất sắc! Việc đọc code đã giúp bạn đi từ "thấy lỗi" đến "hiểu rõ nguyên nhân gốc rễ của lỗi".
