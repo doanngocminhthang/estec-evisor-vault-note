@@ -1500,3 +1500,94 @@ Use code [with caution](https://support.google.com/legal/answer/13505487).
 2. **Làm theo Bước 2**, bắt đầu bằng **Cách 3** để chạy thử một test case duy nhất.
     
 3. **Quan sát kết quả ở Bước 3**. Nếu nó PASSED, hãy thử chạy cả file (Cách 2). Nếu nó FAILED, hãy đọc kỹ log lỗi để tìm ra nguyên nhân.
+
+---
+---
+
+Đúng rồi, đây là một lỗi nhỏ nhưng rất phổ biến khi chuyển đổi qua lại giữa các môi trường terminal khác nhau trên Windows.
+
+### **Phân tích lỗi**
+
+bash: venvScriptsactivate: command not found
+
+- **Nguyên nhân:** Bạn đang ở trong một terminal **Git Bash** (dấu hiệu là MINGW64). Cú pháp của Git Bash (và các terminal dựa trên Linux/Unix khác) khác với cú pháp của Command Prompt (CMD) hay PowerShell của Windows.
+    
+    - **Trong CMD/PowerShell:** Dấu \ được dùng để phân cách thư mục, và bạn chạy file bằng cách gọi thẳng tên nó: .\venv\Scripts\activate.
+        
+    - **Trong Git Bash/Linux:** Dấu / được dùng để phân cách thư mục, và để thực thi một script, bạn phải dùng lệnh source ở phía trước.
+        
+
+Bạn đã dùng cú pháp \ của Windows trong một môi trường bash. bash đã nối tất cả lại thành một chuỗi duy nhất là venvScriptsactivate và cố gắng tìm một lệnh có tên như vậy, nhưng dĩ nhiên là không có.
+
+---
+
+### **Giải pháp: Dùng đúng cú pháp cho Git Bash**
+
+Trong cửa sổ Git Bash của bạn, hãy sử dụng lệnh sau để kích hoạt môi trường ảo:
+
+Generated bash
+
+```
+source venv/Scripts/activate
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+**Giải thích:**
+
+- **source**: Là lệnh của bash dùng để chạy một file script và nạp các biến môi trường của nó vào phiên terminal hiện tại. Đây là cách chuẩn để kích hoạt môi trường ảo trong các môi trường giống Unix.
+    
+- **venv/Scripts/activate**: Đây là đường dẫn đến file kích hoạt, sử dụng dấu / theo đúng cú pháp của bash.
+    
+
+**Sau khi chạy lệnh này, bạn sẽ thấy (venv) xuất hiện ở đầu dòng lệnh, báo hiệu rằng môi trường ảo đã được kích hoạt thành công.**
+
+(venv) thang.doan@THANG-DOAN MINGW64 ...
+
+Từ đó, bạn có thể tiếp tục chạy các lệnh pip install ... và pytest ... như bình thường.
+
+
+---
+---
+
+Đúng rồi, đây là một lỗi nhỏ nhưng rất phổ biến khi chuyển đổi qua lại giữa các môi trường terminal khác nhau trên Windows.
+
+### **Phân tích lỗi**
+
+bash: venvScriptsactivate: command not found
+
+- **Nguyên nhân:** Bạn đang ở trong một terminal **Git Bash** (dấu hiệu là MINGW64). Cú pháp của Git Bash (và các terminal dựa trên Linux/Unix khác) khác với cú pháp của Command Prompt (CMD) hay PowerShell của Windows.
+    
+    - **Trong CMD/PowerShell:** Dấu \ được dùng để phân cách thư mục, và bạn chạy file bằng cách gọi thẳng tên nó: .\venv\Scripts\activate.
+        
+    - **Trong Git Bash/Linux:** Dấu / được dùng để phân cách thư mục, và để thực thi một script, bạn phải dùng lệnh source ở phía trước.
+        
+
+Bạn đã dùng cú pháp \ của Windows trong một môi trường bash. bash đã nối tất cả lại thành một chuỗi duy nhất là venvScriptsactivate và cố gắng tìm một lệnh có tên như vậy, nhưng dĩ nhiên là không có.
+
+---
+
+### **Giải pháp: Dùng đúng cú pháp cho Git Bash**
+
+Trong cửa sổ Git Bash của bạn, hãy sử dụng lệnh sau để kích hoạt môi trường ảo:
+
+Generated bash
+
+```
+source venv/Scripts/activate
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+**Giải thích:**
+
+- **source**: Là lệnh của bash dùng để chạy một file script và nạp các biến môi trường của nó vào phiên terminal hiện tại. Đây là cách chuẩn để kích hoạt môi trường ảo trong các môi trường giống Unix.
+    
+- **venv/Scripts/activate**: Đây là đường dẫn đến file kích hoạt, sử dụng dấu / theo đúng cú pháp của bash.
+    
+
+**Sau khi chạy lệnh này, bạn sẽ thấy (venv) xuất hiện ở đầu dòng lệnh, báo hiệu rằng môi trường ảo đã được kích hoạt thành công.**
+
+(venv) thang.doan@THANG-DOAN MINGW64 ...
+
+Từ đó, bạn có thể tiếp tục chạy các lệnh pip install ... và pytest ... như bình thường.
