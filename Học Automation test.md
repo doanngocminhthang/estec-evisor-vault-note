@@ -1298,7 +1298,7 @@ Bây giờ, hãy dồn toàn bộ sự tập trung và năng lượng của bạ
     
     Generated python
     
-    ```
+    ```python
     # trong file tests/conftest.py
     import pytest
     import requests
@@ -1317,7 +1317,7 @@ Bây giờ, hãy dồn toàn bộ sự tập trung và năng lượng của bạ
     
     Generated python
     
-    ```
+    ```python
     # trong file test_pod_timetracker.py
     def test_merge_file_successfully(auth_token):
         headers = {"Authorization": f"Bearer {auth_token}"}
@@ -1335,3 +1335,168 @@ Bây giờ, hãy dồn toàn bộ sự tập trung và năng lượng của bạ
 Sau khi bạn đã có một bộ API test vững chắc và tự tin rằng Backend hoạt động đúng, việc quay lại viết một vài kịch bản E2E **quan trọng nhất** (như luồng login, luồng upload-merge) sẽ trở nên dễ dàng hơn rất nhiều. Lúc đó, mục tiêu của test E2E không còn là "kiểm tra logic", mà là "đảm bảo Frontend và Backend giao tiếp với nhau một cách trơn tru".
 
 Bạn đang làm rất tốt. Tập trung vào API testing là một quyết định hoàn toàn đúng đắn. Chúc bạn thành công
+
+---
+---
+
+Tuyệt vời! Đây là bước quan trọng nhất: biến kiến thức thành hành động. Việc chạy thử test sau khi viết là một vòng lặp liên tục để bạn hoàn thiện các kịch bản của mình.
+
+Dưới đây là một quy trình chuẩn, từng bước một, để bạn chạy thử các bài test API đã viết.
+
+---
+
+### **Bước 1: Chuẩn bị Môi trường (The Checklist)**
+
+Trước khi nhấn nút "test", bạn phải đảm bảo "bệnh nhân" (hệ thống) đã sẵn sàng để được "khám bệnh".
+
+1. **Khởi động Backend Server:** API của bạn phải đang chạy thì pytest mới có cái để gọi đến.
+    
+    - Mở một cửa sổ terminal.
+        
+    - Di chuyển vào thư mục backend: cd EVisor---Backend---RnD.
+        
+    - Chạy server bằng một trong hai cách:
+        
+        - **Cách 1 (Khuyến khích):** docker-compose up (hoặc .\start.bat).
+            
+        - **Cách 2 (Dev Mode):** Kích hoạt môi trường ảo của backend (.\venv\Scripts\activate) rồi chạy uvicorn src.main:app --reload.
+            
+    - **Quan trọng:** Cứ để yên cửa sổ terminal này, nó phải luôn chạy trong suốt quá trình bạn test.
+        
+2. **Chuẩn bị "Phòng khám" của Tester:**
+    
+    - Mở một cửa sổ terminal **MỚI**.
+        
+    - Di chuyển vào thư mục tester: cd EVisor---Tester---RnD.
+        
+    - **Kích hoạt môi trường ảo** của tester:
+        
+        Generated bash
+        
+        ```
+        .\venv\Scripts\activate
+        ```
+        
+        Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+        
+    - Sau khi chạy, bạn sẽ thấy (venv) ở đầu dòng lệnh. Đây chính là nơi bạn sẽ ra lệnh cho pytest.
+        
+
+Bây giờ bạn đã sẵn sàng.
+
+---
+
+### **Bước 2: Chạy các Lệnh pytest**
+
+Bạn có nhiều cách để chạy test, từ tổng quát đến rất cụ thể.
+
+#### **Cách 1: Chạy TẤT CẢ các bài test trong dự án**
+
+Đây là cách bạn làm khi muốn kiểm tra tổng thể toàn bộ hệ thống.
+
+Generated bash
+
+```
+pytest -v
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+- **-v (verbose):** Hiển thị kết quả chi tiết cho từng bài test, giúp bạn dễ theo dõi hơn.
+    
+- pytest sẽ tự động quét tất cả các thư mục con, tìm các file có tên test_*.py hoặc *_test.py và chạy tất cả các hàm test_* bên trong chúng.
+    
+
+#### **Cách 2: Chạy TẤT CẢ các bài test trong một FILE cụ thể**
+
+Đây là cách bạn thường làm nhất khi đang tập trung viết test cho một chức năng nào đó.
+
+Generated bash
+
+```
+# Ví dụ: Chỉ chạy các test trong file test_authentication.py
+pytest -v tests/test_authentication.py
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+- Lệnh này chỉ chạy 3 hàm test (test_login_successful, test_login_wrong_password...) trong file đó và bỏ qua các file khác.
+    
+
+#### **Cách 3: Chỉ chạy MỘT BÀI TEST DUY NHẤT**
+
+Đây là cách cực kỳ hữu ích khi bạn đang gỡ lỗi một test case cụ thể bị thất bại.
+
+Generated bash
+
+```
+# Cú pháp: pytest -v <đường_dẫn_file>::<tên_hàm_test>
+pytest -v tests/test_authentication.py::test_login_successful
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
+
+- Lệnh này sẽ chỉ thực thi duy nhất hàm test_login_successful và bỏ qua mọi thứ khác. Nó rất nhanh và giúp bạn tập trung vào vấn đề.
+    
+
+---
+
+### **Bước 3: Đọc và Hiểu Kết quả**
+
+Sau khi chạy lệnh, pytest sẽ cho bạn biết kết quả.
+
+#### **Nếu Thành công (PASSED):**
+
+Bạn sẽ thấy một màu xanh lá cây và dòng tóm tắt ở cuối:
+
+Generated code
+
+```
+========================= 3 passed in 1.25s =========================
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).
+
+- **Ý nghĩa:** Chúc mừng! Tất cả các khẳng định (assert) trong các bài test của bạn đều đúng. Logic của API hoạt động như bạn mong đợi.
+    
+
+#### **Nếu Thất bại (FAILED):**
+
+Bạn sẽ thấy màu đỏ và một báo cáo lỗi chi tiết.
+
+Generated code
+
+```
+============================== FAILURES ==============================
+_________________________ test_login_wrong_password __________________________
+
+... (Code của hàm test) ...
+
+>       assert response.status_code == 401, "Phản hồi phải là 401"
+E       AssertionError: Phản hồi phải là 401
+E       assert 200 == 401
+
+...
+======================== 1 failed, 2 passed in 1.98s ========================
+```
+
+Use code [with caution](https://support.google.com/legal/answer/13505487).
+
+- **Ý nghĩa:** Đây là một **phát hiện tốt**!
+    
+    - Phần FAILURES sẽ chỉ ra chính xác hàm test nào đã thất bại (test_login_wrong_password).
+        
+    - Dấu > sẽ chỉ vào đúng dòng assert đã sai.
+        
+    - Dòng E assert 200 == 401 sẽ cho bạn biết: **Giá trị thực tế** là 200, trong khi **giá trị bạn mong đợi** là 401.
+        
+    - Nhiệm vụ của bạn là phân tích tại sao lại có sự khác biệt này và báo cáo lại cho team.
+        
+
+### **Kế hoạch hành động cho bạn:**
+
+1. **Làm theo Bước 1** để khởi động Backend và môi trường Tester.
+    
+2. **Làm theo Bước 2**, bắt đầu bằng **Cách 3** để chạy thử một test case duy nhất.
+    
+3. **Quan sát kết quả ở Bước 3**. Nếu nó PASSED, hãy thử chạy cả file (Cách 2). Nếu nó FAILED, hãy đọc kỹ log lỗi để tìm ra nguyên nhân.
