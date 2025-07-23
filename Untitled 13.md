@@ -1,0 +1,1 @@
+lâm đồng, cloud hay máy chủ, xử lý văn bản, đọc văn bản, tóm tắt nội dung, mở rộng ra những lĩnh vực khác, chuẩn bị demo những chức năng, những câu hỏi, kết hợp nhiều thông số khác nhau. Nhiều con genai , mỗi con sẽ có một chuyên môn, 
