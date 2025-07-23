@@ -22,6 +22,8 @@ Hãy dùng chính code trong file Authentication.py của bạn để giải t
     
 - **Câu lệnh SQL (query):** Là "phiếu yêu cầu" bạn điền thông tin để đưa cho người thủ thư.
     
+![[Giải thích truy vấn database như thế nào.png]]
+
 
 ---
 
