@@ -1,1 +1,1 @@
-hôm nay 23/7/2025 10:06, hãy tận dụng từng giây để sống cuộc đời ý nghĩa, bảo vệ não, bộ phận tư duy, tư duy thay đổi cuộc đời, bảo vệ tay chân để giúp đỡ mọi người lúc cần thiết, làm chủ bộ não, làm chủ cuộc đời. 
+hôm nay 23/7/2025 10:06, hãy tận dụng từng giây để sống cuộc đời ý nghĩa, bảo vệ não, bộ phận tư duy, tư duy thay đổi cuộc đời, bảo vệ tay chân để giúp đỡ mọi người lúc cần thiết, làm chủ bộ não, làm chủ cuộc đời.  ưu tiên những niềm vui dài hạn, 
