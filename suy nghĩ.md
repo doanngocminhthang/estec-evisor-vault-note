@@ -1,0 +1,1 @@
+bắt đầu từ 23/07/2025 08:39, tận dụng từng giây, đọc,ăn đủ chất, uống đủ nước, thở sâu, vận động thể dục, code, thực hành vi tính, giao tiếp, tư duy sâu, k video ngắn, k xem, làm những thứ vô bổ, phim x, mạng xã hội là ma tuý tinh thần và não bộ. Não bộ quyết định số phận, 
