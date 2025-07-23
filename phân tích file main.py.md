@@ -36,6 +36,7 @@ Các API được nhóm lại bằng tags (ví dụ: tags=["POD"], tags=["Au
 - **Logic chính:**
     
     1. Kết nối đến database PostgreSQL.
+	    1. [[giải thích kết nối đến database postgresql]]
         
     2. Gọi hàm Authentication_function() (logic chi tiết nằm trong file Authentication.py) để kiểm tra username và password với dữ liệu trong DB.
         
