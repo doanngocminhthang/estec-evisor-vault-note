@@ -112,7 +112,7 @@ Bây giờ bạn đã biết cách thực hiện một yêu cầu. Hãy thử c�
         "password": "saimatkhau123"
     }
     ```
-    
+    ![[Postman-test.png]]
     Use code [with caution](https://support.google.com/legal/answer/13505487).Json
     
 2. Bấm Send.
