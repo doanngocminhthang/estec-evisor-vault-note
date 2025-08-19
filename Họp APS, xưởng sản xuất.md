@@ -13,3 +13,5 @@
 
 - Chuẩn bị đầy đủ các form mẫu, chuẩn bị productBOM, trước khi lập kế hoạch, phải hoàn thành các đơn đặt mua nguyên vật liệu
 - Evisor + APS của Siemens để thêm tính năng tạo kế hoạch tự động
+
+![[Họp APS, xưởng sản xuất-2.png]]
