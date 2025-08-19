@@ -8,3 +8,7 @@
 - Bổ sung các form
 - mã tủ điện, mã loại, quy trinh sx, thời gian thi công chuẩn cho từng công đoạn, thiếu một số thông tin mẫu import vào aps, 
 - sample cho 1 chiếc xe đạp : mã sản phẩm, mô tả công đoạn, thời gian của từng công đoạn, thiếu resource group
+- Chuẩn bị ProductBOM
+- Trước khi lập kế hoạch, phải hoàn thành các đơn đặt mua nguyên vật liệu
+
+- Chuẩn bị đầy đủ 
