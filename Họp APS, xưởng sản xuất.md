@@ -15,3 +15,6 @@
 - Evisor + APS của Siemens để thêm tính năng tạo kế hoạch tự động
 
 ![[Họp APS, xưởng sản xuất-2.png]]
+![[Họp APS, xưởng sản xuất-3.png]]
+
+Hình ảnh Nguyên gửi , đây là yêu cầu lấy từ Hoài Thanh để import tài liệu để tạo báo cáo từ phần mềm siemens
