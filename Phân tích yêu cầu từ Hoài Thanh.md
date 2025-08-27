@@ -46,6 +46,13 @@ Dưới đây là phân tích và giải thích chi tiết.
     - Sản xuất **khi nào** xong? (`ngày giao hàng`)
         
 
+> [!todo]
+> Tài liệu mã tủ điện
+> - ES211-P2505-020401 Layout Drawing 6Unit (có đóng dấu Issue for Construction)
+> - ES211-P2505-020402 Layout Drawing 18Unit (có đóng dấu Issue for Construction)
+> - ES211-P2505-020403 Schematic Diagrams 6Unit (có đóng dấu Issue for Construction)
+> - ES211-P2505-020404 Schematic Diagrams 18Unit (có đóng dấu Issue for Construction)
+
 #### **Điểm 2 & 3: Các tài liệu kỹ thuật liên quan**
 
 > "Cung cấp những file đính kèm..." và "Cung cấp thêm các Tài liệu liên quan quy trình thi công..."
