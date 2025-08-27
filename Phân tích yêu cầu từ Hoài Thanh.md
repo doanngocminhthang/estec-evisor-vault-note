@@ -64,6 +64,12 @@ Dưới đây là phân tích và giải thích chi tiết.
     - **Tài liệu quy trình (WS-P01-F02...):** Đây là các mã hiệu của tài liệu hướng dẫn công việc hoặc quy trình vận hành tiêu chuẩn (SOP) của công ty. Điều này có nghĩa là công ty đã có sẵn các quy trình lắp ráp tủ điện theo tiêu chuẩn.
         
 
+
+Bổ sung
+- WS-P01-F01
+- WS-P01-F02
+- WS-P01-F03
+
 #### **Điểm 4: Phân tích "Make vs. Buy" (Tự sản xuất hay Mua ngoài)**
 
 > "Công đoạn lắp ráp tủ có bán thành phẩm hoặc cụm lắp ráp nào nhà máy không sản xuất được phải mua từ bên ngoài không. Nếu đặt hàng bên ngoài thì có thông tin Purchased Order (PO) không?"
