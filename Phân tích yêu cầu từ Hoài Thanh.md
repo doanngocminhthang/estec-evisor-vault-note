@@ -64,12 +64,14 @@ Dưới đây là phân tích và giải thích chi tiết.
     - **Tài liệu quy trình (WS-P01-F02...):** Đây là các mã hiệu của tài liệu hướng dẫn công việc hoặc quy trình vận hành tiêu chuẩn (SOP) của công ty. Điều này có nghĩa là công ty đã có sẵn các quy trình lắp ráp tủ điện theo tiêu chuẩn.
         
 
-```
-Bổ sung
-- WS-P01-F01
-- WS-P01-F02
-- WS-P01-F03
-```
+
+> [!note]
+> Bổ sung
+> - WS-P01-F01
+> - WS-P01-F02
+> - WS-P01-F03
+
+
 
 
 #### **Điểm 4: Phân tích "Make vs. Buy" (Tự sản xuất hay Mua ngoài)**
@@ -115,6 +117,15 @@ Dưới đây là chi tiết cụ thể:
 
 Tóm lại, nhà máy **chủ yếu lắp ráp các tủ điện từ các linh kiện và cụm lắp ráp mua ngoài** và có một hệ thống quản lý các đơn đặt hàng (PO) để theo dõi quá trình mua sắm này
 
+
+> [!todo]
+> Tài liệu
+> PO
+> BOQ (Bill of Quantity)
+> Specification
+> 
+
+
 ---
 ---
 
@@ -126,6 +137,9 @@ Tóm lại, nhà máy **chủ yếu lắp ráp các tủ điện từ các linh 
     
 - **"1Office"** ở đây có thể là tên một phần mềm quản trị doanh nghiệp (ERP) mà công ty đang sử dụng để quản lý kho.
     
+> [!note]
+> file excel tồn kho nguyên liệu
+
 
 ---
 
