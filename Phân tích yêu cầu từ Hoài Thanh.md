@@ -64,11 +64,13 @@ Dưới đây là phân tích và giải thích chi tiết.
     - **Tài liệu quy trình (WS-P01-F02...):** Đây là các mã hiệu của tài liệu hướng dẫn công việc hoặc quy trình vận hành tiêu chuẩn (SOP) của công ty. Điều này có nghĩa là công ty đã có sẵn các quy trình lắp ráp tủ điện theo tiêu chuẩn.
         
 
-
+```
 Bổ sung
 - WS-P01-F01
 - WS-P01-F02
 - WS-P01-F03
+```
+
 
 #### **Điểm 4: Phân tích "Make vs. Buy" (Tự sản xuất hay Mua ngoài)**
 
@@ -81,7 +83,40 @@ Bổ sung
     - Những linh kiện/cụm linh kiện nào phải **mua từ nhà cung cấp** bên ngoài?
         
     - Nếu phải mua ngoài, cần có thông tin về **Đơn đặt hàng (Purchase Order - PO)** để theo dõi.
-        
+
+---
+---
+
+Dựa trên các nguồn thông tin được cung cấp, quá trình lắp ráp tủ điện tại nhà máy có sử dụng **nhiều bán thành phẩm và cụm lắp ráp được mua từ bên ngoài**. Đồng thời, có **thông tin về Đơn đặt hàng (Purchase Order - PO)** được đề cập rõ ràng.
+
+Dưới đây là chi tiết cụ thể:
+
+• **Các linh kiện/cụm lắp ráp phải mua từ bên ngoài:**
+
+    ◦ Kế hoạch thi công liệt kê rất nhiều hạng mục **thiết bị và vật tư** được lắp đặt, cho thấy chúng là các thành phần được mua sẵn chứ không phải tự sản xuất tại xưởng. Các hạng mục này bao gồm:
+
+        ▪ **Các thiết bị điện tử và điện công nghiệp chính:** ZCT (biến dòng bảo vệ chạm đất), MCT (biến dòng đo lường), MCCB (aptomat khối), MCB (aptomat tép), Biến tần, PLC (Bộ điều khiển logic khả trình), ET, Base, Module IO, Scalance, PS, SO (các module và thành phần liên quan đến PLC). Đây là các thiết bị chuyên dụng, thường được mua từ các nhà sản xuất có thương hiệu.
+
+        ▪ **Các thiết bị phụ trợ và điều khiển:** Đèn tủ, Công tắc hành trình, Máy biến áp (biến áp điều khiển), Cầu chì chống sét, Domino, Quạt, Filter (lọc), TS (công tắc nhiệt độ), Cầu chì đơn, Relay, Đèn báo pha, PAC, ERL.
+
+        ▪ **Vật tư đấu nối và lắp đặt:** Terminal (cầu đấu), Jump (cầu nối), chặn, Cover (nắp), vách ngăn từ các thương hiệu như Phoenix và Hanyoung.
+
+        ▪ Mặc dù máng, rail và busbar có công đoạn **gia công (cắt, uốn)** tại xưởng, nhưng vật liệu thô (như thanh cái busbar) hoặc các bộ phận tiêu chuẩn khác vẫn được xem là hàng hóa mua ngoài.
+
+    ◦ Quy trình thi công tại xưởng cũng đề cập đến việc **kiểm tra hàng hóa đã nhập từ phòng mua hàng/kho** và việc "lắp file tổng hợp các thiết bị vật tư đã về". Điều này xác nhận rằng các thiết bị và vật tư được thu mua thông qua một bộ phận mua hàng.
+
+• **Thông tin về Đơn đặt hàng (Purchase Order - PO):**
+
+    ◦ Trong tài liệu "ES211-P2505-Yêu cầu Thi công.pdf" dành cho dự án "Supply Local Control Station 18 RTGC 2-2 & 6RMQC 2-2", thông tin về Hợp đồng/PO được nêu rõ là **PO No.: 4250000079**. Đây là một mã PO cụ thể cho dự án/dịch vụ, cho thấy việc mua sắm các thiết bị và vật tư cho dự án này được quản lý bằng PO.
+
+    ◦ Hơn nữa, trong tài liệu "Đề xuất tính năng chính MOC.pdf", một tính năng quan trọng được đề xuất cho Module Quản lý Kho là **"Tích hợp với Module Mua hàng: Đồng bộ trạng thái đơn hàng mua (PO), cho phép kho theo dõi được lịch dự kiến hàng về"**. Điều này không chỉ khẳng định sự tồn tại của các PO cho việc mua hàng mà còn cho thấy tầm quan trọng của việc quản lý và theo dõi chúng trong hệ thống sản xuất và kho.
+
+    ◦ Quy trình thi công tại xưởng cũng nhắc đến việc kiểm tra thông tin từ **BOQ (Bill of Quantity)** và **Specification**, là những tài liệu liên quan chặt chẽ đến việc lập kế hoạch mua sắm và đơn đặt hàng.
+
+Tóm lại, nhà máy **chủ yếu lắp ráp các tủ điện từ các linh kiện và cụm lắp ráp mua ngoài** và có một hệ thống quản lý các đơn đặt hàng (PO) để theo dõi quá trình mua sắm này
+
+---
+---
 
 #### **Điểm 5: Kiểm tra Tồn kho Nguyên vật liệu**
 
