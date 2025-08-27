@@ -19,5 +19,6 @@
 
 Hình ảnh Nguyên gửi , đây là yêu cầu lấy từ Hoài Thanh để import tài liệu để tạo báo cáo từ phần mềm siemens
 
-Tài khoản Evisor
-username: str = Field(example="hoanvlh") password: str = Field(example="Ef27Xw34")
+> [!note]
+> Tài khoản Evisor
+> username: str = Field(example="hoanvlh") password: str = Field(example="Ef27Xw34")
