@@ -86,6 +86,13 @@ File TH trước đó :
 
 ## TH5 : Thêm tên nhân sự, mô tả công việc, thời gian làm việc, nơi làm việc
 
+Thêm nhân sự Nguyễn Văn B - Lên BOQ 3 - 9 giờ - S -  15 / 19.3.2025
+
+![[Pasted image 20250905112652.png]]
+
+Ghép với file TH đuôi 443
+
+File THM : **ES_20250905_113029**
 
 
-## TH6 : Xóa 
+## TH6 : Xóa tên nhân sự , mô tả công việc, thời gian làm việc, nơi làm việc
