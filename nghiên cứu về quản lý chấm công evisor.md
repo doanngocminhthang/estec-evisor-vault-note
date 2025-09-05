@@ -109,16 +109,3 @@ Hệ thống sẽ duyệt qua từng công việc đã xử lý và điền số
 
 Chúc dự án eVisor của bạn thành công!
 
-![ảnh hồ sơ](https://lh3.googleusercontent.com/a/ACg8ocJ9dfUtcBLazDpa_hQniRI-E_zZdBuEstkeTWL-n_XK0c8EZg=s64-c-mo)
-
-  
-
-Deep Research
-
-Video
-
-Hình ảnh
-
-Canvas
-
-Gemini có thể mắc sai sót, vì vậy, nhớ xác minh câu trả lời của Gemini.
