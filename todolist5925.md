@@ -1,4 +1,5 @@
 - test chức năng thuật toán chỉnh sửa file chi tiết sau đó merge vào file tổng hợp trước đó
+
 	tạo các file thành phần đã chỉnh sửa thông tin
 	lần lượt merge vào file tổng hợp
 	file tổng hợp đuôi 443 đầu tiên
@@ -9,12 +10,17 @@
 
 
 ## Trường hợp 1 : Sửa tên nhân sự
+
 - File thành phần 
 	- Sửa Lê Vĩnh Hà -> Nguyễn Văn A
 	- task : Lên BOQ 1 
-hm : đuôi 157
+	
+Thm : đuôi 157
 
-![[ES_20250905_100157.xlsx]]![[todolist5925-1.png]]![[todolist5925-2.png]]
+![[ES_20250905_100157.xlsx]]![[todolist5925-1.png]]
+
+![[todolist5925-2.png]]
+
 đã chỉnh sửa file thành phần -> thay đổi tên thành Nguyễn Văn A - task của anh Lê Vĩnh Hà bị xóa -> thêm mới Nguyễn Văn A và task cũ của Lê Vĩnh Hà
 
 Đánh giá : Đúng
@@ -27,7 +33,11 @@ hm : đuôi 157
 ![[todolist5925-3.png]]
 
 File sau khi merge : đuôi 305
+
+
 ![[todolist5925-4.png]]
+
+
 ![[todolist5925-5.png]]
 
 So sánh với file tổng hợp đầu tiên
@@ -74,3 +84,8 @@ File TH trước đó :
 
 ![[todolist5925-10.png]]
 
+## TH5 : Thêm tên nhân sự, mô tả công việc, thời gian làm việc, nơi làm việc
+
+
+
+## TH6 : Xóa 
