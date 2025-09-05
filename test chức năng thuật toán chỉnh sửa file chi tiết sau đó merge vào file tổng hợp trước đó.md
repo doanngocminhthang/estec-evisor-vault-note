@@ -94,6 +94,12 @@ Ghép với file TH đuôi 443
 
 File THM : **ES_20250905_113029**
 
+![[test chức năng thuật toán chỉnh sửa file chi tiết sau đó merge vào file tổng hợp trước đó-2.png]]
+
+File mới vẫn chưa cập nhật thêm nhân sự Nguyễn Văn B -> task BOQ 3 -> ....
+
+Đánh giá : Vẫn chưa hoàn thành
+
 > [!warning]
 > TH5 CHƯA XONG
 
@@ -104,4 +110,17 @@ File thành phần : xóa nhân sự
 ![[test chức năng thuật toán chỉnh sửa file chi tiết sau đó merge vào file tổng hợp trước đó.png]]
 
 
+File THM : **ES_20250905_114919**
 
+![[test chức năng thuật toán chỉnh sửa file chi tiết sau đó merge vào file tổng hợp trước đó-1.png]]
+
+file tổng hợp mới đã xóa phần task đã xóa ở file thành phần
+
+Đánh giá : Đúng
+
+
+## Tổng kết 
+
+Chức năng hoàn thành : 5/6
+Chưa hoàn thành 
+- Thêm nhân sự - công việc mới 
