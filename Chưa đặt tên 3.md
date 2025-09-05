@@ -1,0 +1,1 @@
+sửa file thành phần -> merge vào file tổng hợp -> kq - có - không
