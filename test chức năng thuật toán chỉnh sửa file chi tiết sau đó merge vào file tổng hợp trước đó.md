@@ -1,5 +1,5 @@
-- test chức năng thuật toán chỉnh sửa file chi tiết sau đó merge vào file tổng hợp trước đó
-
+Nhiệm vụ : test chức năng thuật toán chỉnh sửa file chi tiết sau đó merge vào file tổng hợp trước đó
+Cách làm
 	tạo các file thành phần đã chỉnh sửa thông tin
 	lần lượt merge vào file tổng hợp
 	file tổng hợp đuôi 443 đầu tiên
@@ -94,5 +94,14 @@ Ghép với file TH đuôi 443
 
 File THM : **ES_20250905_113029**
 
+> [!warning]
+> TH5 CHƯA XONG
 
 ## TH6 : Xóa tên nhân sự , mô tả công việc, thời gian làm việc, nơi làm việc
+
+File thành phần : xóa nhân sự
+
+![[test chức năng thuật toán chỉnh sửa file chi tiết sau đó merge vào file tổng hợp trước đó.png]]
+
+
+
