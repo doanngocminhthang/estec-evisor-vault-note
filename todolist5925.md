@@ -50,5 +50,27 @@ Task : Lên BOQ 1 - thiết bị Moxa để đáp ứng tiến độ
 File thm : đuôi 357
 ![[ES_20250905_104357.xlsx]]
 
+![[todolist5925-7.png]]
 
+thời gian đã được thay đổi , 24-28/03/2025
+
+Đánh giá : Đúng
+
+## TH4 : sửa nơi làm việc
+
+Sửa nơi làm việc cảu nhân sự Lê Vĩnh Hà
+Mô tả công việc : Lên BOQ 1 - thiết bị Moxa đáp ứng tiến độ
+Từ S -> V
+![[todolist5925-8.png]]
+
+
+File THM : **ES_20250905_105609**
+
+![[todolist5925-9.png]]
+
+kết quả đã thay đổi từ S -> V
+
+File TH trước đó : 
+
+![[todolist5925-10.png]]
 
