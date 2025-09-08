@@ -79,4 +79,4 @@ Trong dự án này, điều đó có nghĩa là:
     
 3. **Chạy Frontend:** Giữ nguyên lệnh `npm run dev`.
     
-4. **Kiểm tra:** Đảm bảo file `.env` của frontend đang trỏ đúng đến `http://127.0.0.1:8000` để code ở môi trường máy cá nhân (local).
+4. **Kiểm tra:** Đảm bảo file `.env` của frontend đang trỏ đúng đến `http://127.0.0.1:8000` để code ở môi trường máy cá nhân (local)
