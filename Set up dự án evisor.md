@@ -10,3 +10,5 @@ Tester
 
 làm sao chạy dự án
 [[làm sao chạy dự án]]
+
+[[phân tích file main.py]]
