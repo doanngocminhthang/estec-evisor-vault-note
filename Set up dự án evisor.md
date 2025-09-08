@@ -19,3 +19,6 @@ làm sao chạy dự án
 [[đây là ip của web]]
 [[phân tích 2 file env]]
 [[2 port fe và be đang goi chưa khớp đúng không]]
+[[thông báo chạy phía be thành công]]
+[[kiểm tra trỏ đến server be đúng không]]
+[[lỗi khi đăng nhập]]
