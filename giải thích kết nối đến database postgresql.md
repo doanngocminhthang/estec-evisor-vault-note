@@ -27,7 +27,7 @@ Trong file main.py, bạn sẽ thấy đoạn code này:
 
 Generated python
 
-```
+```python
 # Tải biến môi trường từ file .env
 load_dotenv()
 POSTGRESQL_SERVER = os.getenv("POSTGRESQL_SERVER")
@@ -67,7 +67,7 @@ Trong mỗi hàm API (ví dụ Authentication_api), bạn thấy dòng này:
 
 Generated python
 
-```
+```python
 conn = get_postgres_connection(POSTGRESQL_SERVER, POSTGRES_PORT_EXTERNAL, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD)
 ```
 
@@ -79,7 +79,7 @@ Use code [with caution](https://support.google.com/legal/answer/13505487).Pytho
     
     Generated python
     
-    ```
+    ```python
     # Bên trong file DB_Connection.py (ví dụ)
     import psycopg2
     
@@ -111,7 +111,7 @@ Trong file Authentication.py, bạn thấy các lệnh này:
 
 Generated python
 
-```
+```python
 # 1. Mở một phiên giao dịch
 cursor = conn.cursor()
 
