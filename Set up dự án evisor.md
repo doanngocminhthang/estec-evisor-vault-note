@@ -18,3 +18,4 @@ làm sao chạy dự án
 [[server được cài đặt trên công ty, tôi thì đang ngồi quán cà phê]]
 [[đây là ip của web]]
 [[phân tích 2 file env]]
+[[2 port fe và be đang goi chưa khớp đúng không]]

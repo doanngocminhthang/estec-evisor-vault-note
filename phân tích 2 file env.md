@@ -29,11 +29,11 @@ Xuất sang Trang tính
 
 Đây là file cấu hình cho ứng dụng **giao diện người dùng (Vue.js)**. Nó chứa các địa chỉ API mà frontend sẽ gọi để lấy dữ liệu hoặc thực hiện hành động.
 
-| Biến                      | Mục đích                                                                                                                                                                             |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`VITE_API_ENDPOINT`**   | **Đây chính là địa chỉ API của backend EVisor mà bạn đang tìm.** Frontend sẽ gửi tất cả các yêu cầu nghiệp vụ (như đăng nhập, xem công việc) đến địa chỉ `http://52.168.54.37:8000`. |
-| **`VITE_FIREBASE_...`**   | Các cấu hình để kết nối đến dịch vụ **Firebase** của Google. Dự án có thể đang dùng Firebase cho việc xác thực, lưu trữ file phụ hoặc các tính năng khác.                            |
-| **`VITE_API_SOCKET_...`** | Địa chỉ của một **API WebSocket** trên AWS. Cái này dùng cho các tính năng thời gian thực (real-time) như thông báo đẩy hoặc chat.                                                   |
+| Biến                      | Mục đích                                                                                                                                                                              |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`VITE_API_ENDPOINT`**   | **Đây chính là địa chỉ API của backend EVisor mà bạn đang tìm.** Frontend sẽ gửi tất cả các yêu cầu nghiệp vụ (như đăng nhập, xem công việc) đến địa chỉ `http://192.168.54.37:8000`. |
+| **`VITE_FIREBASE_...`**   | Các cấu hình để kết nối đến dịch vụ **Firebase** của Google. Dự án có thể đang dùng Firebase cho việc xác thực, lưu trữ file phụ hoặc các tính năng khác.                             |
+| **`VITE_API_SOCKET_...`** | Địa chỉ của một **API WebSocket** trên AWS. Cái này dùng cho các tính năng thời gian thực (real-time) như thông báo đẩy hoặc chat.                                                    |
 
 Xuất sang Trang tính
 
@@ -45,4 +45,4 @@ Xuất sang Trang tính
 
 Mối quan hệ giữa chúng như sau:
 
-`[Trình duyệt của bạn (Frontend)]` ---gọi đến---> `[API Backend ở http://52.168.54.37:8000]` ---dùng thông tin trong file .env trái để kết nối đến---> `[Database & MinIO]`
+`[Trình duyệt của bạn (Frontend)]` ---gọi đến---> `[API Backend ở http://192.168.54.37:8000]` ---dùng thông tin trong file .env trái để kết nối đến---> `[Database & MinIO]`
