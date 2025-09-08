@@ -13,3 +13,4 @@ làm sao chạy dự án
 
 [[phân tích file main.py]]
 [[phân tích file main.py 2]]
+[[làm sao để học để tham gia dự án]]
