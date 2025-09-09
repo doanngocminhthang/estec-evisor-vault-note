@@ -2,6 +2,215 @@
 
 ---
 #
+```
+running bootstrap script ... ok
+
+performing post-bootstrap initialization ... ok
+
+syncing data to disk ... ok
+
+  
+
+  
+
+Success. You can now start the database server using:
+
+  
+
+pg_ctl -D /var/lib/postgresql/data -l logfile start
+
+  
+
+initdb: warning: enabling "trust" authentication for local connections
+
+initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+
+waiting for server to start....2025-09-09 08:11:23.503 UTC [48] LOG: starting PostgreSQL 15.14 (Debian 15.14-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+
+2025-09-09 08:11:23.505 UTC [48] LOG: listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+
+2025-09-09 08:11:23.511 UTC [51] LOG: database system was shut down at 2025-09-09 08:11:23 UTC
+
+2025-09-09 08:11:23.516 UTC [48] LOG: database system is ready to accept connections
+
+done
+
+server started
+
+CREATE DATABASE
+
+  
+
+  
+
+/usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/ESTEC-User.csv
+
+  
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/init.sh
+
+  
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/init.sql
+
+CREATE TABLE
+
+psql:/docker-entrypoint-initdb.d/init.sql:25: error: \copy: parse error at end of line
+
+  
+
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+
+  
+
+2025-09-09 08:11:24.277 UTC [1] LOG: starting PostgreSQL 15.14 (Debian 15.14-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+
+2025-09-09 08:11:24.278 UTC [1] LOG: listening on IPv4 address "0.0.0.0", port 5432
+
+2025-09-09 08:11:24.278 UTC [1] LOG: listening on IPv6 address "::", port 5432
+
+2025-09-09 08:11:24.281 UTC [1] LOG: listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+
+2025-09-09 08:11:24.286 UTC [29] LOG: database system was interrupted; last known up at 2025-09-09 08:11:23 UTC
+
+2025-09-09 08:11:24.516 UTC [29] LOG: database system was not properly shut down; automatic recovery in progress
+
+2025-09-09 08:11:24.519 UTC [29] LOG: redo starts at 0/1509EE8
+
+2025-09-09 08:11:24.531 UTC [29] LOG: invalid record length at 0/1933288: wanted 24, got 0
+
+2025-09-09 08:11:24.531 UTC [29] LOG: redo done at 0/1932B10 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.01 s
+
+2025-09-09 08:11:24.536 UTC [27] LOG: checkpoint starting: end-of-recovery immediate wait
+
+2025-09-09 08:11:24.604 UTC [27] LOG: checkpoint complete: wrote 928 buffers (5.7%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.014 s, sync=0.050 s, total=0.071 s; sync files=305, longest=0.003 s, average=0.001 s; distance=4261 kB, estimate=4261 kB
+
+2025-09-09 08:11:24.608 UTC [1] LOG: database system is ready to accept connections
+```
+
+Chào bạn, đây là lỗi cú pháp trong file `init.sql`.
+
+Lỗi `error: \copy: parse error at end of line` có nghĩa là lệnh `\copy` của bạn trong file `init.sql` đang bị thiếu một thứ gì đó ở cuối dòng.
+
+---
+
+### ## Nguyên nhân và Cách khắc phục
+
+Trong `psql` (công cụ chạy script SQL), tất cả các lệnh, kể cả lệnh đặc biệt như `\copy`, đều phải được kết thúc bằng một **dấu chấm phẩy (`;`)**. Rất có thể bạn đã bỏ quên nó.
+
+1. **Mở file `init.sql`** (`./postgres/init/init.sql`).
+    
+2. Tìm đến dòng lệnh `\copy`.
+    
+3. **Thêm dấu chấm phẩy (`;`)** vào cuối cùng của dòng đó.
+    
+    **Sửa từ:**
+    
+    SQL
+    
+    ```
+    \copy "User" FROM 'ESTEC-User.csv' DELIMITER ',' CSV HEADER
+    ```
+    
+    **Thành:**
+    
+    SQL
+    
+    ```
+    \copy "User" FROM 'ESTEC-User.csv' DELIMITER ',' CSV HEADER;
+    ```
+    
+
+---
+
+### ## Các bước cuối cùng
+
+Sau khi đã thêm dấu chấm phẩy, bạn hãy thực hiện lại quy trình cuối cùng để đảm bảo database được tạo mới với script đã sửa.
+
+1. Dọn dẹp môi trường cũ:
+    
+    Bash
+    
+    ```
+    docker-compose down -v
+    ```
+    
+2. Khởi động lại:
+    
+    Bash
+    
+    ```
+    docker-compose up -d
+    ```
+    
+
+Sau lần này, log sẽ không còn báo lỗi `parse error` nữa và dữ liệu sẽ được nhập thành công.
+
+#
+Chào bạn, log này đã chỉ ra chính xác lỗi và cách sửa. Đây là một chi tiết nhỏ nhưng rất quan trọng khi làm việc với PostgreSQL trong Docker.
+
+Lỗi `could not open file "ESTEC-User.csv" for reading: No such file or directory` vẫn xảy ra, nhưng lần này, hãy chú ý đến dòng **Gợi ý (HINT)** mà chính PostgreSQL cung cấp:
+
+```
+HINT:  COPY FROM instructs the PostgreSQL server process to read a file. You may want a client-side facility such as psql's \copy.
+```
+
+**Dịch và giải thích:** Gợi ý này nói rằng lệnh `COPY` yêu cầu tiến trình server của PostgreSQL (vốn có quyền truy cập rất hạn chế) đọc file. Bạn nên dùng một công cụ phía client như lệnh `\copy` của `psql`.
+
+---
+
+### ## Vấn đề là gì? (`COPY` vs `\copy`)
+
+- **`COPY`:** Là lệnh của **server**. Nó yêu cầu server PostgreSQL tự tìm và đọc file. Vì lý do bảo mật, server bị giới hạn và không thể đọc các file trong thư mục khởi tạo `/docker-entrypoint-initdb.d`.
+    
+- **`\copy`:** Là lệnh của **client** (`psql` - chương trình đang chạy script `init.sql`). Client `psql` có quyền đọc file `ESTEC-User.csv` vì chúng đang ở cùng một nơi. Lệnh `\copy` sẽ đọc file và truyền dữ liệu đến server.
+    
+
+---
+
+### ## Cách khắc phục cuối cùng 🛠️
+
+Đây là bước cuối cùng và chắc chắn sẽ thành công.
+
+1. **Mở file `init.sql`** (`./postgres/init/init.sql`).
+    
+2. Tìm đến lệnh `COPY` và chỉ cần **thêm một dấu gạch chéo ngược (`\`)** vào trước nó.
+    
+    **Sửa từ:**
+    
+    SQL
+    
+    ```
+    COPY "User" FROM 'ESTEC-User.csv' DELIMITER ',' CSV HEADER;
+    ```
+    
+    **Thành:**
+    
+    SQL
+    
+    ```
+    \copy "User" FROM 'ESTEC-User.csv' DELIMITER ',' CSV HEADER;
+    ```
+    
+3. **Dọn dẹp và Chạy lại:** Vì đây là lỗi trong quá trình khởi tạo, bạn cần tạo lại database từ đầu.
+    
+    Bash
+    
+    ```
+    docker-compose down -v
+    docker-compose up -d
+    ```
+    
+
+Sau khi hoàn thành, script `init.sql` sẽ sử dụng đúng lệnh `\copy`, có đủ quyền để đọc file và nhập dữ liệu thành công vào database của bạn.
+
+
+
+---
+---
+
+
+#
 
 Chúc mừng! Dựa trên log bạn cung cấp, bạn đã **khắc phục được tất cả các lỗi trước đó** và server PostgreSQL đã khởi động thành công.
 
