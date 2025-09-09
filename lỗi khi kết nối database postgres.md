@@ -260,3 +260,186 @@ docker-compose up -d
 ```
 
 Sau khi Docker chạy xong, hãy đợi khoảng 30 giây để database có đủ thời gian khởi tạo. Bây giờ, hãy mở DBeaver và thử **Test Connection** lại. Lần này lỗi chắc chắn sẽ được khắc phục.
+
+---
+---
+
+log của postgre trong docker
+
+```
+The files belonging to this database system will be owned by user "postgres".
+
+This user must also own the server process.
+
+The database cluster will be initialized with locale "en_US.utf8".
+
+The default database encoding has accordingly been set to "UTF8".
+
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+fixing permissions on existing directory /var/lib/postgresql/data ... ok
+
+creating subdirectories ... ok
+
+selecting dynamic shared memory implementation ... posix
+
+selecting default max_connections ... 100
+
+selecting default shared_buffers ... 128MB
+
+selecting default time zone ... Etc/UTC
+
+creating configuration files ... ok
+
+running bootstrap script ... ok
+
+performing post-bootstrap initialization ... ok
+
+syncing data to disk ... ok
+
+initdb: warning: enabling "trust" authentication for local connections
+
+initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+
+Success. You can now start the database server using:
+
+pg_ctl -D /var/lib/postgresql/data -l logfile start
+
+2025-09-09 04:41:48.968 GMT [44] FATAL: -c host all all 0.0.0.0/0 scram-sha-256 requires a value
+
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+
+2025-09-09 04:41:50.788 GMT [1] FATAL: -c host all all 0.0.0.0/0 scram-sha-256 requires a value
+
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+
+2025-09-09 04:41:52.224 GMT [1] FATAL: -c host all all 0.0.0.0/0 scram-sha-256 requires a value
+
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+
+2025-09-09 04:41:53.228 GMT [1] FATAL: -c host all all 0.0.0.0/0 scram-sha-256 requires a value
+
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+```
+
+Chào bạn, đây là phân tích chi tiết về log của PostgreSQL bạn đã cung cấp. Log này cho thấy một lỗi cấu hình rất cụ thể trong file `docker-compose.yaml` của bạn.
+
+---
+
+### ## Phân tích Lỗi Chính
+
+Dòng lỗi quan trọng nhất là:
+
+```
+FATAL:  -c host all all 0.0.0.0/0 scram-sha-256 requires a value
+```
+
+- **Phân tích:** Lỗi này có nghĩa là lệnh bạn đưa vào để khởi động PostgreSQL bị sai cú pháp. Cụ thể, PostgreSQL hiểu rằng bạn đang muốn đặt một giá trị cấu hình (`-c`) nhưng bạn lại không cung cấp giá trị nào cho nó.
+    
+- **Nguyên nhân:** Lỗi này xảy ra do cách bạn viết lệnh `command` trong file `docker-compose.yaml`. YAML là một ngôn ngữ rất nhạy cảm với khoảng trắng và dấu ngoặc kép. Rất có thể bạn đã viết lệnh theo cách mà Docker Compose không thể diễn giải đúng.
+    
+
+---
+
+### ## Các Dòng Log Khác
+
+- **`initdb: warning: enabling "trust" authentication for local connections`**: Đây là một cảnh báo từ lần khởi tạo đầu tiên (trước khi có lỗi), cho thấy PostgreSQL mặc định dùng phương thức "tin tưởng" cho các kết nối nội bộ.
+    
+- **`PostgreSQL Database directory appears to contain a database; Skipping initialization`**: Dòng này xuất hiện ở những lần khởi động lại sau. Nó có nghĩa là PostgreSQL thấy đã có dữ liệu cũ nên nó sẽ bỏ qua bước tạo database mới. Đây là lý do tại sao các lỗi cấu hình cũ có thể vẫn tồn tại nếu bạn không xóa volume (`-v`).
+    
+
+---
+
+### ## Cách khắc phục 🛠️
+
+Lỗi nằm ở cách bạn viết dòng `command` trong file `docker-compose.yaml`. Hãy sửa lại nó cho đúng cú pháp.
+
+1. **Mở file `docker-compose.yaml`**.
+    
+2. Tìm đến dịch vụ `postgres` và sửa lại phần `command` như sau:
+    
+    **Cách viết đúng:**
+    
+    YAML
+    
+    ```
+    command: postgres -c "host all all 0.0.0.0/0 scram-sha-256"
+    ```
+    
+    Hoặc bạn cũng có thể viết dưới dạng danh sách (list), đây là cách YAML ưa thích và ít bị lỗi nhất:
+    
+    YAML
+    
+    ```
+    command:
+      - "postgres"
+      - "-c"
+      - "host all all 0.0.0.0/0 scram-sha-256"
+    ```
+    
+    Sự khác biệt chính là **đặt toàn bộ chuỗi cấu hình vào trong dấu ngoặc kép `"`** để Docker hiểu đó là một giá trị duy nhất.
+    
+3. **Dọn dẹp và Khởi động lại:** Sau khi sửa file, hãy chạy lại các lệnh sau trong terminal để đảm bảo mọi thứ được tạo mới với cấu hình đúng.
+    
+    Bash
+    
+    ```
+    # Dừng và xóa môi trường cũ
+    docker-compose down -v
+    
+    # Khởi động lại với cấu hình đúng
+    docker-compose up -d
+    ```
+    
+
+Sau khi hoàn thành, lỗi `FATAL` sẽ biến mất và database của bạn sẽ khởi động thành công
+
+---
+---
+```
+initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+
+Success. You can now start the database server using:
+
+pg_ctl -D /var/lib/postgresql/data -l logfile start
+
+2025-09-09 04:43:10.548 GMT [43] FATAL: -c host all all 0.0.0.0/0 scram-sha-256 requires a value
+
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+
+2025-09-09 04:43:11.211 GMT [1] FATAL: -c host all all 0.0.0.0/0 scram-sha-256 requires a value
+
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+
+2025-09-09 04:43:12.122 GMT [1] FATAL: -c host all all 0.0.0.0/0 scram-sha-256 requires a value
+
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+
+2025-09-09 04:43:12.915 GMT [1] FATAL: -c host all all 0.0.0.0/0 scram-sha-256 requires a value
+
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+
+2025-09-09 04:43:14.163 GMT [1] FATAL: -c host all all 0.0.0.0/0 scram-sha-256 requires a value
+
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+
+2025-09-09 04:43:16.192 GMT [1] FATAL: -c host all all 0.0.0.0/0 scram-sha-256 requires a value
+
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+
+2025-09-09 04:43:19.640 GMT [1] FATAL: -c host all all 0.0.0.0/0 scram-sha-256 requires a value
+
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+
+2025-09-09 04:43:26.320 GMT [1] FATAL: -c host all all 0.0.0.0/0 scram-sha-256 requires a value
+
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+
+2025-09-09 04:43:39.395 GMT [1] FATAL: -c host all all 0.0.0.0/0 scram-sha-256 requires a value
+
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+
+2025-09-09 04:44:05.261 GMT [1] FATAL: -c host all all 0.0.0.0/0 scram-sha-256 requires a value
+```
