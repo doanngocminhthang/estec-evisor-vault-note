@@ -33,4 +33,5 @@ làm sao chạy dự án
 	- [[thông báo trên terminal khi chạy lệnh docker để khởi tạo]]
 - [[3 địa chỉ ip khi chạy dự án phía fe là gì]]
 - [[lỗi khi đăng nhập dự án]]
+- [[lỗi khi kết nối database postgres]]
 - 
