@@ -104,3 +104,81 @@ Nếu sau này bạn sửa mật khẩu trong file `.env` hoặc `docker-compose
     - Đợi khoảng 15-20 giây để database có thời gian khởi tạo.
         
     - Bây giờ, hãy quay lại DBeaver và nhấn nút **Test Connection**. Lần này kết nối sẽ thành công.
+
+---
+---
+
+```
+FATAL: no pg_hba.conf entry for host "192.168.54.152", user "evisor", database "estecdb", no encryption
+
+FATAL: no pg_hba.conf entry for host "192.168.54.152", user "evisor", database "estecdb", no encryption
+```
+
+Lỗi này có nghĩa là **database PostgreSQL đang từ chối kết nối** từ máy tính của bạn vì nó không được cấu hình để "tin tưởng" địa chỉ IP `192.168.54.152`.
+
+Đây là một lỗi về cấu hình phía server database, không phải lỗi sai mật khẩu.
+
+### ## Giải thích Vấn đề
+
+Hãy tưởng tượng database PostgreSQL của bạn là một club và file `pg_hba.conf` là danh sách khách mời của người bảo vệ.
+
+- Bạn (từ IP `192.168.54.152`) đang cố gắng vào club.
+    
+- Người bảo vệ (PostgreSQL) kiểm tra danh sách (`pg_hba.conf`) và thấy rằng địa chỉ của bạn không có trong đó, vì vậy họ từ chối cho bạn vào.
+    
+
+Lỗi này thường xảy ra với ảnh Docker `postgres:15` mặc định, nó chỉ cho phép kết nối từ bên trong mạng Docker (`localhost` của container) chứ không cho phép kết nối từ máy chủ bên ngoài.
+
+---
+
+### ## Cách khắc phục 🛠️
+
+Bạn cần "bảo" PostgreSQL rằng hãy tin tưởng và chấp nhận các kết nối từ bất kỳ địa chỉ IP nào. Cách dễ nhất để làm điều này là thêm một biến môi trường vào file `docker-compose.yaml`.
+
+1. **Mở file `docker-compose.yaml`** trong thư mục dự án backend.
+    
+2. Tìm đến phần dịch vụ `postgres`.
+    
+3. Thêm dòng sau vào dưới mục `environment`:
+    
+    YAML
+    
+    ```
+    POSTGRES_HOST_AUTH_METHOD: trust
+    ```
+    
+    Phần cấu hình `postgres` của bạn sẽ trông như thế này:
+    
+    YAML
+    
+    ```
+    # File: docker-compose.yaml
+    
+    services:
+      postgres:
+        image: postgres:15
+        environment:
+          POSTGRES_USER: ${POSTGRES_USER}
+          POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+          POSTGRES_DB: ${POSTGRES_DB}
+          POSTGRES_HOST_AUTH_METHOD: trust # <--- THÊM DÒNG NÀY
+        ports:
+          - "${POSTGRES_PORT_EXTERNAL}:${POSTGRES_PORT_INTERNAL}"
+        # ... các cấu hình khác
+    ```
+    
+    **Lưu ý:** `trust` có nghĩa là chấp nhận mọi kết nối mà không cần mật khẩu. Điều này ổn cho môi trường phát triển (development) nhưng **không an toàn** cho môi trường production.
+    
+4. **Dọn dẹp và khởi động lại Docker:** Để thay đổi này có hiệu lực, bạn cần tạo lại container database.
+    
+    Bash
+    
+    ```
+    # Dừng và xóa môi trường cũ
+    docker-compose down -v
+    
+    # Khởi động lại với cấu hình mới
+    docker-compose up -d
+    ```
+    
+5. **Thử lại kết nối:** Đợi khoảng 15-20 giây, sau đó quay lại DBeaver và **Test Connection**. Lần này kết nối sẽ thành công.
