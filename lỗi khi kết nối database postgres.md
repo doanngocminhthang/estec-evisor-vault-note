@@ -143,7 +143,7 @@ Bạn cần "bảo" PostgreSQL rằng hãy tin tưởng và chấp nhận các k
     
     YAML
     
-    ```
+    ```python
     POSTGRES_HOST_AUTH_METHOD: trust
     ```
     
@@ -151,7 +151,7 @@ Bạn cần "bảo" PostgreSQL rằng hãy tin tưởng và chấp nhận các k
     
     YAML
     
-    ```
+    ```python
     # File: docker-compose.yaml
     
     services:
@@ -181,4 +181,82 @@ Bạn cần "bảo" PostgreSQL rằng hãy tin tưởng và chấp nhận các k
     docker-compose up -d
     ```
     
-5. **Thử lại kết nối:** Đợi khoảng 15-20 giây, sau đó quay lại DBeaver và **Test Connection**. Lần này kết nối sẽ thành công.
+1. **Thử lại kết nối:** Đợi khoảng 15-20 giây, sau đó quay lại DBeaver và **Test Connection**. Lần này kết nối sẽ thành công.
+
+---
+---
+
+![[lỗi khi kết nối database postgres-3.png]]
+
+Rất tiếc vì sự cố này vẫn tiếp diễn. Lỗi "sai mật khẩu" sau khi đã thử các cách trên thường xuất phát từ một nguyên nhân sâu xa và khó chịu nhất: **dữ liệu database cũ vẫn còn tồn tại và cấu hình mới không được áp dụng đúng cách**.
+
+Chúng ta sẽ thực hiện một phương pháp cuối cùng, triệt để hơn để đảm bảo database được tạo lại hoàn toàn "sạch sẽ" với cấu hình cho phép kết nối từ bên ngoài.
+
+---
+
+### ## Giải pháp triệt để
+
+Chúng ta sẽ chỉnh sửa file `docker-compose.yaml` để sử dụng phương thức xác thực mật khẩu chuẩn (`scram-sha-256`) và đồng thời ra lệnh cho PostgreSQL chấp nhận kết nối từ mọi địa chỉ IP.
+
+#### **Bước 1: Chỉnh sửa `docker-compose.yaml`**
+
+Hãy mở file `docker-compose.yaml` và thay thế toàn bộ phần dịch vụ `postgres` bằng đoạn mã sau. Đoạn mã này bổ sung phương thức xác thực an toàn và một lệnh để sửa file cấu hình `pg_hba.conf` bên trong container.
+
+YAML
+
+```python
+# File: docker-compose.yaml
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      # Sử dụng phương thức xác thực mật khẩu an toàn
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+    ports:
+      - "${POSTGRES_PORT_EXTERNAL}:${POSTGRES_PORT_INTERNAL}"
+    # Lệnh này sẽ tự động thêm một dòng vào file pg_hba.conf
+    # để cho phép TẤT CẢ các địa chỉ IP kết nối đến
+    command: postgres -c 'host all all 0.0.0.0/0 scram-sha-256'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # ... các dịch vụ khác của bạn (backend, minio...)
+    
+# ... (ở cuối file)
+volumes:
+  postgres_data:
+```
+
+**Lưu ý:** Hãy đảm bảo bạn sao chép và thay thế chính xác, giữ nguyên các dịch vụ khác như `backend`, `minio`...
+
+#### **Bước 2: Dọn dẹp hoàn toàn môi trường cũ**
+
+Đây là bước **quan trọng nhất** để xóa bỏ mọi dữ liệu cũ có thể gây ra lỗi.
+
+1. Mở terminal trong thư mục backend.
+    
+2. Chạy lệnh:
+    
+    Bash
+    
+    ```
+    docker-compose down -v
+    ```
+    
+    _(Tùy chọn `-v` sẽ xóa volume `postgres_data` cũ, đảm bảo database được tạo mới hoàn toàn)_
+    
+
+#### **Bước 3: Khởi động lại**
+
+Bây giờ, hãy khởi động lại toàn bộ hệ thống với cấu hình mới và mạnh mẽ nhất.
+
+Bash
+
+```
+docker-compose up -d
+```
+
+Sau khi Docker chạy xong, hãy đợi khoảng 30 giây để database có đủ thời gian khởi tạo. Bây giờ, hãy mở DBeaver và thử **Test Connection** lại. Lần này lỗi chắc chắn sẽ được khắc phục.
