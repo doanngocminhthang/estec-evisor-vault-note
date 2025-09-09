@@ -70,6 +70,279 @@ CREATE TABLE
 ```
 
 ![[lỗi khi kết nối database postgres-5.png]]
+
+```
+services:
+
+  minio:
+
+    image: ${MINIO_IMAGE}
+
+    container_name: minio
+
+    ports:
+
+      - "${MINIO_PORT_API_EXTERNAL}:${MINIO_PORT_API_INTERNAL}"
+
+      - "${MINIO_PORT_UI_EXTERNAL}:${MINIO_PORT_UI_INTERNAL}"
+
+    environment:
+
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+
+    volumes:
+
+      - minio_data:/data
+
+      - ./minio/init/init-bucket.sh:/init-bucket.sh
+
+    command: server --console-address ":${MINIO_PORT_UI_INTERNAL}" /data
+
+    restart: unless-stopped
+
+  
+
+  minio-init:
+
+    image: minio/mc
+
+    container_name: minioinit
+
+    depends_on:
+
+      - minio
+
+    volumes:
+
+      - ./minio/minio_data:/data
+
+    entrypoint: >
+
+      sh -c "
+
+        sleep 5 &&
+
+        mc alias set local http://${MINIO_ENDPOINT} ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
+
+        mc mb local/${MINIO_BUCKET} || true &&
+
+        mc cp --recursive /data local/${MINIO_BUCKET}
+
+      "
+
+    restart: "no"
+
+  
+
+  postgres:
+
+    image: ${POSTGRES_IMAGE}
+
+    container_name: postgres
+
+    environment:
+
+      POSTGRES_USER: ${POSTGRES_USER}
+
+      POSTGRES_PASSWORD: YourPassword123
+
+      POSTGRES_DB: ${POSTGRES_DB}
+
+      # Sử dụng phương thức xác thực mật khẩu an toàn
+
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+
+    ports:
+
+      - "${POSTGRES_PORT_EXTERNAL}:${POSTGRES_PORT_INTERNAL}"
+
+    volumes:
+
+      - ./postgres/init:/docker-entrypoint-initdb.d
+
+      # - ./postgres/postgres_data:/postgresql/data
+
+      - postgres_data:/var/lib/postgresql/data
+
+      - ./postgres/init/ESTEC-User.csv:/postgresql/data/ESTEC-User.csv
+
+    restart: unless-stopped
+
+  
+
+  # weaviate:
+
+  #   image: cr.weaviate.io/semitechnologies/weaviate:1.32.0
+
+  #   container_name: weaviate
+
+  #   command: ["--host", "0.0.0.0", "--port", "8080", "--scheme", "http"]
+
+  #   ports:
+
+  #     - "8080:8080"
+
+  #     - "50051:50051"
+
+  #   volumes:
+
+  #     - weaviate_data:/var/lib/weaviate
+
+  #   restart: on-failure:0
+
+  #   environment:
+
+  #     QUERY_DEFAULTS_LIMIT: 25
+
+  #     AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+
+  #     PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+
+  #     ENABLE_API_BASED_MODULES: 'true'
+
+  #     ENABLE_MODULES: 'text2vec-transformers'
+
+  #     TRANSFORMERS_INFERENCE_API: 'http://t2v-transformers:8080'
+
+  #     CLUSTER_HOSTNAME: 'node1'
+
+  # t2v-transformers:
+
+  #   image: semitechnologies/transformers-inference:sentence-transformers-paraphrase-mpnet-base-v2
+
+  #   container_name: transformers
+
+  #   environment:
+
+  #     ENABLE_CUDA: '0'
+
+  #   ports:
+
+  #     - "8081:8080"
+
+  # verba:
+
+  #   image: semitechnologies/verba:latest
+
+  #   container_name: verba
+
+  #   ports:
+
+  #     - "8082:8000"
+
+  #   environment:
+
+  #     - VERBA_WEAVIATE_URL=http://weaviate:8080
+
+  #   depends_on:
+
+  #     - weaviate
+
+  
+
+  portainer:
+
+    image: ${PORTAINER_IMAGE}
+
+    container_name: portainer
+
+    ports:
+
+      - "${PORTAINER_PORT_EXTERNAL}:${PORTAINER_PORT_INTERNAL}"
+
+    volumes:
+
+      - /var/run/docker.sock:/var/run/docker.sock
+
+      - portainer_data:/data
+
+    restart: unless-stopped
+
+  
+
+volumes:
+
+  minio_data:
+
+  postgres_data:
+
+  portainer_data:
+
+  # weaviate_data:
+```
+
+Chào bạn, chúng ta đã tiến rất gần đến thành công. Log mới này cho thấy một lỗi cuối cùng rất cụ thể và dễ sửa.
+
+Lỗi `ERROR: "/postgresql/data/ESTEC-User.csv" is a directory` có nghĩa là lệnh `COPY` trong file `init.sql` của bạn đang cố gắng đọc một file, nhưng tại vị trí đó, nó lại tìm thấy một **thư mục** chứ không phải file.
+
+---
+
+### ## Nguyên nhân Lỗi
+
+Lỗi này xảy ra do cách bạn thiết lập `volumes` trong file `docker-compose.yaml`. Bạn đang tạo ra một sự xung đột:
+
+1. Dòng `- ./postgres/init:/docker-entrypoint-initdb.d` đã sao chép **toàn bộ** thư mục `init` (bao gồm cả file `ESTEC-User.csv` bên trong) vào container.
+    
+2. Dòng `- ./postgres/init/ESTEC-User.csv:/postgresql/data/ESTEC-User.csv` lại cố gắng ánh xạ **chỉ riêng file CSV** vào một vị trí khác, nhưng Docker lại hiểu nhầm và tạo ra một thư mục rỗng.
+    
+
+Cách làm đúng và đơn giản hơn rất nhiều là chỉ cần sao chép cả thư mục `init` vào, sau đó trong file `init.sql`, chúng ta chỉ cần gọi tên file CSV vì chúng đang ở cùng một nơi.
+
+---
+
+### ## Cách khắc phục 🛠️
+
+Hãy làm theo chính xác 2 bước sau để dọn dẹp và sửa lỗi.
+
+#### **Bước 1: Sửa lại `docker-compose.yaml` và `init.sql`**
+
+1. **Trong file `docker-compose.yaml`:** Xóa dòng ánh xạ file CSV bị thừa. Phần `volumes` của `postgres` chỉ cần 2 dòng là đủ.
+    
+    YAML
+    
+    ```
+    # File: docker-compose.yaml (dịch vụ postgres)
+    
+      postgres:
+        # ... các cấu hình khác
+        volumes:
+          # Chỉ cần dòng này để đưa cả thư mục init vào
+          - ./postgres/init:/docker-entrypoint-initdb.d
+          # Dòng này để lưu dữ liệu database
+          - postgres_data:/var/lib/postgresql/data
+        # ...
+    ```
+    
+2. **Trong file `init.sql`:** Sửa lại lệnh `COPY` để nó sử dụng đường dẫn tương đối. Vì `init.sql` và `ESTEC-User.csv` đã được đưa vào cùng một thư mục (`/docker-entrypoint-initdb.d`), bạn chỉ cần gọi thẳng tên file.
+    
+    SQL
+    
+    ```
+    -- File: postgres/init/init.sql
+    
+    -- Sửa lại lệnh COPY chỉ còn tên file
+    COPY "User" FROM 'ESTEC-User.csv' DELIMITER ',' CSV HEADER;
+    ```
+    
+
+#### **Bước 2: Dọn dẹp và Chạy lại**
+
+Để áp dụng các thay đổi này, bạn cần tạo lại database từ đầu.
+
+Bash
+
+```
+# Dừng và xóa môi trường cũ
+docker-compose down -v
+
+# Khởi động lại với cấu hình đã sửa
+docker-compose up -d
+```
+
+Sau khi hoàn thành, script sẽ chạy thành công vì lệnh `COPY` bây giờ sẽ tìm thấy file `ESTEC-User.csv` ở ngay bên cạnh nó.
+
 ---
 ---
 
