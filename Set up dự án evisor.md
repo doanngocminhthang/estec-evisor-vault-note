@@ -1,15 +1,17 @@
 Source code
+- https://github.com/estec-digital/EVisor---Frontend---RnD
+- https://github.com/estec-digital/EVisor---Backend---RnD
 
 Frontend
-file env fe : [[file env fe]]
+- file env fe : [[file env fe]]
 
 Backend
-file env be : [[file env be]]
+- file env be : [[file env be]]
 
 Tester
-[[Tài khoản evisor]]
+- [[Tài khoản evisor]]
 làm sao chạy dự án
-[[làm sao chạy dự án]]
+- [[làm sao chạy dự án]]
 
 - [[phân tích file main.py]]
 - [[phân tích file main.py 2]]
