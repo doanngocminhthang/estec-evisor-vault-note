@@ -20,7 +20,7 @@ Bây giờ, bạn hãy làm theo **Bước 2** trong hướng dẫn trước đ�
     
     Bash
     
-    ```
+    ```python
     docker-compose up -d
     ```
     

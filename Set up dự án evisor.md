@@ -28,4 +28,5 @@ làm sao chạy dự án
 	- [[vì sao phải chạy docker trước khi chạy frontend]]
 	- [[vì sao phải khởi chạy mọi thứ với docker compose]]
 	- [[màn hình docker sau khi chạy]]
+	- [[thông báo trên terminal khi chạy lệnh docker để khởi tạo]]
 	- 
