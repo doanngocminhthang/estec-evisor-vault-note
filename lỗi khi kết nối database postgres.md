@@ -1,6 +1,50 @@
 ---
 
 ---
+#
+Tất nhiên rồi. Hãy hình dung toàn bộ hệ thống của bạn như một **bể cá cảnh**.
+
+### ## Bể Cá Kín 🐠
+
+1. **Container Docker (PostgreSQL):** Hãy coi nó như một **bể cá bằng kính, được đậy nắp kín mít**. Mọi thứ bên trong hoạt động độc lập, tách biệt hoàn toàn với thế giới bên ngoài.
+    
+2. **Máy tính của bạn:** Là **căn phòng** nơi bạn đặt bể cá.
+    
+3. **File `ESTEC-User.csv`:** Là một **hộp thức ăn cho cá**, đang nằm trên bàn trong căn phòng.
+    
+4. **Lệnh `COPY` (trong file `init.sql`):** Là **con cá** ở bên trong bể.
+    
+
+### ## Vấn đề đang xảy ra
+
+Lỗi `file not found` giống như bạn ra lệnh cho **con cá (lệnh `COPY`)** hãy ăn đi.
+
+Nhưng vấn đề là **hộp thức ăn (file `ESTEC-User.csv`)** thì đang ở bên ngoài căn phòng, còn con cá thì lại bị nhốt trong bể cá kín. Con cá không thể nào bơi xuyên qua lớp kính để ra ngoài ăn được.
+
+Đó chính là lỗi "không tìm thấy file": chương trình PostgreSQL (con cá) đang cố tìm file dữ liệu (thức ăn) ở bên trong môi trường của nó (bể cá) nhưng không thấy.
+
+### ## Cách giải quyết
+
+Để con cá ăn được, bạn phải **mở nắp bể cá và rắc thức ăn vào**.
+
+Hành động "mở nắp và rắc thức ăn vào" chính là việc bạn thêm dòng sau vào file `docker-compose.yaml`:
+
+YAML
+
+```
+volumes:
+  - ./postgres/init/ESTEC-User.csv:/postgresql/data/ESTEC-User.csv
+```
+
+Dòng lệnh này tạo ra một "đường ống" thần kỳ, giúp đưa **file thức ăn (`ESTEC-User.csv`)** từ bên ngoài căn phòng vào thẳng bên trong **bể cá** để con cá có thể ăn được.
+
+**Tóm lại:** Lỗi xảy ra vì chương trình bên trong "bể cá" Docker không nhìn thấy file ở bên ngoài "căn phòng". Bạn cần dùng `volumes` để đưa file đó vào bên trong.
+
+
+---
+---
+
+
 # Check log bên docker của postgre
 
 ## 
@@ -483,6 +527,7 @@ Bạn cần "bảo" PostgreSQL rằng hãy tin tưởng và chấp nhận các k
     YAML
     
     ```python
+    
     # File: docker-compose.yaml
     
     services:
@@ -516,7 +561,7 @@ Bạn cần "bảo" PostgreSQL rằng hãy tin tưởng và chấp nhận các k
 
 ---
 ---
-
+#
 ![[lỗi khi kết nối database postgres-3.png]]
 
 Rất tiếc vì sự cố này vẫn tiếp diễn. Lỗi "sai mật khẩu" sau khi đã thử các cách trên thường xuất phát từ một nguyên nhân sâu xa và khó chịu nhất: **dữ liệu database cũ vẫn còn tồn tại và cấu hình mới không được áp dụng đúng cách**.
