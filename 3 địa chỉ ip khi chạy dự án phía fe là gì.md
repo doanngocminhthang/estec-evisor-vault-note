@@ -57,8 +57,8 @@
 
 ### ## Tóm tắt
 
-|Địa chỉ|Ai có thể truy cập?|Khi nào dùng?|
-|---|---|---|
-|**`localhost:5173`**|Chỉ bạn|Để code và kiểm thử một mình.|
-|**`192.168.54.152:5173`**|Mọi người trong cùng mạng Wi-Fi|Để cho đồng nghiệp xem hoặc test trên điện thoại.|
-|**`172.22.176.1:5173`**|Thiết bị trong mạng ảo/VPN|Dùng cho các trường hợp kết nối mạng đặc biệt.|
+| Địa chỉ                   | Ai có thể truy cập?             | Khi nào dùng?                                     |
+| ------------------------- | ------------------------------- | ------------------------------------------------- |
+| **`localhost:5173`**      | Chỉ bạn                         | Để code và kiểm thử một mình.                     |
+| **`192.168.54.152:5173`** | Mọi người trong cùng mạng Wi-Fi | Để cho đồng nghiệp xem hoặc test trên điện thoại. |
+| **`172.22.176.1:5173`**   | Thiết bị trong mạng ảo/VPN      | Dùng cho các trường hợp kết nối mạng đặc biệt.    |
