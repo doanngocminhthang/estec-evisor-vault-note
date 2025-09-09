@@ -1,3 +1,334 @@
+---
+
+---
+# Check log bên docker của postgre
+
+## 
+```
+The files belonging to this database system will be owned by user "postgres".
+
+This user must also own the server process.
+
+The database cluster will be initialized with locale "en_US.utf8".
+
+The default database encoding has accordingly been set to "UTF8".
+
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+fixing permissions on existing directory /var/lib/postgresql/data ... ok
+
+creating subdirectories ... ok
+
+selecting dynamic shared memory implementation ... posix
+
+selecting default max_connections ... 100
+
+selecting default shared_buffers ... 128MB
+
+selecting default time zone ... Etc/UTC
+
+creating configuration files ... ok
+
+running bootstrap script ... ok
+
+performing post-bootstrap initialization ... ok
+
+syncing data to disk ... ok
+
+Success. You can now start the database server using:
+
+pg_ctl -D /var/lib/postgresql/data -l logfile start
+
+initdb: warning: enabling "trust" authentication for local connections
+
+initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+
+waiting for server to start....2025-09-09 06:29:26.803 UTC [47] LOG: starting PostgreSQL 15.14 (Debian 15.14-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+
+2025-09-09 06:29:26.806 UTC [47] LOG: listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+
+2025-09-09 06:29:26.815 UTC [50] LOG: database system was shut down at 2025-09-09 06:29:26 UTC
+
+2025-09-09 06:29:26.825 UTC [47] LOG: database system is ready to accept connections
+
+done
+
+server started
+
+CREATE DATABASE
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/init.sh
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/init.sql
+
+CREATE TABLE
+
+2025-09-09 06:29:27.232 UTC [61] ERROR: could not open file "/postgresql/data/ESTEC-User.csv" for reading: No such file or directory
+
+2025-09-09 06:29:27.232 UTC [61] HINT: COPY FROM instructs the PostgreSQL server process to read a file. You may want a client-side facility such as psql's \copy.
+
+2025-09-09 06:29:27.232 UTC [61] STATEMENT: COPY "User" ("user_id", "full_name", "username", "phone_number", "ext", "email", "avatar", "password", "role_id", "created_at", "updated_at", "department_id", "factory_id", "language_id", "is_active", "last_active_at")
+```
+
+## Giải thích
+
+Chào bạn, đây là phân tích chi tiết về log PostgreSQL bạn cung cấp. Log này cho thấy server đã khởi động thành công nhưng sau đó đã gặp lỗi khi cố gắng nhập dữ liệu ban đầu.
+
+---
+
+### ## Phân tích Lỗi Chính ❌
+
+Dòng lỗi quan trọng nhất là:
+
+```
+ERROR:  could not open file "/postgresql/data/ESTEC-User.csv" for reading: No such file or directory
+```
+![[lỗi khi kết nối database postgres-4.png]]
+- **Phân tích:** Lỗi này xảy ra khi script `init.sql` của bạn đang thực thi lệnh `COPY`. Lệnh này yêu cầu PostgreSQL đọc dữ liệu từ file `ESTEC-User.csv` để chèn vào bảng `"User"`. Tuy nhiên, PostgreSQL **không tìm thấy** file này ở đường dẫn `/postgresql/data/ESTEC-User.csv` **bên trong container**.
+    
+- **Nguyên nhân:** File `ESTEC-User.csv` có thể đang tồn tại trên máy tính của bạn, nhưng bạn chưa "đưa" nó vào bên trong container Docker. Container có một hệ thống file hoàn toàn riêng biệt và không thể tự động nhìn thấy các file trên máy tính của bạn trừ khi bạn chỉ định rõ.
+	- [[Hiện tại file ESTEC User.csv đang nằm trong postgres đến init đến postgres data]]
+    
+
+---
+
+### ## Các Dòng Log Khác ✅
+
+Các dòng log phía trên cho thấy mọi thứ khác đều đã diễn ra **hoàn hảo**:
+
+- **`Success. You can now start the database server...`**: Quá trình khởi tạo database cluster đã thành công.
+    
+- **`database system is ready to accept connections`**: Server PostgreSQL đã sẵn sàng nhận kết nối.
+    
+- **`running /docker-entrypoint-initdb.d/init.sh`**: Script `init.sh` bạn tạo ở bước trước đã chạy thành công.
+    
+- **`running /docker-entrypoint-initdb.d/init.sql`**: Bắt đầu chạy script SQL để tạo bảng và nhập dữ liệu.
+    
+- **`CREATE TABLE`**: Lệnh tạo bảng đã chạy thành công.
+    
+
+Lỗi chỉ xảy ra ở bước cuối cùng khi script cố gắng thực thi lệnh `COPY`.
+[[lệnh COPY để làm gì]]
+
+---
+
+### ## Cách khắc phục 🛠️
+
+Để sửa lỗi này, bạn cần **mount (ánh xạ)** file `ESTEC-User.csv` từ máy tính của bạn vào đúng vị trí bên trong container PostgreSQL.
+
+1. **Xác định vị trí file CSV:** Đầu tiên, hãy đảm bảo bạn có file `ESTEC-User.csv` và đặt nó vào một vị trí hợp lý trong dự án, ví dụ: `./postgres/init/ESTEC-User.csv`.
+    
+2. **Sửa lại file `docker-compose.yaml`:** Thêm một dòng vào phần `volumes` của dịch vụ `postgres` để ánh xạ file này.
+    
+    YAML
+    
+    ```
+    # File: docker-compose.yaml
+    
+    services:
+      postgres:
+        # ... các cấu hình khác của bạn
+        volumes:
+          # Dòng này để chạy các script .sh và .sql
+          - ./postgres/init:/docker-entrypoint-initdb.d
+    
+          # THÊM DÒNG NÀY ĐỂ ĐƯA FILE CSV VÀO CONTAINER
+          - ./postgres/init/ESTEC-User.csv:/postgresql/data/ESTEC-User.csv
+    
+          # Dòng này để lưu trữ dữ liệu database
+          - postgres_data:/var/lib/postgresql/data
+    ```
+    
+3. **Sửa lại file `init.sql` (Nếu cần):** Hãy đảm bảo đường dẫn trong lệnh `COPY` của bạn khớp với đường dẫn bạn đã ánh xạ vào container.
+    
+    SQL
+    
+    ```
+    -- File: postgres/init/init.sql
+    COPY "User" FROM '/postgresql/data/ESTEC-User.csv' DELIMITER ',' CSV HEADER;
+    ```
+    
+4. **Dọn dẹp và Chạy lại:** Vì đây là lỗi trong quá trình khởi tạo, bạn cần tạo lại database từ đầu.
+    
+    Bash
+    
+    ```
+    docker-compose down -v
+    docker-compose up -d
+    ```
+    
+
+Sau khi hoàn thành, container `postgres` sẽ được tạo lại, file `ESTEC-User.csv` sẽ được đưa vào đúng vị trí và lệnh `COPY` sẽ thực thi thành công.
+
+
+---
+---
+
+
+#
+
+```
+The files belonging to this database system will be owned by user "postgres".
+
+This user must also own the server process.
+
+The database cluster will be initialized with locale "en_US.utf8".
+
+The default database encoding has accordingly been set to "UTF8".
+
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+fixing permissions on existing directory /var/lib/postgresql/data ... ok
+
+creating subdirectories ... ok
+
+selecting dynamic shared memory implementation ... posix
+
+selecting default max_connections ... 100
+
+selecting default shared_buffers ... 128MB
+
+selecting default time zone ... Etc/UTC
+
+creating configuration files ... ok
+
+running bootstrap script ... ok
+
+performing post-bootstrap initialization ... ok
+
+syncing data to disk ... ok
+
+Success. You can now start the database server using:
+
+pg_ctl -D /var/lib/postgresql/data -l logfile start
+
+initdb: warning: enabling "trust" authentication for local connections
+
+initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+
+waiting for server to start....2025-09-09 06:29:26.803 UTC [47] LOG: starting PostgreSQL 15.14 (Debian 15.14-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+
+2025-09-09 06:29:26.806 UTC [47] LOG: listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+
+2025-09-09 06:29:26.815 UTC [50] LOG: database system was shut down at 2025-09-09 06:29:26 UTC
+
+2025-09-09 06:29:26.825 UTC [47] LOG: database system is ready to accept connections
+
+done
+
+server started
+
+CREATE DATABASE
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/init.sh
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/init.sql
+
+CREATE TABLE
+
+2025-09-09 06:29:27.232 UTC [61] ERROR: could not open file "/postgresql/data/ESTEC-User.csv" for reading: No such file or directory
+
+2025-09-09 06:29:27.232 UTC [61] HINT: COPY FROM instructs the PostgreSQL server process to read a file. You may want a client-side facility such as psql's \copy.
+
+2025-09-09 06:29:27.232 UTC [61] STATEMENT: COPY "User" ("user_id", "full_name", "username", "phone_number", "ext", "email", "avatar", "password", "role_id", "created_at", "updated_at", "department_id", "factory_id", "language_id", "is_active", "last_active_at")
+```
+
+Chào bạn, đây là phân tích chi tiết về log PostgreSQL bạn cung cấp. Log này cho thấy server đã khởi động thành công nhưng sau đó đã gặp lỗi khi cố gắng nhập dữ liệu ban đầu.
+
+---
+
+### ## Phân tích Lỗi Chính ❌
+
+Dòng lỗi quan trọng nhất là:
+
+```
+ERROR:  could not open file "/postgresql/data/ESTEC-User.csv" for reading: No such file or directory
+```
+
+- **Phân tích:** Lỗi này xảy ra khi script `init.sql` của bạn đang thực thi lệnh `COPY`. Lệnh này yêu cầu PostgreSQL đọc dữ liệu từ file `ESTEC-User.csv` để chèn vào bảng `"User"`. Tuy nhiên, PostgreSQL **không tìm thấy** file này ở đường dẫn `/postgresql/data/ESTEC-User.csv` **bên trong container**.
+    
+- **Nguyên nhân:** File `ESTEC-User.csv` có thể đang tồn tại trên máy tính của bạn, nhưng bạn chưa "đưa" nó vào bên trong container Docker. Container có một hệ thống file hoàn toàn riêng biệt và không thể tự động nhìn thấy các file trên máy tính của bạn trừ khi bạn chỉ định rõ.
+    
+
+---
+
+### ## Các Dòng Log Khác ✅
+
+Các dòng log phía trên cho thấy mọi thứ khác đều đã diễn ra **hoàn hảo**:
+
+- **`Success. You can now start the database server...`**: Quá trình khởi tạo database cluster đã thành công.
+    
+- **`database system is ready to accept connections`**: Server PostgreSQL đã sẵn sàng nhận kết nối.
+    
+- **`running /docker-entrypoint-initdb.d/init.sh`**: Script `init.sh` bạn tạo ở bước trước đã chạy thành công.
+    
+- **`running /docker-entrypoint-initdb.d/init.sql`**: Bắt đầu chạy script SQL để tạo bảng và nhập dữ liệu.
+    
+- **`CREATE TABLE`**: Lệnh tạo bảng đã chạy thành công.
+    
+
+Lỗi chỉ xảy ra ở bước cuối cùng khi script cố gắng thực thi lệnh `COPY`.
+
+---
+
+### ## Cách khắc phục 🛠️
+
+Để sửa lỗi này, bạn cần **mount (ánh xạ)** file `ESTEC-User.csv` từ máy tính của bạn vào đúng vị trí bên trong container PostgreSQL.
+
+1. **Xác định vị trí file CSV:** Đầu tiên, hãy đảm bảo bạn có file `ESTEC-User.csv` và đặt nó vào một vị trí hợp lý trong dự án, ví dụ: `./postgres/init/ESTEC-User.csv`.
+    
+2. **Sửa lại file `docker-compose.yaml`:** Thêm một dòng vào phần `volumes` của dịch vụ `postgres` để ánh xạ file này.
+    
+    YAML
+    
+    ```
+    # File: docker-compose.yaml
+    
+    services:
+      postgres:
+        # ... các cấu hình khác của bạn
+        volumes:
+          # Dòng này để chạy các script .sh và .sql
+          - ./postgres/init:/docker-entrypoint-initdb.d
+    
+          # THÊM DÒNG NÀY ĐỂ ĐƯA FILE CSV VÀO CONTAINER
+          - ./postgres/init/ESTEC-User.csv:/postgresql/data/ESTEC-User.csv
+    
+          # Dòng này để lưu trữ dữ liệu database
+          - postgres_data:/var/lib/postgresql/data
+    ```
+    
+3. **Sửa lại file `init.sql` (Nếu cần):** Hãy đảm bảo đường dẫn trong lệnh `COPY` của bạn khớp với đường dẫn bạn đã ánh xạ vào container.
+    
+    SQL
+    
+    ```
+    -- File: postgres/init/init.sql
+    COPY "User" FROM '/postgresql/data/ESTEC-User.csv' DELIMITER ',' CSV HEADER;
+    ```
+    
+4. **Dọn dẹp và Chạy lại:** Vì đây là lỗi trong quá trình khởi tạo, bạn cần tạo lại database từ đầu.
+    
+    Bash
+    
+    ```
+    docker-compose down -v
+    docker-compose up -d
+    ```
+    
+
+Sau khi hoàn thành, container `postgres` sẽ được tạo lại, file `ESTEC-User.csv` sẽ được đưa vào đúng vị trí và lệnh `COPY` sẽ thực thi thành công.
+
+
+---
+
+----
+#
+
 ```# PostgreSQL Configuration
 
 POSTGRES_IMAGE=postgres:15
@@ -443,3 +774,5 @@ PostgreSQL Database directory appears to contain a database; Skipping initializa
 
 2025-09-09 04:44:05.261 GMT [1] FATAL: -c host all all 0.0.0.0/0 scram-sha-256 requires a value
 ```
+
+
