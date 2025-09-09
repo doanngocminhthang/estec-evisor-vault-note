@@ -2,6 +2,96 @@
 
 ---
 #
+Chào bạn, tôi hiểu bạn đang cảm thấy khó khăn khi đã thử nhiều lần mà chưa được. Lỗi này thực sự rất khó chịu.
+
+Khi kế hoạch dứt điểm vẫn thất bại, điều đó có nghĩa là một trong các bước đã không được thực hiện chính xác, hoặc có một yếu tố nào đó chúng ta đã bỏ qua.
+
+Chúng ta hãy cùng nhau kiểm tra lại một cách thật kỹ lưỡng. **Vui lòng thực hiện và gửi lại cho tôi kết quả của từng bước sau đây.**
+
+---
+
+### ## Kế hoạch Kiểm tra & Sửa lỗi
+
+#### **Bước 1: Xác nhận lại file `docker-compose.yaml`**
+
+Hãy sao chép và dán lại **toàn bộ** phần cấu hình của dịch vụ `postgres` trong file `docker-compose.yaml` của bạn vào đây. Chúng ta cần đảm bảo không có lỗi cú pháp nào ẩn trong đó.
+
+[[cấu hình docker compose yaml]]
+
+---
+
+#### **Bước 2: Chạy lại lệnh dọn dẹp và GỬI LOG**
+
+Đây là bước quan trọng nhất để xác nhận database cũ đã thực sự bị xóa.
+
+1. Mở terminal trong thư mục backend.
+    
+2. Chạy lại lệnh sau:
+    
+    Bash
+    
+    ```
+    docker-compose down -v
+    ```
+    
+3. **Sao chép và dán toàn bộ kết quả** mà terminal hiển thị sau khi chạy lệnh này. Kết quả phải có dòng chữ "Removing volume..." hoặc tương tự.
+    
+
+---
+
+#### **Bước 3: Chạy lại lệnh khởi động và GỬI LOG**
+
+1. Sau khi đã dọn dẹp, chạy lệnh khởi động lại:
+    
+    Bash
+    
+    ```
+    docker-compose up -d
+    ```
+    
+2. Đợi khoảng 30 giây, sau đó chạy lệnh sau để lấy log khởi tạo của database:
+    
+    Bash
+    
+    ```
+    docker-compose logs postgres
+    ```
+    
+3. **Sao chép và dán toàn bộ log** mà bạn nhận được. Log của một database được tạo mới hoàn toàn sẽ trông khác với log của một database chỉ khởi động lại.
+    [[log của postgres]]
+
+---
+
+### ## Trong lúc đó, hãy kiểm tra lại:
+
+- **Bạn đã Lưu file chưa?** Bạn có chắc chắn đã nhấn `Ctrl + S` để lưu file `docker-compose.yaml` sau khi sửa không?
+    
+- **Mật khẩu có chính xác 100%?** Mật khẩu bạn gõ trong DBeaver có **giống hệt từng ký tự** (kể cả chữ hoa, chữ thường) với mật khẩu bạn đã đặt trong file `docker-compose.yaml` không?
+    
+
+Vấn đề gần như chắc chắn nằm ở một chi tiết nhỏ trong các bước trên. Khi có được thông tin từ 3 bước kiểm tra, chúng ta sẽ tìm ra chính xác nguyên nhân.
+#
+Dựa trên hình ảnh bạn cung-cấp, cấu hình kết-nối trong DBeaver của bạn **trông hoàn-toàn chính-xác** để kết-nối đến database PostgreSQL đang chạy trong Docker trên máy của bạn.
+
+---
+
+### ## Phân-tích chi-tiết
+
+- **`Host`**: `localhost` - **Đúng**. Đây là địa-chỉ để kết-nối từ máy tính của bạn vào container Docker.
+    
+- **`Port`**: `5432` - **Đúng**. Đây là cổng mặc-định của PostgreSQL mà bạn đã mở ra.
+    
+- **`Database`**: `estecdb` - **Đúng**. Đây là tên database bạn đã cấu-hình.
+    
+- **`Username`**: `evisor` - **Đúng**. Đây là tên người-dùng database.
+    
+- **`Password`**: Đã được nhập.
+    
+
+Mọi thông-tin cần-thiết đều đã được điền đúng. Bước tiếp-theo là kiểm-tra xem mật-khẩu bạn nhập có khớp với mật-khẩu mà database đang sử-dụng hay không.
+
+**Hành-động tiếp-theo:** Hãy nhấn nút **Test Connection ...** để xác-nhận.
+#
 ```
 running bootstrap script ... ok
 

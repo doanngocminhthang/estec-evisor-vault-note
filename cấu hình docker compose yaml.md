@@ -1,0 +1,276 @@
+```
+services:
+
+  minio:
+
+    image: ${MINIO_IMAGE}
+
+    container_name: minio
+
+    ports:
+
+      - "${MINIO_PORT_API_EXTERNAL}:${MINIO_PORT_API_INTERNAL}"
+
+      - "${MINIO_PORT_UI_EXTERNAL}:${MINIO_PORT_UI_INTERNAL}"
+
+    environment:
+
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+
+    volumes:
+
+      - minio_data:/data
+
+      - ./minio/init/init-bucket.sh:/init-bucket.sh
+
+    command: server --console-address ":${MINIO_PORT_UI_INTERNAL}" /data
+
+    restart: unless-stopped
+
+  
+
+  minio-init:
+
+    image: minio/mc
+
+    container_name: minioinit
+
+    depends_on:
+
+      - minio
+
+    volumes:
+
+      - ./minio/minio_data:/data
+
+    entrypoint: >
+
+      sh -c "
+
+        sleep 5 &&
+
+        mc alias set local http://${MINIO_ENDPOINT} ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
+
+        mc mb local/${MINIO_BUCKET} || true &&
+
+        mc cp --recursive /data local/${MINIO_BUCKET}
+
+      "
+
+    restart: "no"
+
+  
+
+  postgres:
+
+    image: ${POSTGRES_IMAGE}
+
+    container_name: postgres
+
+    environment:
+
+      POSTGRES_USER: ${POSTGRES_USER}
+
+      POSTGRES_PASSWORD: YourPassword123
+
+      POSTGRES_DB: ${POSTGRES_DB}
+
+      # Sử dụng phương thức xác thực mật khẩu an toàn
+
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+
+    ports:
+
+      - "${POSTGRES_PORT_EXTERNAL}:${POSTGRES_PORT_INTERNAL}"
+
+    volumes:
+
+      - ./postgres/init:/docker-entrypoint-initdb.d
+
+      # - ./postgres/postgres_data:/postgresql/data
+
+      - postgres_data:/var/lib/postgresql/data
+
+      # - ./postgres/init/ESTEC-User.csv:/postgresql/data/ESTEC-User.csv
+
+    restart: unless-stopped
+
+  
+
+  # weaviate:
+
+  #   image: cr.weaviate.io/semitechnologies/weaviate:1.32.0
+
+  #   container_name: weaviate
+
+  #   command: ["--host", "0.0.0.0", "--port", "8080", "--scheme", "http"]
+
+  #   ports:
+
+  #     - "8080:8080"
+
+  #     - "50051:50051"
+
+  #   volumes:
+
+  #     - weaviate_data:/var/lib/weaviate
+
+  #   restart: on-failure:0
+
+  #   environment:
+
+  #     QUERY_DEFAULTS_LIMIT: 25
+
+  #     AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+
+  #     PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+
+  #     ENABLE_API_BASED_MODULES: 'true'
+
+  #     ENABLE_MODULES: 'text2vec-transformers'
+
+  #     TRANSFORMERS_INFERENCE_API: 'http://t2v-transformers:8080'
+
+  #     CLUSTER_HOSTNAME: 'node1'
+
+  # t2v-transformers:
+
+  #   image: semitechnologies/transformers-inference:sentence-transformers-paraphrase-mpnet-base-v2
+
+  #   container_name: transformers
+
+  #   environment:
+
+  #     ENABLE_CUDA: '0'
+
+  #   ports:
+
+  #     - "8081:8080"
+
+  # verba:
+
+  #   image: semitechnologies/verba:latest
+
+  #   container_name: verba
+
+  #   ports:
+
+  #     - "8082:8000"
+
+  #   environment:
+
+  #     - VERBA_WEAVIATE_URL=http://weaviate:8080
+
+  #   depends_on:
+
+  #     - weaviate
+
+  
+
+  portainer:
+
+    image: ${PORTAINER_IMAGE}
+
+    container_name: portainer
+
+    ports:
+
+      - "${PORTAINER_PORT_EXTERNAL}:${PORTAINER_PORT_INTERNAL}"
+
+    volumes:
+
+      - /var/run/docker.sock:/var/run/docker.sock
+
+      - portainer_data:/data
+
+    restart: unless-stopped
+
+  
+
+volumes:
+
+  minio_data:
+
+  postgres_data:
+
+  portainer_data:
+
+  # weaviate_data:
+```
+
+
+Dựa trên file `docker-compose.yaml` bạn cung cấp, đây là bản phân tích chi tiết về cấu trúc và cách hoạt động của hệ thống backend.
+
+---
+
+### ## Phân tích Tổng quan
+
+Đây là một file cấu hình cho **Docker Compose**, một công cụ dùng để định nghĩa và chạy các ứng dụng Docker đa container. File này mô tả một hệ thống backend hoàn chỉnh bao gồm nhiều dịch vụ khác nhau, tất cả được thiết kế để khởi động và kết nối với nhau chỉ bằng một lệnh.
+
+---
+
+### ## Phân tích các Dịch vụ (Services)
+
+Hệ thống của bạn bao gồm 4 dịch vụ chính đang hoạt động:
+
+#### 1. `postgres` (Cơ sở dữ liệu) 🐘
+
+- **Chức năng:** Đây là hệ quản trị cơ sở dữ liệu PostgreSQL (phiên bản 15), nơi lưu trữ tất cả dữ liệu có cấu trúc của ứng dụng (thông tin người dùng, công việc, v.v.).
+    
+- **Cấu hình quan trọng:**
+    
+    - `environment`: Đặt tên người dùng (`evisor`), mật khẩu (`YourPassword123`), và tên database. Đây là thông tin quan trọng nhất để kết nối.
+        
+    - `volumes`: Sử dụng một "named volume" là `postgres_data` để lưu trữ dữ liệu. Điều này đảm bảo dữ liệu không bị mất ngay cả khi container bị xóa và tạo lại. Nó cũng ánh xạ thư mục `./postgres/init` vào container để chạy các script khởi tạo (`.sql`, `.sh`) khi database được tạo lần đầu.
+        
+    - `ports`: Ánh xạ cổng `5432` từ bên trong container ra bên ngoài, cho phép các công cụ như DBeaver kết nối vào.
+        
+
+#### 2. `minio` (Lưu trữ File) 🗄️
+
+- **Chức năng:** Đây là một hệ thống lưu trữ đối tượng (object storage) tương thích với Amazon S3. Nó được dùng để lưu trữ các file không có cấu trúc như file Excel người dùng upload lên, ảnh avatar, v.v.
+    
+- **Cấu hình quan trọng:**
+    
+    - `environment`: Thiết lập tài khoản `root` cho MinIO.
+        
+    - `volumes`: Sử dụng "named volume" `minio_data` để lưu trữ các file.
+        
+    - `ports`: Mở ra hai cổng, một cho API (`9000`) và một cho giao diện web quản lý (`9001`).
+        
+
+#### 3. `minio-init` (Khởi tạo MinIO)
+
+- **Chức năng:** Đây là một container "chạy một lần" có nhiệm vụ khởi tạo MinIO.
+    
+- **Luồng hoạt động:**
+    
+    1. Nó đợi 5 giây để `minio` khởi động xong (`sleep 5`).
+        
+    2. Nó kết nối đến `minio` và tạo một "bucket" (thùng chứa) có tên được định nghĩa trong biến `MINIO_BUCKET`.
+        
+    3. Nó sao chép bất kỳ dữ liệu ban đầu nào từ thư mục `./minio/minio_data` vào bucket vừa tạo.
+        
+
+#### 4. `portainer` (Quản lý Docker)
+
+- **Chức năng:** Cung cấp một giao diện web đẹp mắt để bạn có thể xem và quản lý các container Docker của mình thay vì phải dùng dòng lệnh.
+    
+- **Cấu hình quan trọng:**
+    
+    - `volumes`: Ánh xạ file `docker.sock` của hệ thống vào container, cho phép Portainer có quyền điều khiển Docker.
+        
+
+---
+
+### ## Kết luận
+
+- File `docker-compose.yaml` này được cấu hình tốt, tách biệt rõ ràng các dịch vụ.
+    
+- Nó sử dụng các biến môi trường (`${...}`) để giữ cho file cấu hình sạch sẽ và linh hoạt, với các giá trị thực tế được lưu trong file `.env`.
+    
+- Việc bạn hardcode mật khẩu `YourPassword123` trực tiếp vào đây là một bước gỡ lỗi tốt để đảm bảo tính nhất quán.
+    
+- Cấu trúc này cho phép bạn khởi động toàn bộ hạ tầng backend chỉ với một lệnh duy nhất (`docker-compose up -d`), rất tiện lợi cho việc phát triển.
