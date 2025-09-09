@@ -34,4 +34,4 @@ làm sao chạy dự án
 - [[3 địa chỉ ip khi chạy dự án phía fe là gì]]
 - [[lỗi khi đăng nhập dự án]]
 - [[lỗi khi kết nối database postgres]]
-- 
+- [[server db evisor]] 
