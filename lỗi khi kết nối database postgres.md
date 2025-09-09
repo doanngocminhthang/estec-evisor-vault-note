@@ -3,6 +3,75 @@
 ---
 #
 
+Chúc mừng! Dựa trên log bạn cung cấp, bạn đã **khắc phục được tất cả các lỗi trước đó** và server PostgreSQL đã khởi động thành công.
+
+Log này cho thấy một trạng thái **gần như hoàn hảo**, chỉ còn một lỗi cuối cùng liên quan đến quyền truy cập file.
+
+---
+
+### ## Phân tích Log ✅
+
+- **Mọi thứ khởi động thành công:** Các dòng log từ `starting PostgreSQL` đến `server started` và `CREATE TABLE` xác nhận rằng database đã được tạo và chạy ổn định. Script `init.sh` của bạn cũng đã chạy.
+    
+- **Lỗi cuối cùng:**
+    
+    ```
+    ERROR: could not open file "ESTEC-User.csv" for reading: No such file or directory
+    ```
+    
+    Lỗi này vẫn là "Không tìm thấy file", nhưng nguyên nhân lần này đã khác. Mặc dù file `ESTEC-User.csv` đã được đưa vào đúng thư mục `/docker-entrypoint-initdb.d` bên trong container, lệnh `COPY` của PostgreSQL vì lý do bảo mật, không có quyền đọc file trực tiếp từ thư mục đó theo mặc định.
+    
+
+---
+
+### ## Cách khắc phục dứt điểm 🛠️
+
+Để giải quyết vấn đề này, chúng ta cần "bảo" PostgreSQL chuyển đến đúng thư mục làm việc trước khi thực thi lệnh `COPY`.
+
+1. **Mở file `init.sql`** (`./postgres/init/init.sql`).
+    
+2. Thêm dòng `\cd /docker-entrypoint-initdb.d` vào **ngay trước** lệnh `COPY`.
+    
+    **Nội dung file `init.sql` của bạn sẽ trông như sau:**
+    
+    SQL
+    
+    ```
+    -- Tạo bảng của bạn (giữ nguyên)
+    CREATE TABLE "User" (
+        -- ... các cột của bạn ...
+    );
+    
+    -- Thêm dòng này để thay đổi thư mục làm việc
+    \cd /docker-entrypoint-initdb.d
+    
+    -- Giữ nguyên lệnh COPY
+    COPY "User" FROM 'ESTEC-User.csv' DELIMITER ',' CSV HEADER;
+    ```
+    
+    Lệnh `\cd` là một lệnh đặc biệt của `psql` (công cụ chạy script SQL), nó sẽ thay đổi thư mục làm việc hiện tại, giúp lệnh `COPY` tìm thấy file một cách chính xác.
+    
+3. **Dọn dẹp và Chạy lại:** Để áp dụng thay đổi trong script khởi tạo, bạn cần tạo lại database từ đầu.
+    
+    Bash
+    
+    ```
+    docker-compose down -v
+    docker-compose up -d
+    ```
+    
+
+Sau khi hoàn thành, script khởi tạo sẽ chạy thành công 100% và dữ liệu từ file CSV sẽ được nhập vào database của bạn.
+
+
+
+
+---
+---
+
+
+#
+
 ```
 The files belonging to this database system will be owned by user "postgres".
 
@@ -302,7 +371,7 @@ Hãy làm theo chính xác 2 bước sau để dọn dẹp và sửa lỗi.
     
     YAML
     
-    ```
+    ```python
     # File: docker-compose.yaml (dịch vụ postgres)
     
       postgres:
@@ -319,7 +388,7 @@ Hãy làm theo chính xác 2 bước sau để dọn dẹp và sửa lỗi.
     
     SQL
     
-    ```
+    ```sql
     -- File: postgres/init/init.sql
     
     -- Sửa lại lệnh COPY chỉ còn tên file
@@ -333,7 +402,7 @@ Hãy làm theo chính xác 2 bước sau để dọn dẹp và sửa lỗi.
 
 Bash
 
-```
+```python
 # Dừng và xóa môi trường cũ
 docker-compose down -v
 
