@@ -2,6 +2,147 @@
 
 ---
 #
+
+```
+The files belonging to this database system will be owned by user "postgres".
+
+This user must also own the server process.
+
+The database cluster will be initialized with locale "en_US.utf8".
+
+The default database encoding has accordingly been set to "UTF8".
+
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+fixing permissions on existing directory /var/lib/postgresql/data ... ok
+
+creating subdirectories ... ok
+
+selecting dynamic shared memory implementation ... posix
+
+selecting default max_connections ... 100
+
+selecting default shared_buffers ... 128MB
+
+selecting default time zone ... Etc/UTC
+
+creating configuration files ... ok
+
+running bootstrap script ... ok
+
+performing post-bootstrap initialization ... ok
+
+syncing data to disk ... ok
+
+Success. You can now start the database server using:
+
+pg_ctl -D /var/lib/postgresql/data -l logfile start
+
+initdb: warning: enabling "trust" authentication for local connections
+
+initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+
+waiting for server to start....2025-09-09 07:24:59.431 UTC [49] LOG: starting PostgreSQL 15.14 (Debian 15.14-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+
+2025-09-09 07:24:59.433 UTC [49] LOG: listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+
+2025-09-09 07:24:59.441 UTC [52] LOG: database system was shut down at 2025-09-09 07:24:59 UTC
+
+2025-09-09 07:24:59.447 UTC [49] LOG: database system is ready to accept connections
+
+done
+
+server started
+
+CREATE DATABASE
+
+/usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/ESTEC-User.csv
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/init.sh
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/init.sql
+
+CREATE TABLE
+
+2025-09-09 07:24:59.702 UTC [63] ERROR: "/postgresql/data/ESTEC-User.csv" is a directory
+```
+
+![[lỗi khi kết nối database postgres-5.png]]
+---
+---
+
+# 
+
+Lỗi này xảy ra do bạn đã đặt sai vị trí của dòng ánh xạ file.
+
+Phần `volumes:` ở cuối file `docker-compose.yaml` chỉ dùng để **khai báo tên** của các "ổ đĩa ảo" (named volumes). Dòng `- ./postgres/init/ESTEC-User.csv...` không phải là một khai báo tên, mà là một hành động **ánh xạ file (bind mount)**.
+
+### ## Analogy: Declaring vs. Assigning
+
+- **`volumes:` (at the end of the file):** This is like **declaring the names** of your storage rooms. You're just telling the building manager, "I'm going to need a room called `postgres_data` and one called `minio_data`."
+    
+- **`volumes:` (inside a service like `postgres`):** This is where you **assign the rooms** and tell the service what to do with them. You're telling the PostgreSQL service, "You are assigned to room `postgres_data`, and also, I'm creating a special window (`- ./postgres...`) to pass files directly into your room."
+    
+
+You mistakenly tried to create the "special window" in the declaration list instead of assigning it to the specific service.
+
+---
+
+### ## How to Fix It 🛠️
+
+You need to move the line for mapping the CSV file from the bottom of the file into the `volumes` section of the `postgres` service.
+
+1. **Cut the incorrect line** from the bottom `volumes:` block.
+    
+2. **Paste it** inside the `volumes:` section of the `postgres` service.
+    
+
+#### **Correct `postgres` Service Configuration**
+
+YAML
+
+```
+# Inside services:
+
+  postgres:
+    # ... other postgres settings
+    volumes:
+      # This is for initialization scripts
+      - ./postgres/init:/docker-entrypoint-initdb.d
+      
+      # This is for the database data
+      - postgres_data:/var/lib/postgresql/data
+      
+      # PASTE THE LINE HERE to map the CSV file
+      - ./postgres/init/ESTEC-User.csv:/docker-entrypoint-initdb.d/ESTEC-User.csv
+```
+
+**Note:** It's better to map the CSV file into `/docker-entrypoint-initdb.d/` so the initialization script can easily find it.
+
+#### **Correct Top-Level `volumes` Block**
+
+This block at the end of the file should only contain the names.
+
+YAML
+
+```
+# At the end of the file
+
+volumes:
+  minio_data:
+  postgres_data:
+  portainer_data:
+```
+
+After making these changes, save the file and run `docker-compose down -v` and `docker-compose up -d` again.
+
+---
+---
+
+
+#
 Tất nhiên rồi. Hãy hình dung toàn bộ hệ thống của bạn như một **bể cá cảnh**.
 
 ### ## Bể Cá Kín 🐠
@@ -31,7 +172,7 @@ Hành động "mở nắp và rắc thức ăn vào" chính là việc bạn th�
 
 YAML
 
-```
+```python
 volumes:
   - ./postgres/init/ESTEC-User.csv:/postgresql/data/ESTEC-User.csv
 ```
