@@ -1,3 +1,6 @@
+---
+ghim: " "
+---
 Nhiệm vụ : test chức năng thuật toán chỉnh sửa file chi tiết sau đó merge vào file tổng hợp trước đó
 Cách làm
 	tạo các file thành phần đã chỉnh sửa thông tin
