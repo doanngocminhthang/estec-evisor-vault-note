@@ -8,4 +8,4 @@ tags: ghim
  - [[các thuật toán cho quản lý nhà xưởng]]
 - ![[Từ_Giấy_Tờ_đến_Kỹ_Thuật_Số.mp4]]![[ESTEC_Chuyển_Đổi_Số__Từ_Bảng_Trắng_Đến_Hệ_Thống_MES_–_Giải_Pháp.mp4]]
 - [[nghiên cứu thuật toán cho hệ thống quản lý xưởng]]
-- 
+- [[nghiên cứu code cho phần mềm quản lý xưởng]]
