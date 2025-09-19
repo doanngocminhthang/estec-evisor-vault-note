@@ -7,5 +7,5 @@ link tài liệu : https://docs.google.com/document/d/1dL9wlC8A2gq-lupkX2DfGUTqy
 18/9/2025
 được thêm vào tài liệu evisor
 ![[E-Visor Document.pdf]]
-- [[Hệ thống Quản lý Tiêu thụ Đắk Nông]]
+- phân tích tài liệu tổng quan : =>> [[Hệ thống Quản lý Tiêu thụ Đắk Nông]]
 - 

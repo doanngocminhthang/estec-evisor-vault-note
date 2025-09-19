@@ -1,4 +1,13 @@
-- 
-- draw.io
-- 
-- [[tài liệu evisor]]
+- vẽ workflow vào đây
+	- ==> draw.io
+- sau đó paste vào đây
+	- ==> [[tài liệu evisor]]
+- workflow của
+	- [[Link web evisor]]
+	- [[Tài khoản evisor]]
+	- ứng dụng là như thế nào
+	- chức năng gì => Quản lý công việc ( Kế hoạch tổ chức)
+	- tên Quản lý công việc ( Kế hoạch tổ chức)
+	- cách hoạt động
+	- thao tác
+	
