@@ -14,8 +14,8 @@ date: 2025-09-19
 	- workflow test là gì
 	- vẽ workflow như thế nào
 	- [[workflow hiện tại của chức năng quản lý công việc]]
-		- upload file tổng hợp
-		- 
+		- upload file tổng hợp -> web nhận và hiển thị dữ liệu bảng -> thêm và sửa công việc -> xuất file
+		
 - usecase
 	- [[sơ đồ hoạt động use case lấy từ tài liệu]]
 	- [[bảng thể hiện usecase lấy từ tài liệu]]

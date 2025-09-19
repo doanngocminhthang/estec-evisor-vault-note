@@ -1,4 +1,13 @@
 - upload file tổng hợp
-	- ![[workflow hiện tại của chức năng quản lý công việc.png]]
-	- ![[Pasted image 20250919112343.png]]
-	- 
+	- ảnh
+		- ![[workflow hiện tại của chức năng quản lý công việc.png]]
+		- ![[Pasted image 20250919112343.png]]
+		- ![[workflow hiện tại của chức năng quản lý công việc-1.png]]
+	- file th mẫu : 
+		- ![[ES_20250903_153941.xlsx]]
+- thêm công việc
+	- ảnh
+		- ![[workflow hiện tại của chức năng quản lý công việc-2.png]]
+- sửa công việc
+	- ảnh
+		- ![[workflow hiện tại của chức năng quản lý công việc-3.png]]
