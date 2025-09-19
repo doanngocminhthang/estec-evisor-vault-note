@@ -1,0 +1,11 @@
+---
+tags:
+  - ghim
+  - tong-quan
+  - trang-chu
+---
+- [[test chức năng thuật toán chỉnh sửa file chi tiết sau đó merge vào file tổng hợp trước đó]]
+- - [[Nghiên cứu ứng dụng evisor]]
+- [[Set up dự án evisor]]
+- [[test chức năng dự án]]
+- [[ vẽ workflow evisor cho tài liệu]]
