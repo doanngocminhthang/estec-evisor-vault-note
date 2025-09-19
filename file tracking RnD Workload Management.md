@@ -1,0 +1,5 @@
+- mô tả :  
+	- link doc : https://docs.google.com/spreadsheets/d/13TJR-kz82p_JWSVgOgCiRMTp9mptuOiqAcG-7315rdU/edit?pli=1&gid=0#gid=0
+	- ảnh
+		- ![[file tracking RnD Workload Management.png]]
+		- ![[file tracking RnD Workload Management-1.png]]

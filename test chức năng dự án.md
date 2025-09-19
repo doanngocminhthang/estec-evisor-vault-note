@@ -8,6 +8,7 @@ date: 2025-09-19
 - tên : Quản lý công việc ( Kế hoạch tổ chức)
 - [[link ứng dụng evisor]]
 - [[tài khoản ứng dụng evisor]]
+- [[file tracking RnD Workload Management]]
 - workflow
 	- workflow là gì
 	- workflow chức năng đó là như thế nào?
@@ -15,7 +16,7 @@ date: 2025-09-19
 	- vẽ workflow như thế nào
 	- [[workflow hiện tại của chức năng quản lý công việc]]
 		- upload file tổng hợp -> web nhận và hiển thị dữ liệu bảng -> thêm và sửa công việc -> xuất file
-		
+		[[taọ testcase và testing]]
 - usecase
 	- [[sơ đồ hoạt động use case lấy từ tài liệu]]
 	- [[bảng thể hiện usecase lấy từ tài liệu]]
