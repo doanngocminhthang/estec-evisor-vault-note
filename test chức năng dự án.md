@@ -18,6 +18,7 @@ date: 2025-09-19
 		- upload file tổng hợp -> web nhận và hiển thị dữ liệu bảng -> thêm và sửa công việc -> xuất file
 - testcase
 		- [[taọ testcase và testing]]
+		- [[list các test case]]
 		- [[tạo file excel]]
 				- 
 - usecase
