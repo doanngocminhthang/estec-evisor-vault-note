@@ -1,0 +1,4 @@
+- upload file tổng hợp
+	- ![[workflow hiện tại của chức năng quản lý công việc.png]]
+	- ![[Pasted image 20250919112343.png]]
+	- 
