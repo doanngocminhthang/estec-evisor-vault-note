@@ -3,6 +3,7 @@ link-doc: https://docs.google.com/document/d/1dL9wlC8A2gq-lupkX2DfGUTqy4D1qf4vEY
 tai-khoan: testter
 mk: testter
 date: 2025-09-19
+link-file-test-case-evisor: https://docs.google.com/spreadsheets/d/1lDQvmm7heUMGA0B77gCKKyMY4ji1witoHp120KtUmHA/edit?gid=0#gid=0
 ---
 - chức năng gì
 - tên : Quản lý công việc ( Kế hoạch tổ chức)
@@ -20,7 +21,8 @@ date: 2025-09-19
 		- [[taọ testcase và testing]]
 		- [[list các test case]]
 		- [[tạo file excel]]
-				- 
+			- link-file-excel-test case , phông chữ : Lora
+			- link phần mô tả
 - usecase
 	- [[sơ đồ hoạt động use case lấy từ tài liệu]]
 	- [[bảng thể hiện usecase lấy từ tài liệu]]
