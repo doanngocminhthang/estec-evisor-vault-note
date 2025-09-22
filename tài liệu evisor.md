@@ -8,4 +8,3 @@ link tài liệu : https://docs.google.com/document/d/1dL9wlC8A2gq-lupkX2DfGUTqy
 được thêm vào tài liệu evisor
 ![[E-Visor Document.pdf]]
 - phân tích tài liệu tổng quan : =>> [[Hệ thống Quản lý Tiêu thụ Đắk Nông]]
-- 

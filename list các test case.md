@@ -1,5 +1,7 @@
 - test case upload
+	- test data cho case upload file tổng hợp
 - test case chỉnh sửa
+	- test data cho tc chỉnh sửa công việc
 - test case thêm công việc
 	- [[test data cho tc thêm công việc]]
 	- 

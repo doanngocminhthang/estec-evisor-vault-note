@@ -101,3 +101,11 @@ Tài liệu cung cấp ba cấp độ sơ đồ ERD:
 ### Kết luận
 
 Tài liệu này cung cấp một đặc tả yêu cầu phần mềm toàn diện cho hệ thống quản lý tiêu thụ tại Công ty Nhôm Đắk Nông-TKV, bao gồm các chức năng cốt lõi như quản lý hệ thống, nhập/xuất kho, di chuyển lưu kho, quản lý đơn hàng, và các yêu cầu phi chức năng liên quan đến hiệu suất và khả năng mở rộng. Mục tiêu tổng thể là tối ưu hóa hoạt động và cung cấp cái nhìn chi tiết về thương mại cho lãnh đạo nhà máy.
+
+|   |   |
+|---|---|
+|Tác nhân|Vai trò và Trách nhiệm chính|
+|**Nhân viên kho**|Người dùng chính tại hiện trường, thực hiện các nghiệp vụ cốt lõi như nhập kho, xuất kho, nâng/hạ tải, di chuyển lưu kho, in tem thông qua thiết bị PDA.|
+|**P. KHTT (Phòng Kế hoạch Tiêu thụ)**|Tham gia vào các quy trình xuất tiêu thụ, hạ tải và truy xuất thông tin đơn hàng.|
+|**Quản trị viên (Administrator)**|Quản lý toàn bộ hệ thống, bao gồm quản lý người dùng, phân quyền, quản lý các danh mục và cấu hình hệ thống.|
+|**Khách hàng**|Người dùng bên ngoài, có thể tra cứu thông tin trạng thái đơn hàng của mình thông qua giao diện web mà không cần đăng nhập.|
