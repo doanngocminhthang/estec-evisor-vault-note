@@ -10,4 +10,5 @@ tags:
 - [[test chức năng dự án]]
 - [[ vẽ workflow evisor cho tài liệu]]
 - [[nghiên cứu tài liệu nhôm daknong]]
-- [[]]
+- [[nghiên cứu lại yêu cầu của evisor từ feedback của anh Hướng]]
+- 
