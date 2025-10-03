@@ -11,4 +11,13 @@ tags:
 - [[ vẽ workflow evisor cho tài liệu]]
 - [[nghiên cứu tài liệu nhôm daknong]]
 - [[nghiên cứu lại yêu cầu của evisor từ feedback của anh Hướng]]
-- 
+
+Họp 
+- 031025
+	- ghi chú
+		- Sửa mã dự án tổng -> merge vẫn bị lỗi 
+		- Chức năng delete file tổng, 
+		- Phát triển chức năng group trong excel 
+		- Phát triển bút xóa theo mã dự án, 
+		- Chức năng xóa file tổng
+	- => thêm các TC mới vào file TC để sau này test các chức năng anh em mới phát triển
