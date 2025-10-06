@@ -23,7 +23,9 @@ Họp
 	- => thêm các TC mới vào file TC để sau này test các chức năng anh em mới phát triển
 
 Test các chức năng mới
- - Xóa các bản ghi công việc dựa theeo người thực hiện, mã dự án 
+ - Xóa các bản ghi công việc dựa theo người thực hiện, mã dự án 
+	 - [[xóa người thực hiện]]
+		 - [[Excalidraw/xóa người thực hiện|xóa người thực hiện]]
  - Xóa nhiều bản ghi cùng lúc
  - Bộ lọc cho phép chọn khoảng thời gian cụ thê
 
