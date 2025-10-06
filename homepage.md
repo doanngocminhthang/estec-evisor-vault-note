@@ -21,3 +21,12 @@ Họp
 		- Phát triển bút xóa theo mã dự án, 
 		- Chức năng xóa file tổng
 	- => thêm các TC mới vào file TC để sau này test các chức năng anh em mới phát triển
+
+Test các chức năng mới
+ - Xóa các bản ghi công việc dựa theeo người thực hiện, mã dự án 
+ - Xóa nhiều bản ghi cùng lúc
+ - Bộ lọc cho phép chọn khoảng thời gian cụ thê
+
+Tài khoản Evisor  
+	username: hoanvlh
+	password: example= Ef27Xw34
