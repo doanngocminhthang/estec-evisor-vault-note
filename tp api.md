@@ -30,4 +30,11 @@
 2. Nhóm API Xuất / Nhập Kho
 	1. Xử lý xuất nhập hàng hóa
 		1. View và View detail
-			1. 
+			1. Test thành công
+			2. Test chi tiết
+		2. .... DML
+			1. Test tạo phiếu nhập
+			2. Test tạo phiếu xuất
+			3. Test tạo nghiệp vụ không hợp lệ
+		3. .... Upload
+			1. Test thành công
