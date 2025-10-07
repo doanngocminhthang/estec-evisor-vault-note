@@ -33,5 +33,9 @@ Tài khoản Evisor
 	username: hoanvlh
 	password: example= Ef27Xw34
 
-Test API cho Kiệt
-- [[]]
+071025
+- Test API cho Kiệt
+	- [[test api cho kiệt]]
+	- ![[Pasted Image 20251006160906_055.png]]
+	- test plan
+		- [[tp api]]
