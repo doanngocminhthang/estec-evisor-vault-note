@@ -39,3 +39,6 @@ Tài khoản Evisor
 	- ![[Pasted Image 20251006160906_055.png]]
 	- test plan
 		- [[tp api]]
+	- file upload :
+		- ![[homepage.png]]
+		- "D:\estec\project\estec_evisor\estec_evisor_research\file upload test cho Kiet\export.xlsx"
