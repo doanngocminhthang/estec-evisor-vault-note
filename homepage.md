@@ -42,4 +42,11 @@ Tài khoản Evisor
 	- file upload :
 		- ![[homepage.png]]
 		- "D:\estec\project\estec_evisor\estec_evisor_research\file upload test cho Kiet\export.xlsx"
-		- 
+
+101025
+- Họp
+	- Nhìn vào bảng để xác định các khoảng trống 
+		- xanh là ít
+		- vàng đỏ còn nhiều
+		- tổng hợp lê hoàng ngày 0306 bao nhiêu giờ, có bị đỏ hay không
+		- sheet tổng hợp -> sheet chi tiết , tổng hợp thời gian của từng bạn
