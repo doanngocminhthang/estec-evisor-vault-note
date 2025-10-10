@@ -50,3 +50,6 @@ Tài khoản Evisor
 		- vàng đỏ còn nhiều
 		- tổng hợp lê hoàng ngày 0306 bao nhiêu giờ, có bị đỏ hay không
 		- sheet tổng hợp -> sheet chi tiết , tổng hợp thời gian của từng bạn
+		- khi nào update file quản lý dự án?? Trưởng ban giám đốc 
+		- Nếu thay đổi thời gian thực hiện phải trao đổi PM hoặc ban quản lý dự án
+		- Thêm ngày kết thúc mới, thêm thay đổi giao diện  cho ngày kết thúc mới để người PM nhìn vào biết lý do vì sao người thực hiện phải thay đổi ngày kết thúc công việc
