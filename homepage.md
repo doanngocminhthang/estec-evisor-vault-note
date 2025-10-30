@@ -62,3 +62,7 @@ Phát triển chức năng người dùng chỉnh sửa thông tin trong file t�
 - DB so sánh xem người dùng đã chỉnh sửa trong cột nào
 	- 3 cột đầu thì tạo task mới và thay đổi giá trị version
 	- các cột còn lại thì thay đổi trạng thái thành đã chỉnh sửa và thay đổi giá trị version
+
+30102025
+	Task check chức năng người dùng chỉnh sửa thông tin trong file tổng hợp
+	- link check
