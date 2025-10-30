@@ -65,4 +65,6 @@ Phát triển chức năng người dùng chỉnh sửa thông tin trong file t�
 
 30102025
 	Task check chức năng người dùng chỉnh sửa thông tin trong file tổng hợp
-	- link check
+	- link check : http://113.160.226.217:5173/work-management-khtc
+	- link testcase : https://docs.google.com/spreadsheets/d/1lDQvmm7heUMGA0B77gCKKyMY4ji1witoHp120KtUmHA/edit?gid=0#gid=0
+	- file để test: "D:\estec\project\evisor\estec_evisor_research\form-mau-input-cham-cong"
