@@ -53,3 +53,12 @@ Tài khoản Evisor
 		- khi nào update file quản lý dự án?? Trưởng ban giám đốc 
 		- Nếu thay đổi thời gian thực hiện phải trao đổi PM hoặc ban quản lý dự án
 		- Thêm ngày kết thúc mới, thêm thay đổi giao diện  cho ngày kết thúc mới để người PM nhìn vào biết lý do vì sao người thực hiện phải thay đổi ngày kết thúc công việc
+
+Phát triển chức năng người dùng chỉnh sửa thông tin trong file tổng hợp
+- Người dùng upload file tổng
+- Sau đó người dùng cần chỉnh sửa 1 trong các thông tin trong file tổng
+- Khi người dùng thay đổi thông tin cần cập nhật version trong file excel
+- Upload lên web, web gửi vào DB
+- DB so sánh xem người dùng đã chỉnh sửa trong cột nào
+	- 3 cột đầu thì tạo task mới và thay đổi giá trị version
+	- các cột còn lại thì thay đổi trạng thái thành đã chỉnh sửa và thay đổi giá trị version
